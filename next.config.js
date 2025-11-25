@@ -1,4 +1,5 @@
 const checkEnvVariables = require("./check-env-variables")
+const { withStoreConfig } = require("./store-config")
 
 checkEnvVariables()
 
@@ -32,7 +33,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
+        hostname: "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com ",
       },
       {
         protocol: "https",
@@ -55,4 +56,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = withStoreConfig({nextConfig});
