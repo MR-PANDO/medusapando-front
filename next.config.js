@@ -32,7 +32,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com",
+        hostname: "minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com",
       },
       {
         protocol: "https",
