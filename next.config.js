@@ -1,5 +1,5 @@
 const checkEnvVariables = require("./check-env-variables")
-const { withStoreConfig } = require("./store-config")
+
 
 checkEnvVariables()
 
@@ -56,4 +56,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withStoreConfig({nextConfig});
+module.exports = nextConfig
