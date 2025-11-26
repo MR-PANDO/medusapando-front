@@ -6,12 +6,16 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 
+type ProductWithBrand = HttpTypes.StoreProduct & {
+  brand?: { id: string; name: string }
+}
+
 export default async function ProductPreview({
   product,
   isFeatured,
   region,
 }: {
-  product: HttpTypes.StoreProduct
+  product: ProductWithBrand
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
 }) {
@@ -37,12 +41,19 @@ export default async function ProductPreview({
           size="full"
           isFeatured={isFeatured}
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
-            {product.title}
-          </Text>
-          <div className="flex items-center gap-x-2">
-            {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+        <div className="flex flex-col txt-compact-medium mt-4">
+          {product.brand && (
+            <Text className="text-ui-fg-muted text-xs font-semibold">
+              {product.brand.name}
+            </Text>
+          )}
+          <div className="flex justify-between">
+            <Text className="text-ui-fg-subtle" data-testid="product-title">
+              {product.title}
+            </Text>
+            <div className="flex items-center gap-x-2">
+              {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+            </div>
           </div>
         </div>
       </div>
