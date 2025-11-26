@@ -1,11 +1,12 @@
 "use client"
 
 import { instantMeiliSearch } from "@meilisearch/instant-meilisearch"
-import { useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useState, useRef, useEffect, useCallback } from "react"
 import { InstantSearch, useSearchBox, useHits } from "react-instantsearch"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
+import { addToCart } from "@lib/data/cart"
 
 const searchClient = instantMeiliSearch(
   process.env.NEXT_PUBLIC_MEILISEARCH_HOST || "http://localhost:7700",
@@ -18,6 +19,7 @@ type ProductHit = {
   handle: string
   description?: string
   thumbnail?: string
+  variant_id?: string
 }
 
 function SearchInput({
@@ -60,9 +62,92 @@ function SearchInput({
   )
 }
 
+function AddToCartButton({
+  variantId,
+  countryCode
+}: {
+  variantId: string
+  countryCode: string
+}) {
+  const [quantity, setQuantity] = useState(1)
+  const [isAdding, setIsAdding] = useState(false)
+  const [added, setAdded] = useState(false)
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!variantId) return
+
+    setIsAdding(true)
+    try {
+      await addToCart({
+        variantId,
+        quantity,
+        countryCode,
+      })
+      setAdded(true)
+      setTimeout(() => setAdded(false), 2000)
+    } catch (error) {
+      console.error("Failed to add to cart:", error)
+    } finally {
+      setIsAdding(false)
+    }
+  }
+
+  const decrementQty = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (quantity > 1) setQuantity(q => q - 1)
+  }
+
+  const incrementQty = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (quantity < 10) setQuantity(q => q + 1)
+  }
+
+  return (
+    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+      <div className="flex items-center border border-gray-200 rounded">
+        <button
+          onClick={decrementQty}
+          className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
+          type="button"
+        >
+          -
+        </button>
+        <span className="px-2 py-1 text-sm min-w-[24px] text-center">{quantity}</span>
+        <button
+          onClick={incrementQty}
+          className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
+          type="button"
+        >
+          +
+        </button>
+      </div>
+      <button
+        onClick={handleAddToCart}
+        disabled={isAdding || !variantId}
+        className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+          added
+            ? "bg-green-500 text-white"
+            : isAdding
+            ? "bg-gray-300 text-gray-500 cursor-wait"
+            : "bg-black text-white hover:bg-gray-800"
+        }`}
+        type="button"
+      >
+        {added ? "Added!" : isAdding ? "..." : "Add"}
+      </button>
+    </div>
+  )
+}
+
 function SearchResults({ onResultClick }: { onResultClick: () => void }) {
   const { hits } = useHits<ProductHit>()
-  const router = useRouter()
+  const params = useParams()
+  const countryCode = (params.countryCode as string) || "ve"
 
   if (hits.length === 0) {
     return (
@@ -75,26 +160,39 @@ function SearchResults({ onResultClick }: { onResultClick: () => void }) {
   return (
     <div className="max-h-[400px] overflow-y-auto">
       {hits.slice(0, 8).map((hit) => (
-        <LocalizedClientLink
+        <div
           key={hit.id}
-          href={`/products/${hit.handle}`}
-          className="flex items-center gap-4 p-3 hover:bg-gray-50 transition-colors"
-          onClick={onResultClick}
+          className="flex items-center gap-4 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
         >
-          <div className="w-12 h-12 flex-shrink-0">
+          <LocalizedClientLink
+            href={`/products/${hit.handle}`}
+            className="w-12 h-12 flex-shrink-0"
+            onClick={onResultClick}
+          >
             <Thumbnail thumbnail={hit.thumbnail} size="square" />
-          </div>
+          </LocalizedClientLink>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {hit.title}
-            </p>
+            <LocalizedClientLink
+              href={`/products/${hit.handle}`}
+              onClick={onResultClick}
+            >
+              <p className="text-sm font-medium text-gray-900 truncate hover:text-gray-600">
+                {hit.title}
+              </p>
+            </LocalizedClientLink>
             {hit.description && (
               <p className="text-xs text-gray-500 truncate">
                 {hit.description}
               </p>
             )}
           </div>
-        </LocalizedClientLink>
+          {hit.variant_id && (
+            <AddToCartButton
+              variantId={hit.variant_id}
+              countryCode={countryCode}
+            />
+          )}
+        </div>
       ))}
     </div>
   )
@@ -139,12 +237,6 @@ function SearchContent() {
         }}
         onBlur={() => {
           setIsFocused(false)
-          // Delay closing to allow click on results
-          setTimeout(() => {
-            if (!isFocused) {
-              setIsOpen(false)
-            }
-          }, 200)
         }}
       />
       {isOpen && query && query.length > 0 && (
