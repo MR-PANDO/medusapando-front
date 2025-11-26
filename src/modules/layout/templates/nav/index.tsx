@@ -1,10 +1,13 @@
 import { Suspense } from "react"
+import Logo from '@/assets/logo.svg';
+import Image from 'next/image';
 
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
+import SearchBox from "@modules/search/components/search-box"
 
 export default async function Nav() {
   const regions = await listRegions().then((regions: StoreRegion[]) => regions)
@@ -25,8 +28,18 @@ export default async function Nav() {
               className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
               data-testid="nav-store-link"
             >
-              Medusa Store
+             <Image
+                src="/logo.svg"
+                alt="Logo"
+                width={200}
+                height={60}
+                priority
+              />
             </LocalizedClientLink>
+          </div>
+
+          <div className="hidden small:flex items-center flex-1 max-w-md mx-4">
+            <SearchBox />
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
