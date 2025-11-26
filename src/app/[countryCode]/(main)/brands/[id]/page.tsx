@@ -1,7 +1,6 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { retrieveBrand } from "@lib/data/brands"
-import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { Heading, Text } from "@medusajs/ui"
 import ProductPreview from "@modules/products/components/product-preview"
@@ -39,20 +38,10 @@ export default async function BrandPage(props: Props) {
     notFound()
   }
 
-  // Get products for this brand using the Query API fields parameter
-  // This fetches products that are linked to the brand
-  const { response } = await listProducts({
-    countryCode,
-    queryParams: {
-      limit: 100,
-      fields: "*variants.calculated_price,+variants.inventory_quantity,+brand.*",
-    },
-  })
-
-  // Filter products by brand ID (since we can't filter by brand in the API yet)
-  const brandProducts = response.products.filter(
-    (product: any) => product.brand?.id === id
-  )
+  // Get products for this brand
+  // Note: Brand filtering will need to be done via a custom API endpoint
+  // For now, we'll show an empty list until brands are linked to products
+  const brandProducts: any[] = []
 
   return (
     <div className="flex flex-col py-6 content-container">
