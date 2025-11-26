@@ -8,7 +8,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "@modules/products/components/thumbnail"
 import { addToCart } from "@lib/data/cart"
 
-const searchClient = instantMeiliSearch(
+const { searchClient } = instantMeiliSearch(
   process.env.NEXT_PUBLIC_MEILISEARCH_HOST || "http://localhost:7700",
   process.env.NEXT_PUBLIC_MEILISEARCH_API_KEY || ""
 )
@@ -252,7 +252,8 @@ export default function SearchBox() {
   return (
     <InstantSearch
       indexName="products"
-      searchClient={searchClient.searchClient}
+      searchClient={searchClient}
+      future={{ preserveSharedStateOnUnmount: true }}
     >
       <SearchContent />
     </InstantSearch>
