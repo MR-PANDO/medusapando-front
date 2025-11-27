@@ -24,19 +24,17 @@ const CATEGORY_ORDER = [
 export default async function Hero() {
   const categories = await listCategories()
 
-  // Filter to only show parent categories (no parent_category)
+  // Filter to only show parent categories that are in our predefined order
   const parentCategories = categories?.filter(
-    (cat: HttpTypes.StoreProductCategory) => !cat.parent_category
+    (cat: HttpTypes.StoreProductCategory) =>
+      !cat.parent_category && CATEGORY_ORDER.includes(cat.handle || "")
   ) || []
 
   // Sort categories by the predefined order
   const sortedCategories = [...parentCategories].sort((a, b) => {
     const indexA = CATEGORY_ORDER.indexOf(a.handle || "")
     const indexB = CATEGORY_ORDER.indexOf(b.handle || "")
-    // If not in the order list, put at the end
-    const orderA = indexA === -1 ? CATEGORY_ORDER.length : indexA
-    const orderB = indexB === -1 ? CATEGORY_ORDER.length : indexB
-    return orderA - orderB
+    return indexA - indexB
   })
 
   return <HeroClient categories={sortedCategories} />
