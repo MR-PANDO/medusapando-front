@@ -35,7 +35,8 @@ export function calculatePricePerUnit(
   if (!unitPricing.unit_amount || unitPricing.unit_amount === 0) {
     return 0
   }
-  return (price / unitPricing.unit_amount) * unitPricing.base_unit_amount
+  // Price per single unit (e.g., price per 1g, price per 1ml)
+  return price / unitPricing.unit_amount
 }
 
 export function formatPricePerUnit(
@@ -69,7 +70,7 @@ export default function UnitPrice({
       className={`text-sm text-ui-fg-muted ${className}`}
       data-testid="unit-price"
     >
-      {formattedPrice} / {unitPricing.base_unit_amount}{unitLabel}
+      {formattedPrice} / {unitLabel}
     </Text>
   )
 }
