@@ -19,31 +19,41 @@ export default async function PreviewPrice({
     return null
   }
 
+  const isSale = price.price_type === "sale"
+
   return (
-    <div className="flex flex-col items-end">
-      <div className="flex items-center gap-x-2">
-        {price.price_type === "sale" && (
-          <Text
-            className="line-through text-ui-fg-muted"
-            data-testid="original-price"
-          >
-            {price.original_price}
-          </Text>
-        )}
+    <div className="flex flex-col">
+      {/* Price row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Current/sale price */}
         <Text
-          className={clx("text-ui-fg-muted", {
-            "text-ui-fg-interactive": price.price_type === "sale",
+          className={clx("text-base font-bold", {
+            "text-red-600": isSale,
+            "text-gray-900": !isSale,
           })}
           data-testid="price"
         >
           {price.calculated_price}
         </Text>
+
+        {/* Original price (crossed out) */}
+        {isSale && (
+          <Text
+            className="text-sm line-through text-gray-400"
+            data-testid="original-price"
+          >
+            {price.original_price}
+          </Text>
+        )}
       </div>
+
+      {/* Unit price */}
       {unitPricing && price.currency_code && (
         <UnitPrice
           price={price.calculated_price_number}
           currencyCode={price.currency_code}
           unitPricing={unitPricing}
+          className="text-xs"
         />
       )}
     </div>

@@ -3,9 +3,6 @@
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
-import Divider from "@modules/common/components/divider"
-import OptionSelect from "@modules/products/components/product-actions/option-select"
 import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -38,6 +35,8 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+  const [isWishlisted, setIsWishlisted] = useState(false)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
@@ -128,41 +127,117 @@ export default function ProductActions({
 
     await addToCart({
       variantId: selectedVariant.id,
-      quantity: 1,
+      quantity,
       countryCode,
     })
 
     setIsAdding(false)
   }
 
+  const decrementQty = () => {
+    if (quantity > 1) setQuantity((q) => q - 1)
+  }
+
+  const incrementQty = () => {
+    if (quantity < 99) setQuantity((q) => q + 1)
+  }
+
+  const toggleWishlist = () => {
+    setIsWishlisted(!isWishlisted)
+  }
+
   return (
     <>
-      <div className="flex flex-col gap-y-2" ref={actionsRef}>
-        <div>
-          {(product.variants?.length ?? 0) > 1 && (
-            <div className="flex flex-col gap-y-4">
-              {(product.options || []).map((option) => {
-                return (
-                  <div key={option.id}>
-                    <OptionSelect
-                      option={option}
-                      current={options[option.id]}
-                      updateOption={setOptionValue}
-                      title={option.title ?? ""}
-                      data-testid="product-options"
-                      disabled={!!disabled || isAdding}
-                    />
+      <div className="flex flex-col gap-y-4" ref={actionsRef}>
+        {/* Variant Options as Pills */}
+        {(product.variants?.length ?? 0) > 1 && (
+          <div className="flex flex-col gap-y-4">
+            {(product.options || []).map((option) => {
+              return (
+                <div key={option.id}>
+                  <span className="text-sm font-medium text-gray-700 mb-2 block">
+                    {option.title}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {option.values?.map((value) => {
+                      const isSelected = options[option.id] === value.value
+                      return (
+                        <button
+                          key={value.id}
+                          onClick={() => setOptionValue(option.id, value.value)}
+                          disabled={!!disabled || isAdding}
+                          className={`px-4 py-2 text-sm rounded-md border transition-all ${
+                            isSelected
+                              ? "bg-gray-800 text-white border-gray-800"
+                              : "bg-gray-100 text-gray-700 border-gray-200 hover:border-gray-400"
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          {value.value}
+                        </button>
+                      )
+                    })}
                   </div>
-                )
-              })}
-              <Divider />
-            </div>
-          )}
-        </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
 
+        {/* Price Display */}
         <ProductPrice product={product} variant={selectedVariant} />
 
-        <Button
+        {/* Quantity Selector and Wishlist */}
+        <div className="flex items-center gap-3">
+          {/* Quantity Selector */}
+          <div className="flex items-center border border-gray-300 rounded-md">
+            <button
+              onClick={decrementQty}
+              disabled={!inStock || quantity <= 1}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="text-xl font-medium">-</span>
+            </button>
+            <span className="w-12 h-10 flex items-center justify-center text-base font-medium border-x border-gray-300">
+              {quantity}
+            </span>
+            <button
+              onClick={incrementQty}
+              disabled={!inStock}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="text-xl font-medium">+</span>
+            </button>
+          </div>
+
+          {/* Wishlist Button */}
+          <button
+            onClick={toggleWishlist}
+            className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all ${
+              isWishlisted
+                ? "bg-red-50 border-red-200 text-red-500"
+                : "border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600"
+            }`}
+            title={isWishlisted ? "Quitar de favoritos" : "Agregar a favoritos"}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill={isWishlisted ? "currentColor" : "none"}
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Add to Cart Button */}
+        <button
           onClick={handleAddToCart}
           disabled={
             !inStock ||
@@ -171,17 +246,60 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          variant="primary"
-          className="w-full h-10"
-          isLoading={isAdding}
+          className={`w-full h-12 flex items-center justify-center gap-2 rounded-md font-medium transition-all ${
+            !inStock || !selectedVariant || !isValidVariant
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : isAdding
+              ? "bg-emerald-400 text-white cursor-wait"
+              : "bg-emerald-600 text-white hover:bg-emerald-700"
+          }`}
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
-            ? "Select variant"
-            : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
-        </Button>
+          {/* Cart icon */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          <span>
+            {!selectedVariant && !options
+              ? "Seleccionar variante"
+              : !inStock || !isValidVariant
+              ? "Agotado"
+              : isAdding
+              ? "Agregando..."
+              : "Agregar al carrito"}
+          </span>
+        </button>
+
+        {/* Order Now Button */}
+        <button
+          onClick={handleAddToCart}
+          disabled={
+            !inStock ||
+            !selectedVariant ||
+            !!disabled ||
+            isAdding ||
+            !isValidVariant
+          }
+          className={`w-full h-12 flex items-center justify-center gap-2 rounded-md font-medium border-2 transition-all ${
+            !inStock || !selectedVariant || !isValidVariant
+              ? "border-gray-200 text-gray-400 cursor-not-allowed"
+              : "border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+          }`}
+        >
+          Comprar ahora
+        </button>
+
         <MobileActions
           product={product}
           variant={selectedVariant}

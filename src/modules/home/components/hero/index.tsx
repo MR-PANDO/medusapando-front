@@ -2,11 +2,11 @@ import { listCategories } from "@lib/data/categories"
 import { HttpTypes } from "@medusajs/types"
 import HeroClient from "./hero-client"
 
-// Desired order of categories (by handle)
+// Desired order of categories (by handle) - must match exact handles in database
 const CATEGORY_ORDER = [
   "congelados",
   "cuidado-personal",
-  "despensa-saludable",
+  "despensa",
   "frutas-y-verduras",
   "frutos-secos-deshidratados-semillas",
   "granolas-cereales-avenas",
@@ -14,11 +14,11 @@ const CATEGORY_ORDER = [
   "lacteos-refrigerados",
   "panaderia-artesanal",
   "pollo-pavo-pescado",
-  "postres-tortas",
+  "postres-tortas-helados",
   "proteinas-suplementos-colagenos",
   "snacks-saludables",
-  "superalimentos",
-  "te-aromaticas-cafe",
+  "bebidas-amp-te",
+  "aceites-funcionales",
 ]
 
 export default async function Hero() {

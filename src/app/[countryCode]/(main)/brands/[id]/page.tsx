@@ -58,7 +58,7 @@ export default async function BrandPage(props: Props) {
         <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-8">
           {brandProducts.map((product: any) => (
             <li key={product.id}>
-              <ProductPreview product={product} region={region} />
+              <ProductPreview product={product} region={region} countryCode={countryCode} />
             </li>
           ))}
         </ul>

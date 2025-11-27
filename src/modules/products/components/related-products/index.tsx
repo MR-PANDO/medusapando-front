@@ -1,7 +1,9 @@
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { HttpTypes } from "@medusajs/types"
-import Product from "../product-preview"
+import { getProductPrice } from "@lib/util/get-product-price"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Thumbnail from "@modules/products/components/thumbnail"
 
 type RelatedProductsProps = {
   product: HttpTypes.StoreProduct
@@ -32,6 +34,7 @@ export default async function RelatedProducts({
       .filter(Boolean) as string[]
   }
   queryParams.is_giftcard = false
+  queryParams.limit = 4
 
   const products = await listProducts({
     queryParams,
@@ -43,27 +46,66 @@ export default async function RelatedProducts({
   })
 
   if (!products.length) {
-    return null
+    return (
+      <p className="text-sm text-gray-500">
+        No hay productos relacionados disponibles.
+      </p>
+    )
   }
 
   return (
-    <div className="product-page-constraint">
-      <div className="flex flex-col items-center text-center mb-16">
-        <span className="text-base-regular text-gray-600 mb-6">
-          Related products
-        </span>
-        <p className="text-2xl-regular text-ui-fg-base max-w-lg">
-          You might also want to check out these products.
-        </p>
-      </div>
+    <div className="flex flex-col gap-4">
+      {products.slice(0, 4).map((relatedProduct) => {
+        const { cheapestPrice } = getProductPrice({ product: relatedProduct })
+        const hasDiscount =
+          cheapestPrice?.price_type === "sale" &&
+          Number(cheapestPrice.percentage_diff) > 0
 
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
-        {products.map((product) => (
-          <li key={product.id}>
-            <Product region={region} product={product} />
-          </li>
-        ))}
-      </ul>
+        return (
+          <LocalizedClientLink
+            key={relatedProduct.id}
+            href={`/products/${relatedProduct.handle}`}
+            className="flex gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+          >
+            {/* Thumbnail */}
+            <div className="relative w-16 h-16 flex-shrink-0">
+              {hasDiscount && (
+                <span className="absolute -top-1 -left-1 z-10 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                  -{cheapestPrice.percentage_diff}%
+                </span>
+              )}
+              <Thumbnail
+                thumbnail={relatedProduct.thumbnail}
+                size="square"
+                className="!w-16 !h-16 !rounded-md"
+              />
+            </div>
+
+            {/* Product Info */}
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                {relatedProduct.title}
+              </h4>
+
+              {/* Price */}
+              {cheapestPrice && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span
+                    className={`text-sm font-bold ${hasDiscount ? "text-red-600" : "text-gray-900"}`}
+                  >
+                    {cheapestPrice.calculated_price}
+                  </span>
+                  {hasDiscount && (
+                    <span className="text-xs text-gray-400 line-through">
+                      {cheapestPrice.original_price}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </LocalizedClientLink>
+        )
+      })}
     </div>
   )
 }
