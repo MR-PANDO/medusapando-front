@@ -6,6 +6,12 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 
+type UnitPricing = {
+  unit_type: string
+  unit_amount: number
+  base_unit_amount: number
+}
+
 type ProductWithBrand = HttpTypes.StoreProduct & {
   brand?: { id: string; name: string }
 }
@@ -32,6 +38,10 @@ export default async function ProductPreview({
     product,
   })
 
+  // Get unit pricing from product metadata
+  const metadata = product.metadata as Record<string, unknown> | undefined
+  const unitPricing = metadata?.unit_pricing as UnitPricing | undefined
+
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group">
       <div data-testid="product-wrapper">
@@ -52,7 +62,7 @@ export default async function ProductPreview({
               {product.title}
             </Text>
             <div className="flex items-center gap-x-2">
-              {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+              {cheapestPrice && <PreviewPrice price={cheapestPrice} unitPricing={unitPricing} />}
             </div>
           </div>
         </div>

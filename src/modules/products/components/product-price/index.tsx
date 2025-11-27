@@ -2,6 +2,13 @@ import { clx } from "@medusajs/ui"
 
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
+import UnitPrice from "@modules/products/components/unit-price"
+
+type UnitPricing = {
+  unit_type: string
+  unit_amount: number
+  base_unit_amount: number
+}
 
 export default function ProductPrice({
   product,
@@ -17,6 +24,10 @@ export default function ProductPrice({
 
   const selectedPrice = variant ? variantPrice : cheapestPrice
 
+  // Get unit pricing from product metadata (follows Medusa's recommended approach)
+  const metadata = product.metadata as Record<string, unknown> | undefined
+  const unitPricing = metadata?.unit_pricing as UnitPricing | undefined
+
   if (!selectedPrice) {
     return <div className="block w-32 h-9 bg-gray-100 animate-pulse" />
   }
@@ -28,7 +39,7 @@ export default function ProductPrice({
           "text-ui-fg-interactive": selectedPrice.price_type === "sale",
         })}
       >
-        {!variant && "From "}
+        {!variant && "Desde "}
         <span
           data-testid="product-price"
           data-value={selectedPrice.calculated_price_number}
@@ -52,6 +63,13 @@ export default function ProductPrice({
             -{selectedPrice.percentage_diff}%
           </span>
         </>
+      )}
+      {unitPricing && selectedPrice.currency_code && (
+        <UnitPrice
+          price={selectedPrice.calculated_price_number}
+          currencyCode={selectedPrice.currency_code}
+          unitPricing={unitPricing}
+        />
       )}
     </div>
   )
