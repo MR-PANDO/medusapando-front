@@ -19,7 +19,7 @@
       "@lib/*": ["lib/*"],
       "@modules/*": ["modules/*"],
       "@pages/*": ["pages/*"],
-      "@assets/*": ["assets/*"]  // Add this line
+      "@assets/*": ["assets/*"]
     },
     "plugins": [
       {
