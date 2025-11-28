@@ -85,11 +85,11 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
     <div className="sticky top-0 inset-x-0 z-50">
       {/* Top Row - Logo, Search, Account, Cart - Hidden when scrolled */}
       <header
-        className={`bg-white border-b border-gray-200 transition-all duration-300 overflow-hidden ${
-          isScrolled ? 'h-0 opacity-0 border-b-0' : 'h-20 opacity-100'
+        className={`bg-white border-b border-gray-200 transition-all duration-300 ${
+          isScrolled ? 'max-h-0 opacity-0 border-b-0 pointer-events-none overflow-hidden' : 'max-h-20 opacity-100 overflow-visible'
         }`}
       >
-        <div className="content-container h-full">
+        <div className="content-container h-20">
           <nav className="flex items-center justify-between h-20 gap-4">
             {/* Logo */}
             <LocalizedClientLink

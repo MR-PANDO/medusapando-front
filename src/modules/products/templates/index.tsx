@@ -2,6 +2,7 @@ import React, { Suspense } from "react"
 
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
+import ProductDietBadges from "@modules/products/components/product-diet-badges"
 import RelatedProducts from "@modules/products/components/related-products"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
@@ -92,6 +93,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   {product.description}
                 </p>
               )}
+
+              {/* Diet Badges - compact version */}
+              <ProductDietBadges tags={product.tags} compact />
 
               {/* Product Actions (Price, Variants, Add to Cart) */}
               <Suspense
