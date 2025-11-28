@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { retrieveBrand } from "@lib/data/brands"
+import { retrieveBrand, listProductsByBrand } from "@lib/data/brands"
 import { getRegion } from "@lib/data/regions"
 import { Heading, Text } from "@medusajs/ui"
 import ProductPreview from "@modules/products/components/product-preview"
@@ -39,9 +39,11 @@ export default async function BrandPage(props: Props) {
   }
 
   // Get products for this brand
-  // Note: Brand filtering will need to be done via a custom API endpoint
-  // For now, we'll show an empty list until brands are linked to products
-  const brandProducts: any[] = []
+  const { products: brandProducts, count } = await listProductsByBrand({
+    brandId: id,
+    regionId: region.id,
+    limit: 100,
+  })
 
   return (
     <div className="flex flex-col py-6 content-container">
@@ -50,7 +52,7 @@ export default async function BrandPage(props: Props) {
           {brand.name}
         </Heading>
         <Text className="text-ui-fg-subtle">
-          {brandProducts.length} producto{brandProducts.length !== 1 ? "s" : ""}
+          {count} producto{count !== 1 ? "s" : ""}
         </Text>
       </div>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, ReactNode } from "react"
+import { useState, useEffect, useRef, useCallback, ReactNode } from "react"
 import Image from 'next/image'
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
@@ -17,19 +17,69 @@ type NavHeaderProps = {
   sideMenu: ReactNode
   searchBox: ReactNode
   cartButton: ReactNode
+  cartButtonCompact?: ReactNode
 }
 
-export default function NavHeader({ sideMenu, searchBox, cartButton }: NavHeaderProps) {
+export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonCompact }: NavHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
+  const isScrolledRef = useRef(false)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const updateScrollState = useCallback((scrolled: boolean) => {
+    if (isScrolledRef.current !== scrolled) {
+      isScrolledRef.current = scrolled
+      setIsScrolled(scrolled)
+    }
+  }, [])
 
   useEffect(() => {
+    // Set initial scroll state after mount
+    const initialScrolled = window.scrollY > 80
+    isScrolledRef.current = initialScrolled
+    setIsScrolled(initialScrolled)
+
+    let ticking = false
+    let lastScrollY = window.scrollY
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      lastScrollY = window.scrollY
+
+      if (!ticking) {
+        // Use requestAnimationFrame for smooth, batched updates
+        window.requestAnimationFrame(() => {
+          const scrollY = lastScrollY
+
+          // Clear any pending timeout
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+            timeoutRef.current = null
+          }
+
+          // Wide hysteresis gap: collapse at 100px, expand only at top (< 10px)
+          if (isScrolledRef.current && scrollY < 10) {
+            // Small debounce when expanding back
+            timeoutRef.current = setTimeout(() => {
+              updateScrollState(false)
+            }, 100)
+          } else if (!isScrolledRef.current && scrollY > 100) {
+            updateScrollState(true)
+          }
+
+          ticking = false
+        })
+
+        ticking = true
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [updateScrollState])
 
   return (
     <div className="sticky top-0 inset-x-0 z-50">
@@ -160,9 +210,11 @@ export default function NavHeader({ sideMenu, searchBox, cartButton }: NavHeader
                 </svg>
               </LocalizedClientLink>
 
-              {/* Cart - only visible when scrolled */}
-              <div className={`transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden'}`}>
-                {cartButton}
+              {/* Cart icon - only visible when scrolled (compact version with badge) */}
+              <div className={`transition-opacity duration-300 ${
+                isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden'
+              }`}>
+                {cartButtonCompact}
               </div>
             </div>
           </div>

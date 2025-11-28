@@ -54,3 +54,42 @@ export const retrieveBrand = async (id: string): Promise<Brand | null> => {
     .then(({ brand }) => brand)
     .catch(() => null)
 }
+
+export const listProductsByBrand = async ({
+  brandId,
+  limit = 100,
+  offset = 0,
+  regionId,
+}: {
+  brandId: string
+  limit?: number
+  offset?: number
+  regionId?: string
+}): Promise<{
+  products: any[]
+  count: number
+}> => {
+  const next = {
+    ...(await getCacheOptions("brands")),
+  }
+
+  return sdk.client
+    .fetch<{ products: any[]; count: number }>(
+      `/store/brands/${brandId}/products`,
+      {
+        method: "GET",
+        query: {
+          limit,
+          offset,
+          ...(regionId && { region_id: regionId }),
+        },
+        next,
+        cache: "force-cache",
+      }
+    )
+    .then(({ products, count }) => ({
+      products,
+      count,
+    }))
+    .catch(() => ({ products: [], count: 0 }))
+}

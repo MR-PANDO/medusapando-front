@@ -86,11 +86,11 @@ export const listProducts = async ({
 }
 
 /**
- * This will fetch 100 products to the Next.js cache and sort them based on the sortBy parameter.
- * It will then return the paginated products based on the page and limit parameters.
+ * Fetches products with proper pagination and sorting.
+ * Uses server-side pagination to handle large product catalogs.
  */
 export const listProductsWithSort = async ({
-  page = 0,
+  page = 1,
   queryParams,
   sortBy = "created_at",
   countryCode,
@@ -106,28 +106,39 @@ export const listProductsWithSort = async ({
 }> => {
   const limit = queryParams?.limit || 12
 
+  // Map sortBy to API order parameter
+  let orderParam: string | undefined
+  if (sortBy === "price_asc") {
+    orderParam = "variants.calculated_price"
+  } else if (sortBy === "price_desc") {
+    orderParam = "-variants.calculated_price"
+  } else if (sortBy === "created_at") {
+    orderParam = "-created_at"
+  } else if (sortBy === "sales_count") {
+    orderParam = "-metadata.sales_count"
+  }
+
   const {
     response: { products, count },
   } = await listProducts({
-    pageParam: 0,
+    pageParam: page,
     queryParams: {
       ...queryParams,
-      limit: 100,
+      limit,
+      ...(orderParam && { order: orderParam }),
     },
     countryCode,
   })
 
+  // Sort products client-side for more complex sorting if needed
   const sortedProducts = sortProducts(products, sortBy)
 
-  const pageParam = (page - 1) * limit
-
-  const nextPage = count > pageParam + limit ? pageParam + limit : null
-
-  const paginatedProducts = sortedProducts.slice(pageParam, pageParam + limit)
+  const offset = (page - 1) * limit
+  const nextPage = count > offset + limit ? page + 1 : null
 
   return {
     response: {
-      products: paginatedProducts,
+      products: sortedProducts,
       count,
     },
     nextPage,
