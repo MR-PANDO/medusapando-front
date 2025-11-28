@@ -6,12 +6,26 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 
 const PRODUCT_LIMIT = 12
 
+// Map URL slugs to actual tag IDs from database
+const TAG_SLUG_TO_ID: Record<string, string> = {
+  vegano: "ptag_MIH1ZD106B4F7ECB2C025EBB",
+  vegetariano: "ptag_MIH1ZD0WE0F5BB75D98BC2DE",
+  "sin-lactosa": "ptag_MIH1ZD14FF66C37851E4C4F1",
+  organico: "ptag_MIH1ZD1K585E3840F803CC57",
+  "sin-azucar": "ptag_MIH1ZD0S047DBC6CAF2BDCAA",
+  paleo: "ptag_MIH1ZD1CAA2106DFFB237963",
+  "sin-gluten": "ptag_MIH1ZD0LCB8F57C1E8CE02D2",
+  keto: "ptag_MIH1ZD0723E50DF51080B187",
+  nuevo: "ptag_MIH1ZD0P70B83B188A619F35",
+}
+
 type PaginatedProductsParams = {
   limit: number
   collection_id?: string[]
   category_id?: string[]
   id?: string[]
   order?: string
+  tag_id?: string[]
 }
 
 export default async function PaginatedProducts({
@@ -21,6 +35,7 @@ export default async function PaginatedProducts({
   categoryId,
   productsIds,
   countryCode,
+  tags,
 }: {
   sortBy?: SortOptions
   page: number
@@ -28,6 +43,7 @@ export default async function PaginatedProducts({
   categoryId?: string
   productsIds?: string[]
   countryCode: string
+  tags?: string
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -43,6 +59,13 @@ export default async function PaginatedProducts({
 
   if (productsIds) {
     queryParams["id"] = productsIds
+  }
+
+  if (tags) {
+    const tagId = TAG_SLUG_TO_ID[tags]
+    if (tagId) {
+      queryParams["tag_id"] = [tagId]
+    }
   }
 
   if (sortBy === "created_at") {

@@ -73,23 +73,51 @@ export const listProductsByBrand = async ({
     ...(await getCacheOptions("brands")),
   }
 
-  return sdk.client
-    .fetch<{ products: any[]; count: number }>(
-      `/store/brands/${brandId}/products`,
-      {
-        method: "GET",
-        query: {
-          limit,
-          offset,
-          ...(regionId && { region_id: regionId }),
-        },
-        next,
-        cache: "force-cache",
-      }
-    )
-    .then(({ products, count }) => ({
-      products,
-      count,
-    }))
-    .catch(() => ({ products: [], count: 0 }))
+  try {
+    // First get product IDs from brand endpoint
+    const brandProducts = await sdk.client.fetch<{
+      products: { id: string; handle: string }[]
+      count: number
+    }>(`/store/brands/${brandId}/products`, {
+      method: "GET",
+      query: {
+        limit,
+        offset,
+      },
+      next,
+      cache: "force-cache",
+    })
+
+    if (!brandProducts.products || brandProducts.products.length === 0) {
+      return { products: [], count: 0 }
+    }
+
+    // Get product IDs
+    const productIds = brandProducts.products.map((p) => p.id)
+
+    // Fetch full product data with prices using the standard store API
+    const fullProducts = await sdk.client.fetch<{
+      products: any[]
+      count: number
+    }>(`/store/products`, {
+      method: "GET",
+      query: {
+        id: productIds,
+        limit,
+        ...(regionId && { region_id: regionId }),
+        fields:
+          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags",
+      },
+      next,
+      cache: "force-cache",
+    })
+
+    return {
+      products: fullProducts.products || [],
+      count: brandProducts.count,
+    }
+  } catch (error) {
+    console.error("Error fetching products by brand:", error)
+    return { products: [], count: 0 }
+  }
 }

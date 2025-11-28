@@ -6,17 +6,42 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 
 import PaginatedProducts from "./paginated-products"
 
+// Map tag slugs to display names
+const TAG_DISPLAY_NAMES: Record<string, string> = {
+  vegano: "Vegano",
+  vegetariano: "Vegetariano",
+  "sin-lactosa": "Sin Lactosa",
+  organico: "Orgánico",
+  "sin-azucar": "Sin Azúcar",
+  paleo: "Paleo",
+  "sin-gluten": "Sin Gluten",
+  keto: "Keto",
+  ofertas: "Ofertas",
+  nuevo: "Nuevos",
+}
+
 const StoreTemplate = ({
   sortBy,
   page,
   countryCode,
+  tags,
 }: {
   sortBy?: SortOptions
   page?: string
   countryCode: string
+  tags?: string
 }) => {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
+
+  // Get display title based on tags filter
+  const getTitle = () => {
+    if (tags) {
+      const tagName = TAG_DISPLAY_NAMES[tags] || tags
+      return `Productos ${tagName}`
+    }
+    return "Todos los productos"
+  }
 
   return (
     <div
@@ -26,13 +51,14 @@ const StoreTemplate = ({
       <RefinementList sortBy={sort} />
       <div className="w-full">
         <div className="mb-8 text-2xl-semi">
-          <h1 data-testid="store-page-title">All products</h1>
+          <h1 data-testid="store-page-title">{getTitle()}</h1>
         </div>
         <Suspense fallback={<SkeletonProductGrid />}>
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
             countryCode={countryCode}
+            tags={tags}
           />
         </Suspense>
       </div>
