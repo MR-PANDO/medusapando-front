@@ -27,12 +27,13 @@ const SideMenu = ({
             <button
               data-testid="nav-menu-button"
               onClick={open}
-              className="h-10 flex items-center gap-2 px-4 sm:px-6 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors focus:outline-none"
+              className="h-10 flex items-center gap-2 px-3 sm:px-6 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors focus:outline-none"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-              <span className="font-semibold text-sm uppercase tracking-wide whitespace-nowrap">Comprar por Categorías</span>
+              <span className="hidden sm:inline font-semibold text-sm uppercase tracking-wide whitespace-nowrap">Comprar por Categorías</span>
+              <span className="sm:hidden font-semibold text-sm uppercase tracking-wide">Categorías</span>
             </button>
           </div>
 

@@ -110,3 +110,43 @@ export const declineTransferRequest = async (id: string, token: string) => {
     .then(({ order }) => ({ success: true, error: null, order }))
     .catch((err) => ({ success: false, error: err.message, order: null }))
 }
+
+export type RecentlyPurchasedItem = {
+  product_id: string
+  variant_id: string | null
+  product_title: string | null
+  product_handle: string | null
+  thumbnail: string | null
+  last_purchased: string
+  purchase_count: number
+  unit_price: number
+}
+
+export const getRecentlyPurchased = async (
+  limit: number = 6
+): Promise<RecentlyPurchasedItem[]> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("orders")),
+  }
+
+  return sdk.client
+    .fetch<{
+      recently_purchased: RecentlyPurchasedItem[]
+      count: number
+    }>(`/store/customers/recently-purchased`, {
+      method: "GET",
+      query: { limit },
+      headers,
+      next,
+      cache: "force-cache",
+    })
+    .then(({ recently_purchased }) => recently_purchased)
+    .catch((err) => {
+      console.error("Error fetching recently purchased:", err)
+      return []
+    })
+}

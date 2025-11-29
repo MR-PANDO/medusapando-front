@@ -1,7 +1,5 @@
 "use client"
 
-import FilterRadioGroup from "@modules/common/components/filter-radio-group"
-
 export type SortOptions = "price_asc" | "price_desc" | "created_at" | "sales_count"
 
 type SortProductsProps = {
@@ -39,13 +37,28 @@ const SortProducts = ({
   }
 
   return (
-    <FilterRadioGroup
-      title="Sort by"
-      items={sortOptions}
-      value={sortBy}
-      handleChange={handleChange}
-      data-testid={dataTestId}
-    />
+    <div className="flex flex-col gap-2">
+      {sortOptions.map((option) => (
+        <label
+          key={option.value}
+          className="flex items-center gap-3 cursor-pointer group"
+        >
+          <input
+            type="radio"
+            name="sortBy"
+            checked={sortBy === option.value}
+            onChange={() => handleChange(option.value as SortOptions)}
+            className="w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500"
+            data-testid={dataTestId}
+          />
+          <span className={`text-sm text-gray-700 group-hover:text-emerald-600 transition-colors ${
+            sortBy === option.value ? "font-medium text-emerald-600" : ""
+          }`}>
+            {option.label}
+          </span>
+        </label>
+      ))}
+    </div>
   )
 }
 

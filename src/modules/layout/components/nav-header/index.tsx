@@ -146,10 +146,10 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
             {/* Categories Menu Button */}
             {sideMenu}
 
-            {/* Logo - only visible when scrolled */}
+            {/* Logo - only visible when scrolled on desktop, hidden on mobile */}
             <LocalizedClientLink
               href="/"
-              className={`flex-shrink-0 transition-all duration-300 ${
+              className={`hidden sm:block flex-shrink-0 transition-all duration-300 ${
                 isScrolled ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'
               }`}
             >
@@ -185,7 +185,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
             </nav>
 
             {/* Right side - always on bottom row */}
-            <div className="flex items-center gap-3 ml-auto">
+            <div className="flex items-center gap-2 sm:gap-3 ml-auto">
               {/* Search icon - only when scrolled on desktop, always on mobile */}
               <LocalizedClientLink
                 href="/store"
@@ -198,11 +198,11 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                 </svg>
               </LocalizedClientLink>
 
-              {/* Account icon - only visible when scrolled */}
+              {/* Account icon - visible when scrolled (on all devices) */}
               <LocalizedClientLink
                 href="/account"
                 className={`p-2 text-gray-600 hover:text-emerald-600 transition-opacity duration-300 ${
-                  isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden md:block'
+                  isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden sm:block'
                 }`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                 </svg>
               </LocalizedClientLink>
 
-              {/* Cart icon - only visible when scrolled (compact version with badge) */}
+              {/* Cart icon - visible when scrolled */}
               <div className={`transition-opacity duration-300 ${
                 isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden'
               }`}>

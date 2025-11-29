@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { HttpTypes } from "@medusajs/types"
 
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
@@ -20,22 +21,48 @@ const TAG_DISPLAY_NAMES: Record<string, string> = {
   nuevo: "Nuevos",
 }
 
+const CATEGORY_DISPLAY_NAMES: Record<string, string> = {
+  "quesos": "Quesos",
+  "lacteos": "Lácteos",
+  "panaderia": "Panadería",
+  "bebidas": "Bebidas",
+  "snacks": "Snacks",
+  "despensa": "Despensa",
+}
+
+type CategoryWithChildren = HttpTypes.StoreProductCategory & {
+  category_children?: HttpTypes.StoreProductCategory[]
+}
+
 const StoreTemplate = ({
   sortBy,
   page,
   countryCode,
   tags,
+  categoryHandle,
+  searchQuery,
+  categories,
 }: {
   sortBy?: SortOptions
   page?: string
   countryCode: string
   tags?: string
+  categoryHandle?: string
+  searchQuery?: string
+  categories?: CategoryWithChildren[]
 }) => {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
 
-  // Get display title based on tags filter
+  // Get display title based on filters
   const getTitle = () => {
+    if (searchQuery) {
+      return `Resultados para "${searchQuery}"`
+    }
+    if (categoryHandle) {
+      const categoryName = CATEGORY_DISPLAY_NAMES[categoryHandle] || categoryHandle
+      return `Productos: ${categoryName}`
+    }
     if (tags) {
       const tagName = TAG_DISPLAY_NAMES[tags] || tags
       return `Productos ${tagName}`
@@ -48,7 +75,12 @@ const StoreTemplate = ({
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
       data-testid="category-container"
     >
-      <RefinementList sortBy={sort} />
+      <RefinementList
+        sortBy={sort}
+        categories={categories}
+        selectedCategory={categoryHandle}
+        selectedTags={tags}
+      />
       <div className="w-full">
         <div className="mb-8 text-2xl-semi">
           <h1 data-testid="store-page-title">{getTitle()}</h1>
@@ -59,6 +91,8 @@ const StoreTemplate = ({
             page={pageNumber}
             countryCode={countryCode}
             tags={tags}
+            categoryHandle={categoryHandle}
+            searchQuery={searchQuery}
           />
         </Suspense>
       </div>

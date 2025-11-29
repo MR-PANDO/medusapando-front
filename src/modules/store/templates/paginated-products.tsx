@@ -1,5 +1,6 @@
 import { listProductsWithSort } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { getCategoryByHandle } from "@lib/data/categories"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -17,6 +18,7 @@ const TAG_SLUG_TO_ID: Record<string, string> = {
   "sin-gluten": "ptag_MIH1ZD0LCB8F57C1E8CE02D2",
   keto: "ptag_MIH1ZD0723E50DF51080B187",
   nuevo: "ptag_MIH1ZD0P70B83B188A619F35",
+  ofertas: "ptag_01JXWNHD9SFCC8RDHB48HXSNWN",
 }
 
 type PaginatedProductsParams = {
@@ -26,6 +28,7 @@ type PaginatedProductsParams = {
   id?: string[]
   order?: string
   tag_id?: string[]
+  q?: string
 }
 
 export default async function PaginatedProducts({
@@ -36,6 +39,8 @@ export default async function PaginatedProducts({
   productsIds,
   countryCode,
   tags,
+  categoryHandle,
+  searchQuery,
 }: {
   sortBy?: SortOptions
   page: number
@@ -44,6 +49,8 @@ export default async function PaginatedProducts({
   productsIds?: string[]
   countryCode: string
   tags?: string
+  categoryHandle?: string
+  searchQuery?: string
 }) {
   const queryParams: PaginatedProductsParams = {
     limit: 12,
@@ -53,7 +60,13 @@ export default async function PaginatedProducts({
     queryParams["collection_id"] = [collectionId]
   }
 
-  if (categoryId) {
+  // If categoryHandle is provided, get the category ID
+  if (categoryHandle) {
+    const category = await getCategoryByHandle([categoryHandle])
+    if (category?.id) {
+      queryParams["category_id"] = [category.id]
+    }
+  } else if (categoryId) {
     queryParams["category_id"] = [categoryId]
   }
 
@@ -66,6 +79,10 @@ export default async function PaginatedProducts({
     if (tagId) {
       queryParams["tag_id"] = [tagId]
     }
+  }
+
+  if (searchQuery) {
+    queryParams["q"] = searchQuery
   }
 
   if (sortBy === "created_at") {
