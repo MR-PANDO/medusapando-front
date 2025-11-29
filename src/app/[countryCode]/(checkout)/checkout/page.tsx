@@ -34,11 +34,11 @@ export default async function Checkout({ params }: Props) {
       <PaymentWrapper cart={cart}>
         <CheckoutForm cart={cart} customer={customer} />
       </PaymentWrapper>
-      <div className="flex flex-col">
-        <CheckoutSummary cart={cart} />
+      <div className="flex flex-col gap-6">
         {recentlyPurchased.length > 0 && (
           <BuyAgain items={recentlyPurchased} countryCode={countryCode} />
         )}
+        <CheckoutSummary cart={cart} />
       </div>
     </div>
   )
