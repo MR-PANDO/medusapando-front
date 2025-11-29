@@ -30,16 +30,16 @@ export default async function Checkout({ params }: Props) {
   const recentlyPurchased = customer ? await getRecentlyPurchased(6) : []
 
   return (
-    <div className="grid grid-cols-1 small:grid-cols-[1fr_416px] content-container gap-x-40 py-12">
-      <PaymentWrapper cart={cart}>
-        <CheckoutForm cart={cart} customer={customer} />
-      </PaymentWrapper>
-      <div className="flex flex-col gap-6">
-        {recentlyPurchased.length > 0 && (
-          <BuyAgain items={recentlyPurchased} countryCode={countryCode} />
-        )}
+    <>
+      <div className="grid grid-cols-1 small:grid-cols-[1fr_416px] content-container gap-x-40 py-12 pb-64">
+        <PaymentWrapper cart={cart}>
+          <CheckoutForm cart={cart} customer={customer} />
+        </PaymentWrapper>
         <CheckoutSummary cart={cart} />
       </div>
-    </div>
+      {recentlyPurchased.length > 0 && (
+        <BuyAgain items={recentlyPurchased} countryCode={countryCode} />
+      )}
+    </>
   )
 }
