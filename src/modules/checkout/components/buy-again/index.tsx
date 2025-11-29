@@ -67,16 +67,16 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg transition-transform duration-300"
-      style={{ transform: isCollapsed ? "translateY(calc(100% - 48px))" : "translateY(0)" }}
+      style={{ transform: isCollapsed ? "translateY(calc(100% - 36px))" : "translateY(0)" }}
     >
       {/* Header - Always visible */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
       >
         <div className="flex items-center gap-2">
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -88,13 +88,13 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          <span className="font-semibold">Comprar de Nuevo</span>
-          <span className="text-emerald-200 text-sm">
-            ({items.length} productos)
+          <span className="font-medium text-sm">Comprar de Nuevo</span>
+          <span className="text-emerald-200 text-xs">
+            ({items.length})
           </span>
         </div>
         <svg
-          className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`}
+          className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -109,13 +109,13 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
       </button>
 
       {/* Slider Content */}
-      <div className="relative bg-gray-50 px-4 py-4">
+      <div className="relative bg-gray-50 px-4 py-2">
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -123,9 +123,9 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -133,19 +133,19 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
         {/* Scrollable Container */}
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-thin px-6 pb-2"
+          className="flex gap-3 overflow-x-auto scrollbar-thin px-5"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {items.map((item) => (
             <div
               key={item.product_id}
-              className="flex-shrink-0 w-36 sm:w-44 bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col"
+              className="flex-shrink-0 flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-2 pr-3"
               style={{ scrollSnapAlign: "start" }}
             >
               {/* Product Image */}
               <LocalizedClientLink
                 href={`/products/${item.product_handle}`}
-                className="block relative aspect-square bg-gray-100"
+                className="block relative w-14 h-14 flex-shrink-0 bg-gray-100 rounded overflow-hidden"
               >
                 {item.thumbnail ? (
                   <Image
@@ -153,12 +153,12 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
                     alt={item.product_title || "Product"}
                     fill
                     className="object-cover"
-                    sizes="176px"
+                    sizes="56px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                     <svg
-                      className="w-8 h-8"
+                      className="w-5 h-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -175,98 +175,49 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
               </LocalizedClientLink>
 
               {/* Product Info */}
-              <div className="p-2 flex flex-col flex-grow">
+              <div className="flex flex-col min-w-0 max-w-[120px]">
                 <LocalizedClientLink
                   href={`/products/${item.product_handle}`}
-                  className="text-xs font-medium text-gray-900 line-clamp-2 hover:text-emerald-600 transition-colors mb-1"
+                  className="text-[11px] font-medium text-gray-900 line-clamp-1 hover:text-emerald-600 transition-colors"
                 >
                   {item.product_title}
                 </LocalizedClientLink>
-
-                <p className="text-[10px] text-gray-500 mb-1">
-                  Comprado {item.purchase_count}x
+                <p className="text-[10px] font-semibold text-gray-700">
+                  {formatPrice(item.unit_price)}
                 </p>
-
-                <div className="mt-auto">
-                  <p className="text-xs font-semibold text-gray-900 mb-1.5">
-                    {formatPrice(item.unit_price)}
-                  </p>
-
-                  <button
-                    onClick={() => handleAddToCart(item)}
-                    disabled={
-                      !item.variant_id ||
-                      addingItems[item.product_id] ||
-                      isPending
-                    }
-                    className={`w-full py-1.5 px-2 rounded text-[10px] font-medium transition-all duration-200 ${
-                      addedItems[item.product_id]
-                        ? "bg-emerald-600 text-white"
-                        : addingItems[item.product_id]
-                        ? "bg-gray-100 text-gray-400 cursor-wait"
-                        : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95"
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    {addedItems[item.product_id] ? (
-                      <span className="flex items-center justify-center gap-1">
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        Agregado
-                      </span>
-                    ) : addingItems[item.product_id] ? (
-                      <span className="flex items-center justify-center gap-1">
-                        <svg
-                          className="w-3 h-3 animate-spin"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                      </span>
-                    ) : (
-                      <span className="flex items-center justify-center gap-1">
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
-                        Agregar
-                      </span>
-                    )}
-                  </button>
-                </div>
               </div>
+
+              {/* Add Button */}
+              <button
+                onClick={() => handleAddToCart(item)}
+                disabled={
+                  !item.variant_id ||
+                  addingItems[item.product_id] ||
+                  isPending
+                }
+                className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  addedItems[item.product_id]
+                    ? "bg-emerald-600 text-white"
+                    : addingItems[item.product_id]
+                    ? "bg-gray-100 text-gray-400 cursor-wait"
+                    : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {addedItems[item.product_id] ? (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : addingItems[item.product_id] ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                )}
+              </button>
             </div>
           ))}
         </div>

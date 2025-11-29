@@ -31,7 +31,7 @@ export default async function Checkout({ params }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-1 small:grid-cols-[1fr_416px] content-container gap-x-40 py-12 pb-64">
+      <div className="grid grid-cols-1 small:grid-cols-[1fr_416px] content-container gap-x-40 py-12 pb-32">
         <PaymentWrapper cart={cart}>
           <CheckoutForm cart={cart} customer={customer} />
         </PaymentWrapper>
