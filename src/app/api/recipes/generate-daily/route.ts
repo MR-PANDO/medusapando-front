@@ -291,6 +291,46 @@ const INGREDIENT_TRANSLATIONS: Record<string, string[]> = {
   "vegan": ["vegano"],
 }
 
+// Words that indicate a processed product (should not match raw ingredients)
+const PROCESSED_PRODUCT_KEYWORDS = [
+  "croqueta", "croquetas", "jugo", "juice", "bebida", "drink",
+  "galleta", "galletas", "cookie", "cookies", "snack", "snacks",
+  "chip", "chips", "papas fritas", "arepa", "arepas", "empanada",
+  "preparado", "preparada", "listo", "lista", "instantáneo", "instantanea",
+  "polvo", "powder", "mezcla", "mix", "concentrado", "concentrate",
+  "barra", "barrita", "bar", "granola bar", "cereal bar",
+  "helado", "ice cream", "postre", "dessert", "torta", "cake",
+  "pan ", "bread", "panadería", "bakery", "pastel", "pastry",
+  "salsa embotellada", "bottled sauce", "aderezo", "dressing",
+  "congelado", "frozen", "precocido", "precooked", "enlatado", "canned",
+  "sabor", "flavor", "saborizante", "flavoring", "artificial",
+]
+
+// Base ingredients that are valid to match (raw/whole foods)
+const BASE_INGREDIENT_KEYWORDS = [
+  "aceite", "oil", "vinagre", "vinegar", "sal", "salt", "azúcar", "sugar",
+  "miel", "honey", "especias", "spice", "hierba", "herb",
+  "harina", "flour", "arroz", "rice", "pasta", "fideos", "noodles",
+  "frijol", "frijoles", "beans", "lenteja", "lentejas", "lentils",
+  "garbanzo", "garbanzos", "chickpeas", "quinoa", "quinua", "avena", "oats",
+  "almendra", "almendras", "almond", "nuez", "nueces", "walnut", "nut",
+  "maní", "cacahuate", "peanut", "semilla", "seed", "chía", "chia", "linaza", "flax",
+  "coco", "coconut", "cacao", "chocolate puro", "pure chocolate",
+  "tofu", "tempeh", "soya", "soja", "soy",
+  "proteína", "proteina", "protein", "suplemento", "supplement",
+  "vitamina", "vitamin", "omega", "colágeno", "collagen",
+  "stevia", "eritritol", "endulzante natural", "natural sweetener",
+  "leche vegetal", "plant milk", "leche de almendra", "almond milk",
+  "leche de coco", "coconut milk", "leche de avena", "oat milk",
+  "mantequilla de maní", "peanut butter", "mantequilla de almendra", "almond butter",
+  "tahini", "hummus",
+  "esparrago", "espárragos", "asparagus", "espinaca", "spinach",
+  "brocoli", "brócoli", "broccoli", "coliflor", "cauliflower",
+  "zanahoria", "carrot", "apio", "celery", "pepino", "cucumber",
+  "tomate", "tomato", "cebolla", "onion", "ajo", "garlic",
+  "pimiento", "pepper", "chile", "chili", "limón", "lemon", "lima", "lime",
+]
+
 // Get search terms for an ingredient (original + translations)
 function getSearchTerms(ingredient: string): string[] {
   const terms: string[] = []
@@ -317,6 +357,40 @@ function getSearchTerms(ingredient: string): string[] {
   return [...new Set(terms)] // Remove duplicates
 }
 
+// Check if a product is a processed food (should not match raw ingredients)
+function isProcessedProduct(productTitle: string): boolean {
+  const lowerTitle = productTitle.toLowerCase()
+  return PROCESSED_PRODUCT_KEYWORDS.some(keyword => lowerTitle.includes(keyword))
+}
+
+// Check if product is a base ingredient match (raw/whole foods store sells)
+function isBaseIngredientProduct(productTitle: string): boolean {
+  const lowerTitle = productTitle.toLowerCase()
+  return BASE_INGREDIENT_KEYWORDS.some(keyword => lowerTitle.includes(keyword))
+}
+
+// Calculate match quality between ingredient and product
+function calculateMatchQuality(ingredientTerms: string[], productTitle: string): number {
+  const lowerTitle = productTitle.toLowerCase()
+  let score = 0
+
+  for (const term of ingredientTerms) {
+    if (term.length < 3) continue
+
+    // Exact word match (higher score)
+    const wordRegex = new RegExp(`\\b${term}\\b`, 'i')
+    if (wordRegex.test(lowerTitle)) {
+      score += 3
+    }
+    // Partial match (lower score)
+    else if (lowerTitle.includes(term)) {
+      score += 1
+    }
+  }
+
+  return score
+}
+
 // Find matching products from our store based on recipe ingredients
 function findMatchingProducts(
   ingredientNames: string[],
@@ -326,49 +400,71 @@ function findMatchingProducts(
   const matchedProducts: RecipeProduct[] = []
   const usedProductIds = new Set<string>()
 
-  // First, try to match products that have any of the diet tags
-  const dietProducts = products.filter((p) => {
+  // Filter to only base ingredient products (exclude processed foods)
+  const baseIngredientProducts = products.filter(p => {
+    const title = p.title.toLowerCase()
+    // Must be a base ingredient AND not a processed product
+    return isBaseIngredientProduct(title) && !isProcessedProduct(title)
+  })
+
+  // Filter to diet-compatible base ingredients
+  const dietProducts = baseIngredientProducts.filter((p) => {
     const tags = p.tags?.map((t) => t.value.toLowerCase()) || []
     return dietIds.some(dietId => tags.includes(dietId.toLowerCase()))
   })
 
-  // Search for matches in ingredients
+  // Score all potential matches for each ingredient
+  interface PotentialMatch {
+    product: Product
+    ingredientName: string
+    score: number
+  }
+
+  const allPotentialMatches: PotentialMatch[] = []
+
   for (const ingredientName of ingredientNames) {
-    // Get all search terms (original + translations)
     const searchTerms = getSearchTerms(ingredientName)
 
-    // Try diet-compatible products first, then all products
-    const searchPools = [dietProducts, products]
+    // Search in diet products first, then all base ingredient products
+    const searchPools = [dietProducts, baseIngredientProducts]
 
     for (const pool of searchPools) {
       for (const product of pool) {
         if (usedProductIds.has(product.id)) continue
 
-        const productTitle = product.title.toLowerCase()
+        const score = calculateMatchQuality(searchTerms, product.title)
 
-        // Check if any search term matches the product title
-        const hasMatch = searchTerms.some(
-          (term) => term.length > 2 && productTitle.includes(term)
-        )
-
-        if (hasMatch && product.variants?.[0]) {
-          matchedProducts.push({
-            id: product.id,
-            variantId: product.variants[0].id,
-            title: product.title,
-            handle: product.handle,
-            thumbnail: product.thumbnail,
-            quantity: "1 unidad",
-            price: product.variants[0].calculated_price?.calculated_amount,
+        // Only consider matches with score >= 3 (at least one exact word match)
+        if (score >= 3 && product.variants?.[0]) {
+          allPotentialMatches.push({
+            product,
+            ingredientName,
+            score,
           })
-          usedProductIds.add(product.id)
-
-          if (matchedProducts.length >= 4) {
-            return matchedProducts
-          }
-          break
         }
       }
+    }
+  }
+
+  // Sort by score (highest first) and pick the best matches
+  allPotentialMatches.sort((a, b) => b.score - a.score)
+
+  for (const match of allPotentialMatches) {
+    if (usedProductIds.has(match.product.id)) continue
+
+    matchedProducts.push({
+      id: match.product.id,
+      variantId: match.product.variants![0].id,
+      title: match.product.title,
+      handle: match.product.handle,
+      thumbnail: match.product.thumbnail,
+      quantity: "1 unidad",
+      price: match.product.variants![0].calculated_price?.calculated_amount,
+    })
+    usedProductIds.add(match.product.id)
+
+    if (matchedProducts.length >= 4) {
+      break
     }
   }
 
