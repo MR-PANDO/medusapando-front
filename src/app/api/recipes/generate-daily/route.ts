@@ -1,42 +1,36 @@
 import { NextRequest, NextResponse } from "next/server"
-import Anthropic from "@anthropic-ai/sdk"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 
 // Initialize S3 client for Minio
 const s3Client = new S3Client({
-  region: "us-east-1", // Minio doesn't care about region
+  region: "us-east-1",
   endpoint: process.env.MINIO_ENDPOINT,
   credentials: {
     accessKeyId: process.env.MINIO_ACCESS_KEY || "",
     secretAccessKey: process.env.MINIO_SECRET_KEY || "",
   },
-  forcePathStyle: true, // Required for Minio
+  forcePathStyle: true,
 })
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
-
-// Secret key to protect this endpoint (call it from a cron job)
-// Hardcoded fallback for when env vars aren't available at runtime
+const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY || "a587c68a1d054fa2a05da1c7e872efd4"
 const CRON_SECRET = process.env.CRON_SECRET || process.env.REVALIDATE_SECRET || "0462f2f0498cba3f0dbdbe26ca4bb08b26e5570d8f4162e76e4e72a1d23020ee"
 
+// Map our diet IDs to Spoonacular diet parameters
 const DIETS = [
-  { id: "vegano", name: "Vegano", definition: "sin ningún producto de origen animal" },
-  { id: "vegetariano", name: "Vegetariano", definition: "sin carne ni pescado, puede incluir lácteos y huevos" },
-  { id: "sin-lactosa", name: "Sin Lactosa", definition: "sin lácteos ni productos con lactosa" },
-  { id: "organico", name: "Orgánico", definition: "con ingredientes orgánicos y naturales" },
-  { id: "sin-azucar", name: "Sin Azúcar", definition: "sin azúcar añadida ni edulcorantes artificiales" },
-  { id: "paleo", name: "Paleo", definition: "sin granos, legumbres, lácteos ni azúcares refinados" },
-  { id: "sin-gluten", name: "Sin Gluten", definition: "sin trigo, cebada, centeno ni derivados del gluten" },
-  { id: "keto", name: "Keto", definition: "muy baja en carbohidratos, alta en grasas saludables" },
+  { id: "vegano", name: "Vegano", spoonacularDiet: "vegan", spoonacularIntolerances: "" },
+  { id: "vegetariano", name: "Vegetariano", spoonacularDiet: "vegetarian", spoonacularIntolerances: "" },
+  { id: "sin-lactosa", name: "Sin Lactosa", spoonacularDiet: "", spoonacularIntolerances: "dairy" },
+  { id: "organico", name: "Orgánico", spoonacularDiet: "whole30", spoonacularIntolerances: "" },
+  { id: "sin-azucar", name: "Sin Azúcar", spoonacularDiet: "", spoonacularIntolerances: "", maxSugar: 5 },
+  { id: "paleo", name: "Paleo", spoonacularDiet: "paleo", spoonacularIntolerances: "" },
+  { id: "sin-gluten", name: "Sin Gluten", spoonacularDiet: "gluten free", spoonacularIntolerances: "gluten" },
+  { id: "keto", name: "Keto", spoonacularDiet: "ketogenic", spoonacularIntolerances: "" },
 ]
 
 interface Product {
   id: string
   title: string
   handle: string
-  description?: string
   thumbnail?: string
   tags?: Array<{ value: string }>
   variants?: Array<{ id: string; calculated_price?: { calculated_amount: number } }>
@@ -64,6 +58,8 @@ interface Recipe {
   id: string
   title: string
   description: string
+  image?: string
+  sourceUrl?: string
   diet: string
   dietName: string
   prepTime: string
@@ -76,6 +72,34 @@ interface Recipe {
   nutrition: NutritionInfo
   tips?: string
   generatedAt: string
+}
+
+interface SpoonacularRecipe {
+  id: number
+  title: string
+  image: string
+  sourceUrl: string
+  readyInMinutes: number
+  preparationMinutes?: number
+  cookingMinutes?: number
+  servings: number
+  summary: string
+  extendedIngredients: Array<{
+    original: string
+    name: string
+  }>
+  analyzedInstructions: Array<{
+    steps: Array<{
+      step: string
+    }>
+  }>
+  nutrition?: {
+    nutrients: Array<{
+      name: string
+      amount: number
+      unit: string
+    }>
+  }
 }
 
 async function fetchProducts(): Promise<Product[]> {
@@ -99,99 +123,42 @@ async function fetchProducts(): Promise<Product[]> {
   return data.products || []
 }
 
-async function generateRecipesForDiet(
-  diet: typeof DIETS[0],
+// Find matching products from our store based on recipe ingredients
+function findMatchingProducts(
+  ingredientNames: string[],
   products: Product[],
-  count: number = 4
-): Promise<Recipe[]> {
-  // Filter products that match the diet
-  const compatibleProducts = products.filter((product) => {
-    const productTags = product.tags?.map((t) => t.value.toLowerCase()) || []
-    return productTags.includes(diet.id.toLowerCase())
+  dietId: string
+): RecipeProduct[] {
+  const matchedProducts: RecipeProduct[] = []
+  const usedProductIds = new Set<string>()
+
+  // First, try to match products that have the diet tag
+  const dietProducts = products.filter((p) => {
+    const tags = p.tags?.map((t) => t.value.toLowerCase()) || []
+    return tags.includes(dietId.toLowerCase())
   })
 
-  // If not enough compatible products, use all products
-  const productsToUse = compatibleProducts.length >= 4 ? compatibleProducts : products
+  // Search for matches in ingredients
+  for (const ingredientName of ingredientNames) {
+    const lowerIngredient = ingredientName.toLowerCase()
 
-  // Get product list for the prompt
-  const productList = productsToUse
-    .slice(0, 30) // Limit to 30 products to keep prompt size reasonable
-    .map((p) => `- ${p.title} (ID: ${p.id})`)
-    .join("\n")
+    // Try diet-compatible products first, then all products
+    const searchPools = [dietProducts, products]
 
-  // Single API call to generate multiple recipes (cost optimization)
-  const prompt = `Eres un chef experto en cocina saludable colombiana y nutricionista. Genera exactamente ${count} recetas diferentes que sean ${diet.definition}.
+    for (const pool of searchPools) {
+      for (const product of pool) {
+        if (usedProductIds.has(product.id)) continue
 
-PRODUCTOS DISPONIBLES DE LA TIENDA (usa 2-4 por receta):
-${productList}
+        const productTitle = product.title.toLowerCase()
 
-Responde SOLO con un array JSON válido (sin markdown, sin \`\`\`). Cada receta debe tener esta estructura:
-[
-  {
-    "title": "Nombre creativo",
-    "description": "Descripción breve (1-2 oraciones)",
-    "prepTime": "X min",
-    "cookTime": "X min",
-    "servings": número,
-    "difficulty": "Fácil" | "Medio" | "Difícil",
-    "ingredients": ["ingrediente con cantidad", ...],
-    "instructions": ["paso detallado", ...],
-    "productIds": ["ID exacto del producto de la lista", ...],
-    "nutrition": {
-      "calories": número (kcal por porción),
-      "carbs": número (gramos de carbohidratos por porción),
-      "protein": número (gramos de proteína por porción),
-      "fat": número (gramos de grasa por porción),
-      "fiber": número (gramos de fibra por porción)
-    },
-    "tips": "consejo útil"
-  }
-]
+        // Check if product name matches ingredient
+        const ingredientWords = lowerIngredient.split(/\s+/)
+        const hasMatch = ingredientWords.some(
+          (word) => word.length > 3 && productTitle.includes(word)
+        )
 
-IMPORTANTE:
-- Genera ${count} recetas DIFERENTES
-- Usa productIds exactos de la lista de productos
-- Cada receta debe usar 2-4 productos de la tienda
-- Recetas prácticas con ingredientes comunes en Colombia
-- Calcula la información nutricional de forma realista basándote en los ingredientes
-- Responde SOLO el JSON array`
-
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 4096,
-    messages: [{ role: "user", content: prompt }],
-  })
-
-  const responseText = message.content[0].type === "text" ? message.content[0].text : ""
-
-  let recipesData: Array<{
-    title: string
-    description: string
-    prepTime: string
-    cookTime: string
-    servings: number
-    difficulty: "Fácil" | "Medio" | "Difícil"
-    ingredients: string[]
-    instructions: string[]
-    productIds: string[]
-    nutrition: NutritionInfo
-    tips?: string
-  }>
-
-  try {
-    recipesData = JSON.parse(responseText)
-  } catch {
-    console.error("Failed to parse recipes JSON for diet:", diet.id)
-    return []
-  }
-
-  // Map recipes with full product data
-  const recipes: Recipe[] = recipesData.map((recipeData, index) => {
-    const matchedProducts: RecipeProduct[] = recipeData.productIds
-      .map((productId) => {
-        const product = productsToUse.find((p) => p.id === productId)
-        if (product && product.variants?.[0]) {
-          return {
+        if (hasMatch && product.variants?.[0]) {
+          matchedProducts.push({
             id: product.id,
             variantId: product.variants[0].id,
             title: product.title,
@@ -199,56 +166,162 @@ IMPORTANTE:
             thumbnail: product.thumbnail,
             quantity: "1 unidad",
             price: product.variants[0].calculated_price?.calculated_amount,
-          }
-        }
-        return null
-      })
-      .filter((p): p is RecipeProduct => p !== null)
+          })
+          usedProductIds.add(product.id)
 
-    return {
-      id: `${diet.id}-${Date.now()}-${index}`,
-      title: recipeData.title,
-      description: recipeData.description,
-      diet: diet.id,
-      dietName: diet.name,
-      prepTime: recipeData.prepTime,
-      cookTime: recipeData.cookTime,
-      servings: recipeData.servings,
-      difficulty: recipeData.difficulty,
-      ingredients: recipeData.ingredients,
-      instructions: recipeData.instructions,
-      products: matchedProducts,
-      nutrition: recipeData.nutrition || { calories: 0, carbs: 0, protein: 0, fat: 0 },
-      tips: recipeData.tips,
-      generatedAt: new Date().toISOString(),
+          if (matchedProducts.length >= 4) {
+            return matchedProducts
+          }
+          break
+        }
+      }
     }
+  }
+
+  return matchedProducts
+}
+
+function getDifficulty(readyInMinutes: number): "Fácil" | "Medio" | "Difícil" {
+  if (readyInMinutes <= 30) return "Fácil"
+  if (readyInMinutes <= 60) return "Medio"
+  return "Difícil"
+}
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").trim()
+}
+
+async function fetchRecipesFromSpoonacular(
+  diet: typeof DIETS[0],
+  count: number = 4
+): Promise<SpoonacularRecipe[]> {
+  const params = new URLSearchParams({
+    apiKey: SPOONACULAR_API_KEY,
+    number: String(count + 2), // Fetch extra in case some don't have enough info
+    addRecipeNutrition: "true",
+    addRecipeInstructions: "true",
+    fillIngredients: "true",
+    instructionsRequired: "true",
   })
 
-  return recipes.filter((r) => r.products.length >= 2) // Only recipes with at least 2 products
+  if (diet.spoonacularDiet) {
+    params.append("diet", diet.spoonacularDiet)
+  }
+  if (diet.spoonacularIntolerances) {
+    params.append("intolerances", diet.spoonacularIntolerances)
+  }
+  if ("maxSugar" in diet && diet.maxSugar) {
+    params.append("maxSugar", String(diet.maxSugar))
+  }
+
+  const response = await fetch(
+    `https://api.spoonacular.com/recipes/complexSearch?${params.toString()}`
+  )
+
+  if (!response.ok) {
+    console.error(`Spoonacular API error for ${diet.name}:`, response.status)
+    return []
+  }
+
+  const data = await response.json()
+  const recipeIds = data.results?.map((r: { id: number }) => r.id) || []
+
+  if (recipeIds.length === 0) return []
+
+  // Fetch full recipe details
+  const detailsResponse = await fetch(
+    `https://api.spoonacular.com/recipes/informationBulk?ids=${recipeIds.join(",")}&includeNutrition=true&apiKey=${SPOONACULAR_API_KEY}`
+  )
+
+  if (!detailsResponse.ok) {
+    console.error("Failed to fetch recipe details")
+    return []
+  }
+
+  return detailsResponse.json()
+}
+
+async function generateRecipesForDiet(
+  diet: typeof DIETS[0],
+  products: Product[],
+  count: number = 4
+): Promise<Recipe[]> {
+  const spoonacularRecipes = await fetchRecipesFromSpoonacular(diet, count)
+
+  const recipes: Recipe[] = []
+
+  for (const spRecipe of spoonacularRecipes) {
+    if (recipes.length >= count) break
+
+    // Skip if no instructions
+    if (!spRecipe.analyzedInstructions?.[0]?.steps?.length) continue
+
+    // Get ingredient names for matching
+    const ingredientNames = spRecipe.extendedIngredients?.map((i) => i.name) || []
+
+    // Find matching products from our store
+    const matchedProducts = findMatchingProducts(ingredientNames, products, diet.id)
+
+    // Extract nutrition info
+    const nutrients = spRecipe.nutrition?.nutrients || []
+    const getNutrient = (name: string) => {
+      const n = nutrients.find((x) => x.name.toLowerCase() === name.toLowerCase())
+      return Math.round(n?.amount || 0)
+    }
+
+    const nutrition: NutritionInfo = {
+      calories: getNutrient("Calories"),
+      carbs: getNutrient("Carbohydrates"),
+      protein: getNutrient("Protein"),
+      fat: getNutrient("Fat"),
+      fiber: getNutrient("Fiber"),
+    }
+
+    // Build recipe object
+    const recipe: Recipe = {
+      id: `${diet.id}-${spRecipe.id}-${Date.now()}`,
+      title: spRecipe.title,
+      description: stripHtml(spRecipe.summary).slice(0, 200) + "...",
+      image: spRecipe.image,
+      sourceUrl: spRecipe.sourceUrl,
+      diet: diet.id,
+      dietName: diet.name,
+      prepTime: `${spRecipe.preparationMinutes || Math.floor(spRecipe.readyInMinutes / 3)} min`,
+      cookTime: `${spRecipe.cookingMinutes || Math.floor(spRecipe.readyInMinutes * 2 / 3)} min`,
+      servings: spRecipe.servings,
+      difficulty: getDifficulty(spRecipe.readyInMinutes),
+      ingredients: spRecipe.extendedIngredients?.map((i) => i.original) || [],
+      instructions: spRecipe.analyzedInstructions[0]?.steps?.map((s) => s.step) || [],
+      products: matchedProducts,
+      nutrition,
+      generatedAt: new Date().toISOString(),
+    }
+
+    recipes.push(recipe)
+  }
+
+  return recipes
 }
 
 async function generateAllRecipes() {
-  console.log("Starting daily recipe generation...")
+  console.log("Starting daily recipe generation from Spoonacular...")
 
-  // Fetch all products
   const products = await fetchProducts()
-  console.log(`Fetched ${products.length} products`)
+  console.log(`Fetched ${products.length} products from store`)
 
-  // Generate recipes for each diet (4 recipes per diet)
   const allRecipes: Recipe[] = []
 
   for (const diet of DIETS) {
-    console.log(`Generating recipes for ${diet.name}...`)
+    console.log(`Fetching recipes for ${diet.name}...`)
     const recipes = await generateRecipesForDiet(diet, products, 4)
     allRecipes.push(...recipes)
 
-    // Small delay between API calls to avoid rate limiting
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Delay to respect API rate limits
+    await new Promise((resolve) => setTimeout(resolve, 500))
   }
 
-  console.log(`Generated ${allRecipes.length} total recipes`)
+  console.log(`Fetched ${allRecipes.length} total recipes`)
 
-  // Save recipes to Minio
   const recipesData = {
     generatedAt: new Date().toISOString(),
     recipes: allRecipes,
@@ -272,7 +345,6 @@ async function generateAllRecipes() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify cron secret - check both header and query param
     const authHeader = request.headers.get("authorization")
     const headerSecret = authHeader?.replace("Bearer ", "")
     const querySecret = request.nextUrl.searchParams.get("secret")
@@ -298,7 +370,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Also allow GET for testing (with secret in query)
 export async function GET(request: NextRequest) {
   try {
     const secret = request.nextUrl.searchParams.get("secret")

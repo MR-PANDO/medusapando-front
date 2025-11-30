@@ -20,6 +20,8 @@ export interface Recipe {
   id: string
   title: string
   description: string
+  image?: string           // Recipe image from Spoonacular
+  sourceUrl?: string       // Original recipe source
   diet: string
   dietName: string
   prepTime: string

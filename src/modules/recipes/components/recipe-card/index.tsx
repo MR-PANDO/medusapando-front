@@ -55,20 +55,43 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-5 text-white">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <span className="inline-block px-2 py-0.5 bg-white/20 rounded text-xs font-medium mb-2">
+      {/* Recipe Image */}
+      {recipe.image && (
+        <div className="relative h-48 w-full">
+          <Image
+            src={recipe.image}
+            alt={recipe.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          <div className="absolute top-3 left-3">
+            <span className="inline-block px-2 py-1 bg-emerald-600 text-white rounded text-xs font-medium shadow">
               {recipe.dietName}
             </span>
-            <h3 className="text-lg font-bold leading-tight">{recipe.title}</h3>
           </div>
-          <span className={`flex-shrink-0 px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(recipe.difficulty)}`}>
-            {recipe.difficulty}
-          </span>
+          <div className="absolute top-3 right-3">
+            <span className={`px-2 py-1 rounded text-xs font-medium shadow ${getDifficultyColor(recipe.difficulty)}`}>
+              {recipe.difficulty}
+            </span>
+          </div>
         </div>
-        <p className="text-emerald-100 text-sm mt-2 line-clamp-2">{recipe.description}</p>
+      )}
+
+      {/* Header */}
+      <div className={`p-4 ${!recipe.image ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white' : ''}`}>
+        {!recipe.image && (
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <span className="inline-block px-2 py-0.5 bg-white/20 rounded text-xs font-medium">
+              {recipe.dietName}
+            </span>
+            <span className={`flex-shrink-0 px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(recipe.difficulty)}`}>
+              {recipe.difficulty}
+            </span>
+          </div>
+        )}
+        <h3 className={`text-lg font-bold leading-tight ${recipe.image ? 'text-gray-800' : ''}`}>{recipe.title}</h3>
+        <p className={`text-sm mt-2 line-clamp-2 ${recipe.image ? 'text-gray-600' : 'text-emerald-100'}`}>{recipe.description}</p>
       </div>
 
       {/* Meta Info */}
