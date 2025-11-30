@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { name: "Ofertas", href: "/store?tags=ofertas", highlight: true },
   { name: "Nuevos", href: "/store?tags=nuevo" },
   { name: "Marcas", href: "/brands" },
+  { name: "Recetas", href: "/recetas", isNew: true },
 ]
 
 type NavHeaderProps = {
@@ -178,6 +179,11 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                   {link.highlight && (
                     <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded uppercase">
                       Sale
+                    </span>
+                  )}
+                  {link.isNew && (
+                    <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-emerald-500 text-white rounded uppercase">
+                      IA
                     </span>
                   )}
                 </LocalizedClientLink>
