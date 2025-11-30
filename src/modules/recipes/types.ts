@@ -1,9 +1,11 @@
 export interface RecipeProduct {
   id: string
+  variantId: string
   title: string
   handle: string
   thumbnail?: string
   quantity: string
+  price?: number
 }
 
 export interface Recipe {
@@ -11,6 +13,7 @@ export interface Recipe {
   title: string
   description: string
   diet: string
+  dietName: string
   prepTime: string
   cookTime: string
   servings: number
@@ -19,6 +22,12 @@ export interface Recipe {
   instructions: string[]
   products: RecipeProduct[]
   tips?: string
+  generatedAt: string
+}
+
+export interface RecipesData {
+  generatedAt: string
+  recipes: Recipe[]
 }
 
 export interface DietOption {
