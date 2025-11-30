@@ -16,6 +16,10 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
   const [addedToCart, setAddedToCart] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
 
+  // Get diet names (support both old and new format)
+  const dietNames = recipe.dietNames || (recipe.dietName ? [recipe.dietName] : [])
+  const displayDiets = dietNames.slice(0, 3) // Show max 3 diet tags
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Fácil":
@@ -65,10 +69,17 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          <div className="absolute top-3 left-3">
-            <span className="inline-block px-2 py-1 bg-emerald-600 text-white rounded text-xs font-medium shadow">
-              {recipe.dietName}
-            </span>
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+            {displayDiets.map((diet, index) => (
+              <span key={index} className="inline-block px-2 py-1 bg-emerald-600 text-white rounded text-xs font-medium shadow">
+                {diet}
+              </span>
+            ))}
+            {dietNames.length > 3 && (
+              <span className="inline-block px-2 py-1 bg-emerald-700 text-white rounded text-xs font-medium shadow">
+                +{dietNames.length - 3}
+              </span>
+            )}
           </div>
           <div className="absolute top-3 right-3">
             <span className={`px-2 py-1 rounded text-xs font-medium shadow ${getDifficultyColor(recipe.difficulty)}`}>
@@ -82,9 +93,13 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
       <div className={`p-4 ${!recipe.image ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white' : ''}`}>
         {!recipe.image && (
           <div className="flex items-start justify-between gap-3 mb-2">
-            <span className="inline-block px-2 py-0.5 bg-white/20 rounded text-xs font-medium">
-              {recipe.dietName}
-            </span>
+            <div className="flex flex-wrap gap-1">
+              {displayDiets.map((diet, index) => (
+                <span key={index} className="inline-block px-2 py-0.5 bg-white/20 rounded text-xs font-medium">
+                  {diet}
+                </span>
+              ))}
+            </div>
             <span className={`flex-shrink-0 px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(recipe.difficulty)}`}>
               {recipe.difficulty}
             </span>

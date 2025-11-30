@@ -22,8 +22,11 @@ export interface Recipe {
   description: string
   image?: string           // Recipe image from Spoonacular
   sourceUrl?: string       // Original recipe source
-  diet: string
-  dietName: string
+  // Support both single and multiple diets for backwards compatibility
+  diet?: string            // Legacy single diet
+  dietName?: string        // Legacy single diet name
+  diets?: string[]         // Multiple diet IDs
+  dietNames?: string[]     // Multiple diet display names
   prepTime: string
   cookTime: string
   servings: number
@@ -33,6 +36,7 @@ export interface Recipe {
   products: RecipeProduct[]
   nutrition: NutritionInfo
   tips?: string
+  spoonacularId?: number
   generatedAt: string
 }
 
@@ -49,6 +53,7 @@ export interface DietOption {
 }
 
 export const DIET_OPTIONS: DietOption[] = [
+  { id: "all", name: "Todas", tag: "all", color: "#6b7280" },
   { id: "vegano", name: "Vegano", tag: "vegano", color: "#4ade80" },
   { id: "vegetariano", name: "Vegetariano", tag: "vegetariano", color: "#bef264" },
   { id: "sin-lactosa", name: "Sin Lactosa", tag: "sin-lactosa", color: "#fbcfe8" },
@@ -57,4 +62,5 @@ export const DIET_OPTIONS: DietOption[] = [
   { id: "paleo", name: "Paleo", tag: "paleo", color: "#fcd34d" },
   { id: "sin-gluten", name: "Sin Gluten", tag: "sin-gluten", color: "#f9a8d4" },
   { id: "keto", name: "Keto", tag: "keto", color: "#bfdbfe" },
+  { id: "saludable", name: "Saludable", tag: "saludable", color: "#10b981" },
 ]

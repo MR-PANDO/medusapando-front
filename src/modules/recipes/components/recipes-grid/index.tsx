@@ -9,12 +9,29 @@ interface RecipesGridProps {
   countryCode: string
 }
 
+// Helper to get all diets for a recipe (supports old and new format)
+function getRecipeDiets(recipe: Recipe): string[] {
+  if (recipe.diets && recipe.diets.length > 0) {
+    return recipe.diets
+  }
+  if (recipe.diet) {
+    return [recipe.diet]
+  }
+  return []
+}
+
 export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) {
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null)
 
+  // Filter recipes - a recipe matches if it has the selected diet in its diets array
   const filteredRecipes = selectedDiet
-    ? recipes.filter((r) => r.diet === selectedDiet)
+    ? recipes.filter((r) => getRecipeDiets(r).includes(selectedDiet))
     : recipes
+
+  // Count recipes per diet (a recipe can count for multiple diets)
+  const getDietCount = (dietId: string): number => {
+    return recipes.filter((r) => getRecipeDiets(r).includes(dietId)).length
+  }
 
   return (
     <div>
@@ -31,8 +48,8 @@ export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) 
           >
             Todas ({recipes.length})
           </button>
-          {DIET_OPTIONS.map((diet) => {
-            const count = recipes.filter((r) => r.diet === diet.id).length
+          {DIET_OPTIONS.filter(d => d.id !== "all").map((diet) => {
+            const count = getDietCount(diet.id)
             if (count === 0) return null
             return (
               <button
