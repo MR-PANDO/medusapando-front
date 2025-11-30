@@ -10,18 +10,38 @@ export const metadata: Metadata = {
 
 async function getRecipes(): Promise<RecipesData | null> {
   try {
-    // Fetch from Minio CDN
-    const minioUrl = process.env.MINIO_CDN_URL || "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com/vitaintegralimages"
-    const response = await fetch(`${minioUrl}/recipes.json`, {
+    // Try fetching from Medusa API first (PostgreSQL)
+    const backendUrl = process.env.MEDUSA_BACKEND_URL || process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.nutrimercados.com"
+    const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+
+    const response = await fetch(`${backendUrl}/store/recipes?limit=100`, {
+      headers: {
+        "x-publishable-api-key": publishableKey,
+      },
       next: { revalidate: 3600 }, // Revalidate every hour
     })
 
-    if (!response.ok) {
-      console.error("Failed to fetch recipes:", response.status)
+    if (response.ok) {
+      const data = await response.json()
+      return {
+        generatedAt: data.generatedAt || new Date().toISOString(),
+        recipes: data.recipes || [],
+      }
+    }
+
+    // Fallback to Minio CDN if API fails
+    console.log("Medusa API not available, falling back to Minio...")
+    const minioUrl = process.env.MINIO_CDN_URL || "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com/vitaintegralimages"
+    const minioResponse = await fetch(`${minioUrl}/recipes.json`, {
+      next: { revalidate: 3600 },
+    })
+
+    if (!minioResponse.ok) {
+      console.error("Failed to fetch recipes from both sources")
       return null
     }
 
-    return response.json()
+    return minioResponse.json()
   } catch (error) {
     console.error("Error fetching recipes:", error)
     return null

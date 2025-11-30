@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 
-// Initialize S3 client for Minio
+// Initialize S3 client for Minio (fallback)
 const s3Client = new S3Client({
   region: "us-east-1",
   endpoint: process.env.MINIO_ENDPOINT,
@@ -99,6 +99,31 @@ interface SpoonacularRecipe {
       amount: number
       unit: string
     }>
+  }
+}
+
+// Try to call the Medusa backend to generate recipes
+async function tryGenerateViaBackend(secret: string): Promise<{ success: boolean; data?: any }> {
+  try {
+    const backendUrl = process.env.MEDUSA_BACKEND_URL || "https://api.nutrimercados.com"
+
+    const response = await fetch(`${backendUrl}/admin/recipes/generate?secret=${secret}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${secret}`,
+      },
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      return { success: true, data }
+    }
+
+    console.log("Backend recipe generation not available, falling back to frontend...")
+    return { success: false }
+  } catch (error) {
+    console.log("Backend recipe generation failed, falling back to frontend:", error)
+    return { success: false }
   }
 }
 
@@ -303,8 +328,9 @@ async function generateRecipesForDiet(
   return recipes
 }
 
-async function generateAllRecipes() {
-  console.log("Starting daily recipe generation from Spoonacular...")
+// Fallback: Generate recipes via frontend and save to Minio
+async function generateAllRecipesToMinio() {
+  console.log("Starting daily recipe generation from Spoonacular (Minio fallback)...")
 
   const products = await fetchProducts()
   console.log(`Fetched ${products.length} products from store`)
@@ -354,12 +380,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const recipesData = await generateAllRecipes()
+    // First, try to generate via Medusa backend (PostgreSQL)
+    const backendResult = await tryGenerateViaBackend(providedSecret)
+    if (backendResult.success) {
+      return NextResponse.json({
+        ...backendResult.data,
+        source: "postgresql",
+      })
+    }
+
+    // Fallback to generating via frontend and saving to Minio
+    const recipesData = await generateAllRecipesToMinio()
 
     return NextResponse.json({
       success: true,
       count: recipesData.recipes.length,
       generatedAt: recipesData.generatedAt,
+      source: "minio",
     })
   } catch (error) {
     console.error("Error generating daily recipes:", error)
@@ -378,12 +415,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const recipesData = await generateAllRecipes()
+    // First, try to generate via Medusa backend (PostgreSQL)
+    const backendResult = await tryGenerateViaBackend(secret)
+    if (backendResult.success) {
+      return NextResponse.json({
+        ...backendResult.data,
+        source: "postgresql",
+      })
+    }
+
+    // Fallback to generating via frontend and saving to Minio
+    const recipesData = await generateAllRecipesToMinio()
 
     return NextResponse.json({
       success: true,
       count: recipesData.recipes.length,
       generatedAt: recipesData.generatedAt,
+      source: "minio",
     })
   } catch (error) {
     console.error("Error generating daily recipes:", error)
