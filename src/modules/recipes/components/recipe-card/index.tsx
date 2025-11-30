@@ -124,7 +124,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
                   <span className="font-medium text-gray-800 text-sm block truncate">{product.title}</span>
                   {product.price && (
                     <span className="text-emerald-600 text-xs">
-                      ${(product.price / 100).toLocaleString("es-CO")}
+                      ${product.price.toLocaleString("es-CO")}
                     </span>
                   )}
                 </div>
@@ -170,7 +170,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
                 Agregar todo al carrito
                 {totalPrice > 0 && (
                   <span className="bg-white/20 px-2 py-0.5 rounded ml-1">
-                    ${(totalPrice / 100).toLocaleString("es-CO")}
+                    ${totalPrice.toLocaleString("es-CO")}
                   </span>
                 )}
               </>
