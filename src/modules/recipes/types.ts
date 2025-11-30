@@ -8,6 +8,14 @@ export interface RecipeProduct {
   price?: number
 }
 
+export interface NutritionInfo {
+  calories: number      // kcal por porción
+  carbs: number         // gramos de carbohidratos por porción
+  protein: number       // gramos de proteína por porción
+  fat: number           // gramos de grasa por porción
+  fiber?: number        // gramos de fibra por porción
+}
+
 export interface Recipe {
   id: string
   title: string
@@ -21,6 +29,7 @@ export interface Recipe {
   ingredients: string[]
   instructions: string[]
   products: RecipeProduct[]
+  nutrition: NutritionInfo
   tips?: string
   generatedAt: string
 }

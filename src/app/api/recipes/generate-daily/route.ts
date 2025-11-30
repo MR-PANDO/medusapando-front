@@ -52,6 +52,14 @@ interface RecipeProduct {
   price?: number
 }
 
+interface NutritionInfo {
+  calories: number
+  carbs: number
+  protein: number
+  fat: number
+  fiber?: number
+}
+
 interface Recipe {
   id: string
   title: string
@@ -65,6 +73,7 @@ interface Recipe {
   ingredients: string[]
   instructions: string[]
   products: RecipeProduct[]
+  nutrition: NutritionInfo
   tips?: string
   generatedAt: string
 }
@@ -111,7 +120,7 @@ async function generateRecipesForDiet(
     .join("\n")
 
   // Single API call to generate multiple recipes (cost optimization)
-  const prompt = `Eres un chef experto en cocina saludable colombiana. Genera exactamente ${count} recetas diferentes que sean ${diet.definition}.
+  const prompt = `Eres un chef experto en cocina saludable colombiana y nutricionista. Genera exactamente ${count} recetas diferentes que sean ${diet.definition}.
 
 PRODUCTOS DISPONIBLES DE LA TIENDA (usa 2-4 por receta):
 ${productList}
@@ -128,6 +137,13 @@ Responde SOLO con un array JSON válido (sin markdown, sin \`\`\`). Cada receta 
     "ingredients": ["ingrediente con cantidad", ...],
     "instructions": ["paso detallado", ...],
     "productIds": ["ID exacto del producto de la lista", ...],
+    "nutrition": {
+      "calories": número (kcal por porción),
+      "carbs": número (gramos de carbohidratos por porción),
+      "protein": número (gramos de proteína por porción),
+      "fat": número (gramos de grasa por porción),
+      "fiber": número (gramos de fibra por porción)
+    },
     "tips": "consejo útil"
   }
 ]
@@ -137,6 +153,7 @@ IMPORTANTE:
 - Usa productIds exactos de la lista de productos
 - Cada receta debe usar 2-4 productos de la tienda
 - Recetas prácticas con ingredientes comunes en Colombia
+- Calcula la información nutricional de forma realista basándote en los ingredientes
 - Responde SOLO el JSON array`
 
   const message = await anthropic.messages.create({
@@ -157,6 +174,7 @@ IMPORTANTE:
     ingredients: string[]
     instructions: string[]
     productIds: string[]
+    nutrition: NutritionInfo
     tips?: string
   }>
 
@@ -200,6 +218,7 @@ IMPORTANTE:
       ingredients: recipeData.ingredients,
       instructions: recipeData.instructions,
       products: matchedProducts,
+      nutrition: recipeData.nutrition || { calories: 0, carbs: 0, protein: 0, fat: 0 },
       tips: recipeData.tips,
       generatedAt: new Date().toISOString(),
     }

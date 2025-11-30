@@ -95,6 +95,31 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
         </div>
       </div>
 
+      {/* Nutrition Info */}
+      {recipe.nutrition && (
+        <div className="px-4 py-3 border-b">
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="bg-orange-50 rounded-lg p-2">
+              <div className="text-orange-600 font-bold text-sm">{recipe.nutrition.calories}</div>
+              <div className="text-[10px] text-gray-500 uppercase">kcal</div>
+            </div>
+            <div className="bg-amber-50 rounded-lg p-2">
+              <div className="text-amber-600 font-bold text-sm">{recipe.nutrition.carbs}g</div>
+              <div className="text-[10px] text-gray-500 uppercase">Carbs</div>
+            </div>
+            <div className="bg-red-50 rounded-lg p-2">
+              <div className="text-red-600 font-bold text-sm">{recipe.nutrition.protein}g</div>
+              <div className="text-[10px] text-gray-500 uppercase">Proteína</div>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-2">
+              <div className="text-blue-600 font-bold text-sm">{recipe.nutrition.fat}g</div>
+              <div className="text-[10px] text-gray-500 uppercase">Grasa</div>
+            </div>
+          </div>
+          <p className="text-[10px] text-gray-400 text-center mt-2">Por porción (valores aproximados)</p>
+        </div>
+      )}
+
       {/* Products from Store - Always visible */}
       {recipe.products.length > 0 && (
         <div className="p-4 border-b">
