@@ -198,53 +198,61 @@ IMPORTANTE:
   return recipes.filter((r) => r.products.length >= 2) // Only recipes with at least 2 products
 }
 
+async function generateAllRecipes() {
+  console.log("Starting daily recipe generation...")
+
+  // Fetch all products
+  const products = await fetchProducts()
+  console.log(`Fetched ${products.length} products`)
+
+  // Generate recipes for each diet (4 recipes per diet)
+  const allRecipes: Recipe[] = []
+
+  for (const diet of DIETS) {
+    console.log(`Generating recipes for ${diet.name}...`)
+    const recipes = await generateRecipesForDiet(diet, products, 4)
+    allRecipes.push(...recipes)
+
+    // Small delay between API calls to avoid rate limiting
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+  }
+
+  console.log(`Generated ${allRecipes.length} total recipes`)
+
+  // Save recipes to a JSON file in public directory
+  const recipesData = {
+    generatedAt: new Date().toISOString(),
+    recipes: allRecipes,
+  }
+
+  const publicDir = path.join(process.cwd(), "public", "data")
+  await mkdir(publicDir, { recursive: true })
+
+  const filePath = path.join(publicDir, "recipes.json")
+  await writeFile(filePath, JSON.stringify(recipesData, null, 2))
+
+  console.log("Recipes saved to public/data/recipes.json")
+
+  return recipesData
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Verify cron secret
+    // Verify cron secret - check both header and query param
     const authHeader = request.headers.get("authorization")
-    const providedSecret = authHeader?.replace("Bearer ", "")
+    const headerSecret = authHeader?.replace("Bearer ", "")
+    const querySecret = request.nextUrl.searchParams.get("secret")
+    const providedSecret = headerSecret || querySecret
 
     if (providedSecret !== CRON_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    console.log("Starting daily recipe generation...")
-
-    // Fetch all products
-    const products = await fetchProducts()
-    console.log(`Fetched ${products.length} products`)
-
-    // Generate recipes for each diet (4 recipes per diet)
-    const allRecipes: Recipe[] = []
-
-    for (const diet of DIETS) {
-      console.log(`Generating recipes for ${diet.name}...`)
-      const recipes = await generateRecipesForDiet(diet, products, 4)
-      allRecipes.push(...recipes)
-
-      // Small delay between API calls to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    }
-
-    console.log(`Generated ${allRecipes.length} total recipes`)
-
-    // Save recipes to a JSON file in public directory
-    const recipesData = {
-      generatedAt: new Date().toISOString(),
-      recipes: allRecipes,
-    }
-
-    const publicDir = path.join(process.cwd(), "public", "data")
-    await mkdir(publicDir, { recursive: true })
-
-    const filePath = path.join(publicDir, "recipes.json")
-    await writeFile(filePath, JSON.stringify(recipesData, null, 2))
-
-    console.log("Recipes saved to public/data/recipes.json")
+    const recipesData = await generateAllRecipes()
 
     return NextResponse.json({
       success: true,
-      count: allRecipes.length,
+      count: recipesData.recipes.length,
       generatedAt: recipesData.generatedAt,
     })
   } catch (error) {
@@ -258,12 +266,25 @@ export async function POST(request: NextRequest) {
 
 // Also allow GET for testing (with secret in query)
 export async function GET(request: NextRequest) {
-  const secret = request.nextUrl.searchParams.get("secret")
+  try {
+    const secret = request.nextUrl.searchParams.get("secret")
 
-  if (secret !== CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (secret !== CRON_SECRET) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const recipesData = await generateAllRecipes()
+
+    return NextResponse.json({
+      success: true,
+      count: recipesData.recipes.length,
+      generatedAt: recipesData.generatedAt,
+    })
+  } catch (error) {
+    console.error("Error generating daily recipes:", error)
+    return NextResponse.json(
+      { error: "Error generating recipes" },
+      { status: 500 }
+    )
   }
-
-  // Redirect to POST handler
-  return POST(request)
 }
