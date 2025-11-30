@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import Anthropic from "@anthropic-ai/sdk"
-import { writeFile, mkdir } from "fs/promises"
-import path from "path"
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
+
+// Initialize S3 client for Minio
+const s3Client = new S3Client({
+  region: "us-east-1", // Minio doesn't care about region
+  endpoint: process.env.MINIO_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.MINIO_ACCESS_KEY || "",
+    secretAccessKey: process.env.MINIO_SECRET_KEY || "",
+  },
+  forcePathStyle: true, // Required for Minio
+})
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -219,19 +229,24 @@ async function generateAllRecipes() {
 
   console.log(`Generated ${allRecipes.length} total recipes`)
 
-  // Save recipes to a JSON file in public directory
+  // Save recipes to Minio
   const recipesData = {
     generatedAt: new Date().toISOString(),
     recipes: allRecipes,
   }
 
-  const publicDir = path.join(process.cwd(), "public", "data")
-  await mkdir(publicDir, { recursive: true })
+  const bucket = process.env.MINIO_BUCKET || "vitaintegralimages"
 
-  const filePath = path.join(publicDir, "recipes.json")
-  await writeFile(filePath, JSON.stringify(recipesData, null, 2))
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: "recipes.json",
+      Body: JSON.stringify(recipesData, null, 2),
+      ContentType: "application/json",
+    })
+  )
 
-  console.log("Recipes saved to public/data/recipes.json")
+  console.log(`Recipes saved to Minio: ${bucket}/recipes.json`)
 
   return recipesData
 }

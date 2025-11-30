@@ -10,18 +10,20 @@ export const metadata: Metadata = {
 
 async function getRecipes(): Promise<RecipesData | null> {
   try {
-    // In production, fetch from the public JSON file
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000"
-    const response = await fetch(`${baseUrl}/data/recipes.json`, {
+    // Fetch from Minio CDN
+    const minioUrl = process.env.MINIO_CDN_URL || "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com/vitaintegralimages"
+    const response = await fetch(`${minioUrl}/recipes.json`, {
       next: { revalidate: 3600 }, // Revalidate every hour
     })
 
     if (!response.ok) {
+      console.error("Failed to fetch recipes:", response.status)
       return null
     }
 
     return response.json()
-  } catch {
+  } catch (error) {
+    console.error("Error fetching recipes:", error)
     return null
   }
 }
