@@ -8,7 +8,8 @@ const anthropic = new Anthropic({
 })
 
 // Secret key to protect this endpoint (call it from a cron job)
-const CRON_SECRET = process.env.CRON_SECRET || process.env.REVALIDATE_SECRET
+// Hardcoded fallback for when env vars aren't available at runtime
+const CRON_SECRET = process.env.CRON_SECRET || process.env.REVALIDATE_SECRET || "0462f2f0498cba3f0dbdbe26ca4bb08b26e5570d8f4162e76e4e72a1d23020ee"
 
 const DIETS = [
   { id: "vegano", name: "Vegano", definition: "sin ningún producto de origen animal" },
