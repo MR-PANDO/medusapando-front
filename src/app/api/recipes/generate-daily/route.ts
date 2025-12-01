@@ -579,6 +579,14 @@ async function fetchDietSpecificRecipes(): Promise<SpoonacularRecipe[]> {
   const allRecipes: SpoonacularRecipe[] = []
   const seenIds = new Set<number>()
 
+  // Check if API key is configured
+  if (!SPOONACULAR_API_KEY) {
+    console.error("SPOONACULAR_API_KEY is not configured!")
+    return []
+  }
+
+  console.log("Starting to fetch recipes from Spoonacular...")
+
   // Fetch a few recipes for each diet type
   for (const diet of DIETS) {
     if (!diet.spoonacularDiet && !diet.spoonacularIntolerances) continue
@@ -600,11 +608,17 @@ async function fetchDietSpecificRecipes(): Promise<SpoonacularRecipe[]> {
     }
 
     try {
+      console.log(`Fetching ${diet.name} recipes...`)
       const response = await fetch(
         `https://api.spoonacular.com/recipes/complexSearch?${params.toString()}`
       )
 
-      if (!response.ok) continue
+      if (!response.ok) {
+        console.error(`Spoonacular API error for ${diet.name}: ${response.status} ${response.statusText}`)
+        const errorText = await response.text()
+        console.error(`Error details: ${errorText}`)
+        continue
+      }
 
       const data = await response.json()
       const recipeIds = data.results?.map((r: { id: number }) => r.id).filter((id: number) => !seenIds.has(id)) || []
@@ -728,6 +742,16 @@ async function generateAllRecipesToMinio() {
   }
 
   console.log(`Generated ${allRecipes.length} unique translated recipes`)
+
+  // PROTECTION: Don't overwrite with empty data if quota exhausted or API failed
+  if (allRecipes.length === 0) {
+    console.error("No recipes generated! Skipping Minio save to preserve existing recipes.")
+    return {
+      generatedAt: new Date().toISOString(),
+      recipes: [],
+      error: "No recipes fetched from Spoonacular - quota may be exhausted",
+    }
+  }
 
   const recipesData = {
     generatedAt: new Date().toISOString(),
