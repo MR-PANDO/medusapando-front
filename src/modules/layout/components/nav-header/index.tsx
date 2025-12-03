@@ -3,6 +3,29 @@
 import { useState, useEffect, useRef, useCallback, ReactNode } from "react"
 import Image from 'next/image'
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import brushPattern from "@assets/brush-pattern.png"
+
+// Import diet icons
+import VeganoSvg from "@assets/vegano.svg"
+import VegetarianoSvg from "@assets/vegetariano.svg"
+import SinLactosaSvg from "@assets/sin_lactosa.svg"
+import OrganicoSvg from "@assets/organico.svg"
+import SinAzucarSvg from "@assets/sin_azucar.svg"
+import PaleoSvg from "@assets/paleo.svg"
+import SinGlutenSvg from "@assets/sin_gluten.svg"
+import KetoSvg from "@assets/keto.svg"
+
+// Diet data for dropdown
+const DIET_NAV_ITEMS = [
+  { id: "vegano", name: "Vegano", slug: "vegano", icon: VeganoSvg, brushColor: "#4ade80" },
+  { id: "vegetariano", name: "Vegetariano", slug: "vegetariano", icon: VegetarianoSvg, brushColor: "#bef264" },
+  { id: "sin-lactosa", name: "Sin Lactosa", slug: "sin-lactosa", icon: SinLactosaSvg, brushColor: "#fbcfe8" },
+  { id: "organico", name: "Orgánico", slug: "organico", icon: OrganicoSvg, brushColor: "#22c55e" },
+  { id: "sin-azucar", name: "Sin Azúcar", slug: "sin-azucar", icon: SinAzucarSvg, brushColor: "#fef08a" },
+  { id: "paleo", name: "Paleo", slug: "paleo", icon: PaleoSvg, brushColor: "#fcd34d" },
+  { id: "sin-gluten", name: "Sin Gluten", slug: "sin-gluten", icon: SinGlutenSvg, brushColor: "#f9a8d4" },
+  { id: "keto", name: "Keto", slug: "keto", icon: KetoSvg, brushColor: "#bfdbfe" },
+]
 
 // Quick nav links for the second row
 const NAV_LINKS = [
@@ -11,6 +34,7 @@ const NAV_LINKS = [
   { name: "Ofertas", href: "/store?tags=ofertas", highlight: true },
   { name: "Nuevos", href: "/store?tags=nuevo" },
   { name: "Marcas", href: "/brands" },
+  { name: "Dietas", href: "/dietas", hasDropdown: true },
   { name: "Recetas", href: "/recetas", isNew: true },
 ]
 
@@ -23,8 +47,23 @@ type NavHeaderProps = {
 
 export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonCompact }: NavHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isDietsOpen, setIsDietsOpen] = useState(false)
+  const dietsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isScrolledRef = useRef(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleDietsMouseEnter = () => {
+    if (dietsTimeoutRef.current) {
+      clearTimeout(dietsTimeoutRef.current)
+    }
+    setIsDietsOpen(true)
+  }
+
+  const handleDietsMouseLeave = () => {
+    dietsTimeoutRef.current = setTimeout(() => {
+      setIsDietsOpen(false)
+    }, 150)
+  }
 
   const updateScrollState = useCallback((scrolled: boolean) => {
     if (isScrolledRef.current !== scrolled) {
@@ -166,27 +205,119 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map((link) => (
-                <LocalizedClientLink
-                  key={link.name}
-                  href={link.href}
-                  className={`px-4 py-2 text-sm font-medium transition-colors ${
-                    link.highlight
-                      ? 'text-red-600 hover:text-red-700'
-                      : 'text-gray-700 hover:text-emerald-600'
-                  }`}
-                >
-                  {link.name}
-                  {link.highlight && (
-                    <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded uppercase">
-                      Sale
-                    </span>
-                  )}
-                  {link.isNew && (
-                    <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-emerald-500 text-white rounded uppercase">
-                      IA
-                    </span>
-                  )}
-                </LocalizedClientLink>
+                link.hasDropdown ? (
+                  <div
+                    key={link.name}
+                    className="relative"
+                    onMouseEnter={handleDietsMouseEnter}
+                    onMouseLeave={handleDietsMouseLeave}
+                  >
+                    <LocalizedClientLink
+                      href={link.href}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
+                    >
+                      {link.name}
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-200 ${isDietsOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </LocalizedClientLink>
+
+                    {/* Diets Dropdown */}
+                    <div
+                      className={`absolute top-full left-0 mt-1 w-80 bg-white rounded-xl shadow-xl border border-gray-100
+                                  transition-all duration-200 origin-top z-50
+                                  ${isDietsOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}
+                    >
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-bold text-gray-800">Explora por Dieta</h3>
+                          <LocalizedClientLink
+                            href="/dietas"
+                            className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                          >
+                            Ver todas
+                          </LocalizedClientLink>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {DIET_NAV_ITEMS.map((diet) => (
+                            <LocalizedClientLink
+                              key={diet.id}
+                              href={`/dietas/${diet.slug}`}
+                              className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+                            >
+                              <div className="relative w-10 h-10 flex-shrink-0">
+                                <div
+                                  className="absolute inset-0 transition-transform duration-200 group-hover:scale-110"
+                                  style={{
+                                    backgroundColor: diet.brushColor,
+                                    WebkitMaskImage: `url(${brushPattern.src})`,
+                                    maskImage: `url(${brushPattern.src})`,
+                                    WebkitMaskPosition: "center center",
+                                    maskPosition: "center center",
+                                    WebkitMaskRepeat: "no-repeat",
+                                    maskRepeat: "no-repeat",
+                                    WebkitMaskSize: "contain",
+                                    maskSize: "contain",
+                                  }}
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <Image
+                                    src={diet.icon}
+                                    alt={diet.name}
+                                    width={22}
+                                    height={22}
+                                    className="object-contain transition-all duration-200 group-hover:brightness-0 group-hover:invert"
+                                  />
+                                </div>
+                              </div>
+                              <span className="text-sm text-gray-700 group-hover:text-emerald-600 font-medium transition-colors">
+                                {diet.name}
+                              </span>
+                            </LocalizedClientLink>
+                          ))}
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <LocalizedClientLink
+                            href="/store"
+                            className="flex items-center justify-center gap-2 w-full py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            Ver Todos los Productos
+                          </LocalizedClientLink>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <LocalizedClientLink
+                    key={link.name}
+                    href={link.href}
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                      link.highlight
+                        ? 'text-red-600 hover:text-red-700'
+                        : 'text-gray-700 hover:text-emerald-600'
+                    }`}
+                  >
+                    {link.name}
+                    {link.highlight && (
+                      <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded uppercase">
+                        Sale
+                      </span>
+                    )}
+                    {link.isNew && (
+                      <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-emerald-500 text-white rounded uppercase">
+                        IA
+                      </span>
+                    )}
+                  </LocalizedClientLink>
+                )
               ))}
             </nav>
 
