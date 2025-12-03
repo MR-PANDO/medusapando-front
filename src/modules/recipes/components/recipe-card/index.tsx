@@ -15,6 +15,146 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [addedToCart, setAddedToCart] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  // Generate and download recipe as HTML file
+  const handleDownloadRecipe = async () => {
+    setIsDownloading(true)
+    try {
+      const dietTags = (recipe.dietNames || []).join(" • ")
+
+      const htmlContent = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${recipe.title} - Vita Integral</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; color: #333; line-height: 1.6; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #059669, #0d9488); color: white; padding: 30px; border-radius: 16px; margin-bottom: 24px; }
+    .header h1 { font-size: 28px; margin-bottom: 12px; }
+    .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tag { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .meta { display: flex; gap: 24px; font-size: 14px; }
+    .meta-item { display: flex; align-items: center; gap: 6px; }
+    .recipe-image { width: 100%; height: 300px; object-fit: cover; border-radius: 16px; margin-bottom: 24px; }
+    .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .section h2 { color: #059669; font-size: 18px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #d1fae5; }
+    .ingredients { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ingredient { display: flex; align-items: flex-start; gap: 8px; }
+    .ingredient::before { content: "•"; color: #059669; font-weight: bold; }
+    .instructions { counter-reset: step; }
+    .step { display: flex; gap: 16px; margin-bottom: 16px; }
+    .step-number { flex-shrink: 0; width: 28px; height: 28px; background: #d1fae5; color: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+    .nutrition { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; text-align: center; }
+    .nutrition-item { background: #f3f4f6; padding: 16px; border-radius: 12px; }
+    .nutrition-value { font-size: 24px; font-weight: bold; color: #059669; }
+    .nutrition-label { font-size: 12px; color: #6b7280; text-transform: uppercase; }
+    .tips { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 0 12px 12px 0; }
+    .tips strong { color: #92400e; }
+    .footer { text-align: center; padding: 24px; color: #9ca3af; font-size: 12px; }
+    @media print { body { background: white; } .container { padding: 0; } }
+    @media (max-width: 600px) { .ingredients { grid-template-columns: 1fr; } .nutrition { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="tags">
+        ${(recipe.dietNames || []).map(d => `<span class="tag">${d}</span>`).join('')}
+        <span class="tag">${recipe.difficulty}</span>
+      </div>
+      <h1>${recipe.title}</h1>
+      <p style="opacity: 0.9; margin-bottom: 16px;">${recipe.description}</p>
+      <div class="meta">
+        <div class="meta-item">⏱️ Prep: ${recipe.prepTime}</div>
+        <div class="meta-item">🔥 Cocción: ${recipe.cookTime}</div>
+        <div class="meta-item">👥 ${recipe.servings} porciones</div>
+      </div>
+    </div>
+
+    ${recipe.image ? `<img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">` : ''}
+
+    ${recipe.nutrition ? `
+    <div class="section">
+      <h2>🥗 Información Nutricional</h2>
+      <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Por porción (valores aproximados)</p>
+      <div class="nutrition">
+        <div class="nutrition-item">
+          <div class="nutrition-value">${recipe.nutrition.calories}</div>
+          <div class="nutrition-label">Calorías</div>
+        </div>
+        <div class="nutrition-item">
+          <div class="nutrition-value">${recipe.nutrition.carbs}g</div>
+          <div class="nutrition-label">Carbohidratos</div>
+        </div>
+        <div class="nutrition-item">
+          <div class="nutrition-value">${recipe.nutrition.protein}g</div>
+          <div class="nutrition-label">Proteína</div>
+        </div>
+        <div class="nutrition-item">
+          <div class="nutrition-value">${recipe.nutrition.fat}g</div>
+          <div class="nutrition-label">Grasa</div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
+
+    <div class="section">
+      <h2>📝 Ingredientes</h2>
+      <div class="ingredients">
+        ${recipe.ingredients.map(ing => `<div class="ingredient">${ing}</div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>👨‍🍳 Instrucciones</h2>
+      <div class="instructions">
+        ${recipe.instructions.map((step, i) => `
+          <div class="step">
+            <div class="step-number">${i + 1}</div>
+            <div>${step}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    ${recipe.tips ? `
+    <div class="section">
+      <div class="tips">
+        <strong>💡 Tip:</strong> ${recipe.tips}
+      </div>
+    </div>
+    ` : ''}
+
+    <div class="footer">
+      <p>Receta de Vita Integral • nutrimercados.com</p>
+      <p>Generada con ❤️ para una alimentación saludable</p>
+    </div>
+  </div>
+</body>
+</html>
+      `.trim()
+
+      // Create blob and download
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${recipe.title.replace(/[^a-zA-Z0-9áéíóúñ ]/g, '').replace(/\s+/g, '-').toLowerCase()}.html`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error downloading recipe:", error)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   // Get diet names (support both old and new format)
   const dietNames = recipe.dietNames || (recipe.dietName ? [recipe.dietName] : [])
@@ -243,10 +383,10 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
       )}
 
       {/* Expandable Section */}
-      <div className="px-4 py-3">
+      <div className="px-4 py-3 flex items-center gap-2">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors"
+          className="flex-1 flex items-center justify-between text-sm font-medium text-gray-600 hover:text-emerald-600 transition-colors"
         >
           <span>Ver receta completa</span>
           <svg
@@ -257,6 +397,24 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
+        </button>
+        <button
+          onClick={handleDownloadRecipe}
+          disabled={isDownloading}
+          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+          title="Descargar receta"
+        >
+          {isDownloading ? (
+            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          )}
+          <span className="hidden sm:inline">Descargar</span>
         </button>
       </div>
 
