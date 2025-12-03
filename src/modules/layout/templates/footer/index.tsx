@@ -69,16 +69,12 @@ const SOCIAL_LINKS = [
   },
 ]
 
-const PAYMENT_METHODS = [
-  { name: "Visa", icon: "/payments/visa.svg" },
-  { name: "Mastercard", icon: "/payments/mastercard.svg" },
-  { name: "PSE", icon: "/payments/pse.svg" },
-  { name: "Nequi", icon: "/payments/nequi.svg" },
-]
-
 export default async function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gradient-to-b from-gray-50 to-gray-100 border-t border-gray-200">
+      {/* Decorative top border with brand color */}
+      <div className="h-1 bg-gradient-to-r from-[#5B8C3E] via-[#7AB356] to-[#5B8C3E]" />
+
       {/* Main Footer */}
       <div className="content-container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
@@ -90,10 +86,9 @@ export default async function Footer() {
                 alt="Vita Integral"
                 width={180}
                 height={50}
-                className="brightness-0 invert"
               />
             </LocalizedClientLink>
-            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
+            <p className="text-gray-600 text-sm leading-relaxed mb-6 max-w-sm">
               Mercado saludable desde 2012. Ofrecemos una amplia variedad de productos naturales
               que se alinean con las verdaderas necesidades de tu cuerpo a precios justos.
             </p>
@@ -101,41 +96,48 @@ export default async function Footer() {
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-[#5B8C3E] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="text-gray-400 text-sm">
+                <div className="w-8 h-8 bg-[#5B8C3E]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <span className="text-gray-600 text-sm">
                   Av. Nutibara Trv. 39B 77-40<br />
                   Medellín, Antioquia
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-[#5B8C3E] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <span className="text-gray-400 text-sm">604 322 84 82 ext. 4</span>
+                <div className="w-8 h-8 bg-[#5B8C3E]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <span className="text-gray-600 text-sm">604 322 84 82 ext. 4</span>
               </div>
               <div className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-[#5B8C3E] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <a href="mailto:info@vitaintegral.co" className="text-gray-400 text-sm hover:text-[#5B8C3E] transition-colors">
+                <div className="w-8 h-8 bg-[#5B8C3E]/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <a href="mailto:info@vitaintegral.co" className="text-gray-600 text-sm hover:text-[#5B8C3E] transition-colors">
                   info@vitaintegral.co
                 </a>
               </div>
             </div>
 
             {/* Social Links */}
-            <div className="flex items-center gap-4 mt-6">
+            <div className="flex items-center gap-3 mt-6">
               {SOCIAL_LINKS.map((social) => (
                 <a
                   key={social.name}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center
-                             text-gray-400 hover:bg-[#5B8C3E] hover:text-white transition-all duration-300"
+                  className="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center
+                             text-gray-500 hover:bg-[#5B8C3E] hover:border-[#5B8C3E] hover:text-white
+                             transition-all duration-300 shadow-sm"
                   aria-label={social.name}
                 >
                   {social.icon}
@@ -146,13 +148,16 @@ export default async function Footer() {
 
           {/* Links Columns */}
           <div>
-            <h4 className="text-white font-bold mb-4">{FOOTER_LINKS.empresa.title}</h4>
+            <h4 className="text-gray-800 font-bold mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#5B8C3E] rounded-full" />
+              {FOOTER_LINKS.empresa.title}
+            </h4>
             <ul className="space-y-3">
               {FOOTER_LINKS.empresa.links.map((link) => (
                 <li key={link.name}>
                   <LocalizedClientLink
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#5B8C3E] transition-colors"
+                    className="text-gray-600 text-sm hover:text-[#5B8C3E] transition-colors"
                   >
                     {link.name}
                   </LocalizedClientLink>
@@ -162,13 +167,16 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-4">{FOOTER_LINKS.ayuda.title}</h4>
+            <h4 className="text-gray-800 font-bold mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#5B8C3E] rounded-full" />
+              {FOOTER_LINKS.ayuda.title}
+            </h4>
             <ul className="space-y-3">
               {FOOTER_LINKS.ayuda.links.map((link) => (
                 <li key={link.name}>
                   <LocalizedClientLink
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#5B8C3E] transition-colors"
+                    className="text-gray-600 text-sm hover:text-[#5B8C3E] transition-colors"
                   >
                     {link.name}
                   </LocalizedClientLink>
@@ -176,13 +184,16 @@ export default async function Footer() {
               ))}
             </ul>
 
-            <h4 className="text-white font-bold mb-4 mt-8">{FOOTER_LINKS.legal.title}</h4>
+            <h4 className="text-gray-800 font-bold mb-4 mt-8 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#5B8C3E] rounded-full" />
+              {FOOTER_LINKS.legal.title}
+            </h4>
             <ul className="space-y-3">
               {FOOTER_LINKS.legal.links.map((link) => (
                 <li key={link.name}>
                   <LocalizedClientLink
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#5B8C3E] transition-colors"
+                    className="text-gray-600 text-sm hover:text-[#5B8C3E] transition-colors"
                   >
                     {link.name}
                   </LocalizedClientLink>
@@ -192,13 +203,16 @@ export default async function Footer() {
           </div>
 
           <div>
-            <h4 className="text-white font-bold mb-4">{FOOTER_LINKS.tienda.title}</h4>
+            <h4 className="text-gray-800 font-bold mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-[#5B8C3E] rounded-full" />
+              {FOOTER_LINKS.tienda.title}
+            </h4>
             <ul className="space-y-3">
               {FOOTER_LINKS.tienda.links.map((link) => (
                 <li key={link.name}>
                   <LocalizedClientLink
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-[#5B8C3E] transition-colors"
+                    className="text-gray-600 text-sm hover:text-[#5B8C3E] transition-colors"
                   >
                     {link.name}
                   </LocalizedClientLink>
@@ -206,12 +220,23 @@ export default async function Footer() {
               ))}
             </ul>
 
-            {/* Newsletter */}
-            <div className="mt-8">
-              <h4 className="text-white font-bold mb-3">Horarios</h4>
-              <div className="text-gray-400 text-sm space-y-1">
-                <p>Lun - Sáb: 9:00 - 19:30</p>
-                <p>Dom y Festivos: 9:30 - 16:00</p>
+            {/* Horarios */}
+            <div className="mt-8 bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <h4 className="text-gray-800 font-bold mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Horarios
+              </h4>
+              <div className="text-gray-600 text-sm space-y-1">
+                <p className="flex justify-between">
+                  <span>Lun - Sáb:</span>
+                  <span className="font-medium">9:00 - 19:30</span>
+                </p>
+                <p className="flex justify-between">
+                  <span>Dom y Festivos:</span>
+                  <span className="font-medium">9:30 - 16:00</span>
+                </p>
               </div>
             </div>
           </div>
@@ -219,7 +244,7 @@ export default async function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-gray-200 bg-white/50">
         <div className="content-container py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
@@ -230,16 +255,16 @@ export default async function Footer() {
             <div className="flex items-center gap-3">
               <span className="text-gray-500 text-xs mr-2">Métodos de pago:</span>
               <div className="flex items-center gap-2">
-                <div className="bg-white rounded px-2 py-1">
-                  <span className="text-gray-800 text-xs font-bold">VISA</span>
+                <div className="bg-white border border-gray-200 rounded px-2.5 py-1.5 shadow-sm">
+                  <span className="text-blue-600 text-xs font-bold">VISA</span>
                 </div>
-                <div className="bg-white rounded px-2 py-1">
-                  <span className="text-gray-800 text-xs font-bold">MC</span>
+                <div className="bg-white border border-gray-200 rounded px-2.5 py-1.5 shadow-sm">
+                  <span className="text-orange-500 text-xs font-bold">MC</span>
                 </div>
-                <div className="bg-white rounded px-2 py-1">
-                  <span className="text-gray-800 text-xs font-bold">PSE</span>
+                <div className="bg-white border border-gray-200 rounded px-2.5 py-1.5 shadow-sm">
+                  <span className="text-[#5B8C3E] text-xs font-bold">PSE</span>
                 </div>
-                <div className="bg-[#E91E63] rounded px-2 py-1">
+                <div className="bg-[#E91E63] rounded px-2.5 py-1.5 shadow-sm">
                   <span className="text-white text-xs font-bold">Nequi</span>
                 </div>
               </div>

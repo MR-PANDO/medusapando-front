@@ -1,5 +1,7 @@
 import { Metadata } from "next"
+import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import misionVisionImage from "@/assets/mision-vision.jpg"
 
 export const metadata: Metadata = {
   title: "Misión y Visión | Vita Integral",
@@ -74,22 +76,59 @@ export default function MisionVisionPage() {
         <span className="text-gray-800 font-medium">Misión y Visión</span>
       </nav>
 
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <span className="inline-block px-4 py-1 bg-[#5B8C3E]/10 text-[#5B8C3E] text-sm font-medium rounded-full mb-4">
-          Nuestro Propósito
-        </span>
-        <h1
-          className="text-4xl md:text-5xl font-bold text-gray-800 mb-6"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
-          Misión, Visión y{" "}
-          <span className="text-[#5B8C3E]">Valores</span>
-        </h1>
-        <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
-          Nuestro compromiso va más allá de vender productos. Queremos ser parte
-          de tu camino hacia una vida más saludable y consciente.
-        </p>
+      {/* Hero Section with Image */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+        {/* Image */}
+        <div className="relative order-2 lg:order-1">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+            <Image
+              src={misionVisionImage}
+              alt="Equipo Vita Integral"
+              width={595}
+              height={744}
+              className="w-full h-auto object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#5B8C3E]/30 to-transparent" />
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-orange-200/30 rounded-2xl -z-10" />
+          <div className="absolute -top-6 -left-6 w-32 h-32 bg-[#5B8C3E]/20 rounded-full -z-10" />
+        </div>
+
+        {/* Text */}
+        <div className="order-1 lg:order-2">
+          <span className="inline-block px-4 py-1 bg-[#5B8C3E]/10 text-[#5B8C3E] text-sm font-medium rounded-full mb-4">
+            Nuestro Propósito
+          </span>
+          <h1
+            className="text-4xl md:text-5xl font-bold text-gray-800 mb-6"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Misión, Visión y{" "}
+            <span className="text-[#5B8C3E]">Valores</span>
+          </h1>
+          <p className="text-gray-600 text-lg leading-relaxed mb-8">
+            Nuestro compromiso va más allá de vender productos. Queremos ser parte
+            de tu camino hacia una vida más saludable y consciente.
+          </p>
+
+          {/* Quick stats */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <p className="text-2xl font-bold text-[#5B8C3E]">40+</p>
+              <p className="text-xs text-gray-500">Años de experiencia</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <p className="text-2xl font-bold text-[#5B8C3E]">3</p>
+              <p className="text-xs text-gray-500">Sedes</p>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <p className="text-2xl font-bold text-[#5B8C3E]">500+</p>
+              <p className="text-xs text-gray-500">Productos</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Mission & Vision Cards */}
@@ -139,7 +178,7 @@ export default function MisionVisionPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {VALUES.map((value, index) => (
+          {VALUES.map((value) => (
             <div
               key={value.title}
               className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow duration-300"
@@ -176,7 +215,7 @@ export default function MisionVisionPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {PRINCIPLES.map((principle, index) => (
-            <div key={principle.title} className="flex items-start gap-4">
+            <div key={principle.title} className="flex items-start gap-4 bg-white rounded-xl p-5">
               <div className="w-10 h-10 bg-[#5B8C3E] text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                 {index + 1}
               </div>
@@ -190,27 +229,26 @@ export default function MisionVisionPage() {
       </div>
 
       {/* CTA */}
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+      <div className="bg-gradient-to-r from-[#5B8C3E] to-emerald-600 rounded-3xl p-8 md:p-12 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
           ¿Compartes nuestros valores?
         </h2>
-        <p className="text-gray-600 mb-8 max-w-xl mx-auto">
+        <p className="text-white/80 mb-8 max-w-xl mx-auto">
           Únete a la comunidad de personas que eligen alimentarse de manera
           consciente y responsable.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <LocalizedClientLink
             href="/store"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#5B8C3E] text-white rounded-full
-                       font-medium text-sm hover:bg-[#4A7A2E] transition-all duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#5B8C3E] rounded-full
+                       font-medium text-sm hover:bg-gray-100 transition-all duration-300"
           >
             Explorar Productos
           </LocalizedClientLink>
           <LocalizedClientLink
             href="/quienes-somos"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-800 rounded-full
-                       font-medium text-sm border border-gray-200 hover:border-[#5B8C3E]
-                       hover:text-[#5B8C3E] transition-all duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 text-white rounded-full
+                       font-medium text-sm hover:bg-white/30 transition-all duration-300"
           >
             Conocer Nuestra Historia
           </LocalizedClientLink>
