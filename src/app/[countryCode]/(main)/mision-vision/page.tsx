@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import misionVisionImage from "@/assets/mision-vision.jpg"
+import misionVisionImage from "../../../../assets/mision-vision.jpg"
 
 export const metadata: Metadata = {
   title: "Misión y Visión | Vita Integral",
