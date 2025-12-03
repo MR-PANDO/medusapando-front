@@ -5,6 +5,33 @@ import { getProductPrice } from "@lib/util/get-product-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 
+// Diet tags that we use to find related products
+const DIET_TAGS = [
+  "vegano",
+  "vegetariano",
+  "sin_lactosa",
+  "sin-lactosa",
+  "organico",
+  "sin_azucar",
+  "sin-azucar",
+  "paleo",
+  "sin_gluten",
+  "sin-gluten",
+  "keto",
+  "kosher",
+  "halal",
+]
+
+// Fisher-Yates shuffle algorithm for randomization
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 type RelatedProductsProps = {
   product: HttpTypes.StoreProduct
   countryCode: string
@@ -20,23 +47,33 @@ export default async function RelatedProducts({
     return null
   }
 
-  // edit this function to define your related products logic
-  const queryParams: HttpTypes.StoreProductListParams = {}
-  if (region?.id) {
-    queryParams.region_id = region.id
+  // Get diet tags from the current product
+  const productDietTags = product.tags
+    ?.filter((tag) => {
+      const tagValue = tag.value?.toLowerCase() || ""
+      return DIET_TAGS.some(
+        (dietTag) => tagValue === dietTag || tagValue.includes(dietTag)
+      )
+    })
+    .map((t) => t.id)
+    .filter(Boolean) as string[]
+
+  // Build query params - prioritize diet tags
+  const queryParams: HttpTypes.StoreProductListParams = {
+    region_id: region.id,
+    is_giftcard: false,
+    limit: 20, // Fetch more products to randomize from
   }
-  if (product.collection_id) {
+
+  // If product has diet tags, filter by them
+  if (productDietTags && productDietTags.length > 0) {
+    queryParams.tag_id = productDietTags
+  } else if (product.collection_id) {
+    // Fallback to collection if no diet tags
     queryParams.collection_id = [product.collection_id]
   }
-  if (product.tags) {
-    queryParams.tag_id = product.tags
-      .map((t) => t.id)
-      .filter(Boolean) as string[]
-  }
-  queryParams.is_giftcard = false
-  queryParams.limit = 4
 
-  const products = await listProducts({
+  let products = await listProducts({
     queryParams,
     countryCode,
   }).then(({ response }) => {
@@ -44,6 +81,43 @@ export default async function RelatedProducts({
       (responseProduct) => responseProduct.id !== product.id
     )
   })
+
+  // If no products found with diet tags, try with collection
+  if (products.length === 0 && product.collection_id) {
+    const fallbackParams: HttpTypes.StoreProductListParams = {
+      region_id: region.id,
+      collection_id: [product.collection_id],
+      is_giftcard: false,
+      limit: 20,
+    }
+
+    products = await listProducts({
+      queryParams: fallbackParams,
+      countryCode,
+    }).then(({ response }) => {
+      return response.products.filter(
+        (responseProduct) => responseProduct.id !== product.id
+      )
+    })
+  }
+
+  // If still no products, get any products
+  if (products.length === 0) {
+    const anyParams: HttpTypes.StoreProductListParams = {
+      region_id: region.id,
+      is_giftcard: false,
+      limit: 20,
+    }
+
+    products = await listProducts({
+      queryParams: anyParams,
+      countryCode,
+    }).then(({ response }) => {
+      return response.products.filter(
+        (responseProduct) => responseProduct.id !== product.id
+      )
+    })
+  }
 
   if (!products.length) {
     return (
@@ -53,9 +127,12 @@ export default async function RelatedProducts({
     )
   }
 
+  // Shuffle products and take first 4 for randomness
+  const randomProducts = shuffleArray(products).slice(0, 4)
+
   return (
     <div className="flex flex-col gap-4">
-      {products.slice(0, 4).map((relatedProduct) => {
+      {randomProducts.map((relatedProduct) => {
         const { cheapestPrice } = getProductPrice({ product: relatedProduct })
         const hasDiscount =
           cheapestPrice?.price_type === "sale" &&

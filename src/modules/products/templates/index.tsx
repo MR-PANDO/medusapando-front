@@ -131,10 +131,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900 text-sm">
-                      Mejor Precio Garantizado
+                      Precios Justos
                     </h4>
                     <p className="text-xs text-gray-500">
-                      Te devolvemos la diferencia si lo encuentras mas barato
+                      Productos saludables a precios accesibles para todos
                     </p>
                   </div>
                 </div>
@@ -157,10 +157,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900 text-sm">
-                      Devoluciones Faciles
+                      Cambios y Devoluciones
                     </h4>
                     <p className="text-xs text-gray-500">
-                      Devuelve el producto y recibe tu reembolso en segundos
+                      48 horas para reportar productos dañados o incorrectos
                     </p>
                   </div>
                 </div>
