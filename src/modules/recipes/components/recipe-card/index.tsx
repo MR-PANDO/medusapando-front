@@ -298,6 +298,37 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
         </div>
       )}
 
+      {/* Ingredients Preview - Always visible */}
+      {recipe.ingredients && recipe.ingredients.length > 0 && (
+        <div className="px-4 py-3 border-b">
+          <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+            <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+            Ingredientes ({recipe.ingredients.length})
+          </h4>
+          <ul className="text-sm text-gray-600 space-y-1">
+            {recipe.ingredients.slice(0, isExpanded ? recipe.ingredients.length : 5).map((ingredient, index) => (
+              <li key={index} className="flex items-start gap-2">
+                <span className="text-emerald-500 mt-0.5">•</span>
+                <span className="line-clamp-1">{ingredient}</span>
+              </li>
+            ))}
+          </ul>
+          {recipe.ingredients.length > 5 && !isExpanded && (
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="mt-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
+            >
+              <span>... y {recipe.ingredients.length - 5} más</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Products from Store - Always visible */}
       {recipe.products.length > 0 && (
         <div className="p-4 border-b">
@@ -421,24 +452,6 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
       {/* Expanded Content */}
       {isExpanded && (
         <div className="border-t">
-          {/* Ingredients */}
-          <div className="p-4 border-b">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <svg className="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-              </svg>
-              Ingredientes
-            </h4>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm text-gray-600">
-              {recipe.ingredients.map((ingredient, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <span className="text-emerald-500 mt-0.5">•</span>
-                  {ingredient}
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Instructions */}
           <div className="p-4">
             <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">

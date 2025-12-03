@@ -248,7 +248,7 @@ export default async function Footer() {
         <div className="content-container py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Vita Integral SAS. NIT: 900779886. Todos los derechos reservados.
+              © 2025 Vita Integral SAS. NIT: 900779886. Todos los derechos reservados.
             </p>
 
             {/* Payment Methods */}
