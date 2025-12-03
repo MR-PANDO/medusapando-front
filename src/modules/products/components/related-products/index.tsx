@@ -22,13 +22,27 @@ const DIET_TAGS = [
   "halal",
 ]
 
-// Fisher-Yates shuffle algorithm for randomization
-function shuffleArray<T>(array: T[]): T[] {
+// Deterministic shuffle based on product ID to avoid DYNAMIC_SERVER_USAGE error
+// This creates consistent but varied results per product
+function deterministicShuffle<T>(array: T[], seed: string): T[] {
   const shuffled = [...array]
+
+  // Create a simple hash from the seed
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32-bit integer
+  }
+
+  // Use the hash to shuffle deterministically
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
+    hash = ((hash << 5) - hash) + i
+    hash = hash & hash
+    const j = Math.abs(hash) % (i + 1)
     ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
+
   return shuffled
 }
 
@@ -62,7 +76,7 @@ export default async function RelatedProducts({
   const queryParams: HttpTypes.StoreProductListParams = {
     region_id: region.id,
     is_giftcard: false,
-    limit: 20, // Fetch more products to randomize from
+    limit: 20, // Fetch more products to select from
   }
 
   // If product has diet tags, filter by them
@@ -127,12 +141,14 @@ export default async function RelatedProducts({
     )
   }
 
-  // Shuffle products and take first 4 for randomness
-  const randomProducts = shuffleArray(products).slice(0, 4)
+  // Use product ID as seed for deterministic but varied shuffle
+  // This ensures different products show different related items
+  const shuffledProducts = deterministicShuffle(products, product.id)
+  const selectedProducts = shuffledProducts.slice(0, 4)
 
   return (
     <div className="flex flex-col gap-4">
-      {randomProducts.map((relatedProduct) => {
+      {selectedProducts.map((relatedProduct) => {
         const { cheapestPrice } = getProductPrice({ product: relatedProduct })
         const hasDiscount =
           cheapestPrice?.price_type === "sale" &&

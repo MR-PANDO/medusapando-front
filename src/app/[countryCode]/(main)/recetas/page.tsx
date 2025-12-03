@@ -2,6 +2,9 @@ import { Metadata } from "next"
 import { RecipesData } from "@modules/recipes/types"
 import RecipesGrid from "@modules/recipes/components/recipes-grid"
 
+// Force dynamic rendering to avoid DYNAMIC_SERVER_USAGE errors
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Recetas Saludables | Vita Integral",
   description:
@@ -9,43 +12,46 @@ export const metadata: Metadata = {
 }
 
 async function getRecipes(): Promise<RecipesData | null> {
-  try {
-    // Try fetching from Medusa API first (PostgreSQL)
-    const backendUrl = process.env.MEDUSA_BACKEND_URL || process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.nutrimercados.com"
-    const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+  const backendUrl = process.env.MEDUSA_BACKEND_URL || process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "https://api.nutrimercados.com"
+  const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
+  const minioUrl = process.env.MINIO_CDN_URL || "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com/vitaintegralimages"
 
+  // Try Medusa API first (PostgreSQL)
+  try {
     const response = await fetch(`${backendUrl}/store/recipes?limit=100`, {
       headers: {
         "x-publishable-api-key": publishableKey,
       },
-      next: { revalidate: 3600 }, // Revalidate every hour
+      cache: "no-store", // Always fetch fresh data
     })
 
     if (response.ok) {
       const data = await response.json()
-      return {
-        generatedAt: data.generatedAt || new Date().toISOString(),
-        recipes: data.recipes || [],
+      if (data.recipes && data.recipes.length > 0) {
+        return {
+          generatedAt: data.generatedAt || new Date().toISOString(),
+          recipes: data.recipes,
+        }
       }
     }
-
-    // Fallback to Minio CDN if API fails
+  } catch (error) {
     console.log("Medusa API not available, falling back to Minio...")
-    const minioUrl = process.env.MINIO_CDN_URL || "https://minio-ps8cwskk08k8gssooc00s80k.pando.tecnoclinica.com/vitaintegralimages"
+  }
+
+  // Fallback to Minio CDN
+  try {
     const minioResponse = await fetch(`${minioUrl}/recipes.json`, {
-      next: { revalidate: 3600 },
+      cache: "no-store",
     })
 
-    if (!minioResponse.ok) {
-      console.error("Failed to fetch recipes from both sources")
-      return null
+    if (minioResponse.ok) {
+      return minioResponse.json()
     }
-
-    return minioResponse.json()
   } catch (error) {
-    console.error("Error fetching recipes:", error)
-    return null
+    console.error("Error fetching from Minio:", error)
   }
+
+  return null
 }
 
 export default async function RecetasPage(props: {
