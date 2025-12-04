@@ -15,14 +15,25 @@ export const metadata: Metadata = {
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
-  const customer = await retrieveCustomer()
-  const cart = await retrieveCart()
+  let customer = null
+  let cart = null
   let shippingOptions: StoreCartShippingOption[] = []
 
-  if (cart) {
-    const { shipping_options } = await listCartOptions()
+  // Wrap in try-catch to prevent backend errors from crashing the entire page
+  try {
+    customer = await retrieveCustomer()
+  } catch (error) {
+    console.error("Error retrieving customer:", error)
+  }
 
-    shippingOptions = shipping_options
+  try {
+    cart = await retrieveCart()
+    if (cart) {
+      const { shipping_options } = await listCartOptions()
+      shippingOptions = shipping_options
+    }
+  } catch (error) {
+    console.error("Error retrieving cart:", error)
   }
 
   return (
