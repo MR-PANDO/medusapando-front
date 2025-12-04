@@ -3,7 +3,7 @@ import React, { Suspense } from "react"
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
 import ProductDietBadges from "@modules/products/components/product-diet-badges"
-import ProductNutrition from "@modules/products/components/product-nutrition"
+import ProductDetailsTabs from "@modules/products/components/product-details-tabs"
 import RelatedProducts from "@modules/products/components/related-products"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
@@ -186,68 +186,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
             </div>
           </div>
 
-          {/* Product Details (Main Content) */}
+          {/* Product Details (Main Content with Tabs) */}
           <div className="lg:col-span-2 order-1 lg:order-2">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Detalles del Producto
-              </h3>
-
-              {/* Description */}
-              {product.description && (
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-800 mb-2">Descripcion</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                    {product.description}
-                  </p>
-                </div>
-              )}
-
-              {/* Nutrition Information */}
-              <ProductNutrition productId={product.id} />
-
-              {/* Product Metadata / Specs */}
-              {product.metadata && Object.keys(product.metadata).length > 0 && (
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-800 mb-2">
-                    Especificaciones
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {Object.entries(product.metadata)
-                      .filter(([key]) => !key.startsWith("_") && key !== "unit_pricing")
-                      .map(([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex justify-between py-2 border-b border-gray-100"
-                        >
-                          <span className="text-sm text-gray-500 capitalize">
-                            {key.replace(/_/g, " ")}
-                          </span>
-                          <span className="text-sm text-gray-900 font-medium">
-                            {String(value)}
-                          </span>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Tags */}
-              {product.tags && product.tags.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-gray-800 mb-2">Etiquetas</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag) => (
-                      <span
-                        key={tag.id}
-                        className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
-                      >
-                        {tag.value}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <ProductDetailsTabs product={product} />
             </div>
           </div>
         </div>
