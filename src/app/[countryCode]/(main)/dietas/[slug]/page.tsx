@@ -5,6 +5,9 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { getDietBySlug, getAllDietSlugs, DIETS_DATA } from "@lib/data/diets"
 import brushPattern from "@assets/brush-pattern.png"
 
+// Force dynamic rendering to avoid static/cookies conflict with layout
+export const dynamic = "force-dynamic"
+
 type Props = {
   params: Promise<{ countryCode: string; slug: string }>
 }
