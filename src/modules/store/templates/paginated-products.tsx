@@ -9,16 +9,16 @@ const PRODUCT_LIMIT = 12
 
 // Map URL slugs to actual tag IDs from database
 const TAG_SLUG_TO_ID: Record<string, string> = {
-  vegano: "ptag_MIH1ZD106B4F7ECB2C025EBB",
-  vegetariano: "ptag_MIH1ZD0WE0F5BB75D98BC2DE",
-  "sin-lactosa": "ptag_MIH1ZD14FF66C37851E4C4F1",
-  organico: "ptag_MIH1ZD1K585E3840F803CC57",
-  "sin-azucar": "ptag_MIH1ZD0S047DBC6CAF2BDCAA",
-  paleo: "ptag_MIH1ZD1CAA2106DFFB237963",
-  "sin-gluten": "ptag_MIH1ZD0LCB8F57C1E8CE02D2",
-  keto: "ptag_MIH1ZD0723E50DF51080B187",
-  nuevo: "ptag_MIH1ZD0P70B83B188A619F35",
-  ofertas: "ptag_01JXWNHD9SFCC8RDHB48HXSNWN",
+  vegano: "ptag_MM35AC853D60BAF59EFCE70B",
+  vegetariano: "ptag_MM35AC7X54CE2FFF8CD1FDF1",
+  "sin-lactosa": "ptag_MM35AC83ACBF8FF55020958F",
+  organico: "ptag_MM35AC897F29DACAC0FF87BA",
+  "sin-azucar": "ptag_MM35AC7W2161C6591F004C46",
+  paleo: "ptag_MM35AC8604C2C59EE3E2CF72",
+  "sin-gluten": "ptag_MM35AC7S0EAD8C96272EDE2B",
+  keto: "ptag_MM35AC81792D2B901D49D703",
+  nuevo: "ptag_MM35AC7VAFF044604F45F664",
+  natural: "ptag_MM35AC9D350F48C06F7476DF",
 }
 
 type PaginatedProductsParams = {
