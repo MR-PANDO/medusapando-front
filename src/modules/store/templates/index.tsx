@@ -64,8 +64,8 @@ const StoreTemplate = ({
       return `Productos: ${categoryName}`
     }
     if (tags) {
-      const tagName = TAG_DISPLAY_NAMES[tags] || tags
-      return `Productos ${tagName}`
+      const tagNames = tags.split(",").map((t) => TAG_DISPLAY_NAMES[t] || t)
+      return `Productos: ${tagNames.join(" + ")}`
     }
     return "Todos los productos"
   }

@@ -75,9 +75,12 @@ export default async function PaginatedProducts({
   }
 
   if (tags) {
-    const tagId = TAG_SLUG_TO_ID[tags]
-    if (tagId) {
-      queryParams["tag_id"] = [tagId]
+    const tagSlugs = tags.split(",")
+    const tagIds = tagSlugs
+      .map((slug) => TAG_SLUG_TO_ID[slug])
+      .filter(Boolean)
+    if (tagIds.length > 0) {
+      queryParams["tag_id"] = tagIds
     }
   }
 

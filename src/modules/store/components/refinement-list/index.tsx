@@ -177,25 +177,36 @@ const RefinementList = ({
         onToggle={() => toggleSection("diets")}
       >
         <div className="flex flex-col gap-2">
-          {DIET_TAGS.map((tag) => (
-            <label
-              key={tag.value}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <input
-                type="radio"
-                name="diet"
-                checked={selectedTags === tag.value}
-                onChange={() => setQueryParams("tags", selectedTags === tag.value ? "" : tag.value)}
-                className="w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500"
-              />
-              <span className={`text-sm text-gray-700 group-hover:text-emerald-600 transition-colors ${
-                selectedTags === tag.value ? "font-medium text-emerald-600" : ""
-              }`}>
-                {tag.label}
-              </span>
-            </label>
-          ))}
+          {DIET_TAGS.map((tag) => {
+            const activeTags = selectedTags ? selectedTags.split(",") : []
+            const isChecked = activeTags.includes(tag.value)
+            return (
+              <label
+                key={tag.value}
+                className="flex items-center gap-3 cursor-pointer group"
+              >
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => {
+                    let newTags: string[]
+                    if (isChecked) {
+                      newTags = activeTags.filter((t) => t !== tag.value)
+                    } else {
+                      newTags = [...activeTags, tag.value]
+                    }
+                    setQueryParams("tags", newTags.join(","))
+                  }}
+                  className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                />
+                <span className={`text-sm text-gray-700 group-hover:text-emerald-600 transition-colors ${
+                  isChecked ? "font-medium text-emerald-600" : ""
+                }`}>
+                  {tag.label}
+                </span>
+              </label>
+            )
+          })}
         </div>
       </FilterSection>
 
