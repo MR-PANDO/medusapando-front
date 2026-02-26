@@ -37,6 +37,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "storage.nutrimercados.com",
+      },
+      {
+        protocol: "https",
         hostname: "medusa-server-testing.s3.amazonaws.com",
       },
       {
