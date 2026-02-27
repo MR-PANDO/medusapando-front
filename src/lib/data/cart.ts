@@ -214,6 +214,34 @@ export async function deleteLineItem(lineId: string) {
     .catch(medusaError)
 }
 
+export async function clearCart() {
+  const cartId = await getCartId()
+
+  if (!cartId) {
+    throw new Error("No existing cart found")
+  }
+
+  const cart = await retrieveCart(cartId, "items.id")
+
+  if (!cart?.items?.length) {
+    return
+  }
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  for (const item of cart.items) {
+    await sdk.store.cart.deleteLineItem(cartId, item.id, headers)
+  }
+
+  const cartCacheTag = await getCacheTag("carts")
+  revalidateTag(cartCacheTag)
+
+  const fulfillmentCacheTag = await getCacheTag("fulfillment")
+  revalidateTag(fulfillmentCacheTag)
+}
+
 export async function setShippingMethod({
   cartId,
   shippingMethodId,

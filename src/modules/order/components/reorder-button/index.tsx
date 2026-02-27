@@ -2,7 +2,7 @@
 
 import { reorder } from "@lib/data/orders"
 import { ArrowUpRightMini } from "@medusajs/icons"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import React, { useState } from "react"
 
 type ReorderButtonProps = {
@@ -12,7 +12,6 @@ type ReorderButtonProps = {
 const ReorderButton: React.FC<ReorderButtonProps> = ({ orderId }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
   const { countryCode } = useParams()
 
   const handleReorder = async () => {
@@ -23,11 +22,11 @@ const ReorderButton: React.FC<ReorderButtonProps> = ({ orderId }) => {
       const cart = await reorder(orderId)
 
       if (cart?.id) {
-        router.push(`/${countryCode}/cart`)
+        // Hard navigation to ensure fresh cookies and data
+        window.location.href = `/${countryCode}/cart`
       }
     } catch (err: any) {
       setError(err?.message || "Error al crear el nuevo pedido")
-    } finally {
       setIsLoading(false)
     }
   }
