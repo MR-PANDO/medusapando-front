@@ -3,6 +3,12 @@ import { notFound } from "next/navigation"
 
 import { getCategoryByHandle, listCategories } from "@lib/data/categories"
 import { listRegions } from "@lib/data/regions"
+import { getSeoMetadata } from "@lib/data/seo"
+import { buildMetadata } from "@modules/seo/utils/build-metadata"
+import SeoHead from "@modules/seo/components/seo-head"
+import FaqSection from "@modules/seo/components/faq-section"
+import GeoSection from "@modules/seo/components/geo-section"
+import SxoIntentLayout from "@modules/seo/components/sxo-intent-layout"
 import { StoreRegion } from "@medusajs/types"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -48,16 +54,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     const productCategory = await getCategoryByHandle(params.category)
 
     const title = productCategory.name + " | Medusa Store"
-
     const description = productCategory.description ?? `${title} category.`
 
-    return {
-      title: `${title} | Medusa Store`,
+    const seo = await getSeoMetadata("category", productCategory.id)
+
+    return buildMetadata(seo, {
+      title,
       description,
-      alternates: {
-        canonical: `${params.category.join("/")}`,
-      },
-    }
+    })
   } catch (error) {
     notFound()
   }
@@ -74,12 +78,22 @@ export default async function CategoryPage(props: Props) {
     notFound()
   }
 
+  const seo = await getSeoMetadata("category", productCategory.id)
+
   return (
-    <CategoryTemplate
-      category={productCategory}
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-    />
+    <>
+      <SeoHead seo={seo} />
+      <CategoryTemplate
+        category={productCategory}
+        sortBy={sortBy}
+        page={page}
+        countryCode={params.countryCode}
+      />
+      <div className="content-container">
+        <FaqSection seo={seo} />
+        <GeoSection seo={seo} />
+        <SxoIntentLayout seo={seo} />
+      </div>
+    </>
   )
 }

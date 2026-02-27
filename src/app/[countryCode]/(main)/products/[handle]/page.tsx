@@ -4,6 +4,12 @@ import { notFound } from "next/navigation"
 export const dynamic = "force-dynamic"
 import { listProducts } from "@lib/data/products"
 import { getRegion, listRegions } from "@lib/data/regions"
+import { getSeoMetadata } from "@lib/data/seo"
+import { buildMetadata } from "@modules/seo/utils/build-metadata"
+import SeoHead from "@modules/seo/components/seo-head"
+import FaqSection from "@modules/seo/components/faq-section"
+import GeoSection from "@modules/seo/components/geo-section"
+import SxoIntentLayout from "@modules/seo/components/sxo-intent-layout"
 import ProductTemplate from "@modules/products/templates"
 import { HttpTypes } from "@medusajs/types"
 
@@ -89,15 +95,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     notFound()
   }
 
-  return {
+  const seo = await getSeoMetadata("product", product.id)
+
+  return buildMetadata(seo, {
     title: `${product.title} | Medusa Store`,
-    description: `${product.title}`,
-    openGraph: {
-      title: `${product.title} | Medusa Store`,
-      description: `${product.title}`,
-      images: product.thumbnail ? [product.thumbnail] : [],
-    },
-  }
+    description: product.description || product.title,
+    image: product.thumbnail || undefined,
+  })
 }
 
 export default async function ProductPage(props: Props) {
@@ -122,12 +126,22 @@ export default async function ProductPage(props: Props) {
     notFound()
   }
 
+  const seo = await getSeoMetadata("product", pricedProduct.id)
+
   return (
-    <ProductTemplate
-      product={pricedProduct}
-      region={region}
-      countryCode={params.countryCode}
-      images={images}
-    />
+    <>
+      <SeoHead seo={seo} />
+      <ProductTemplate
+        product={pricedProduct}
+        region={region}
+        countryCode={params.countryCode}
+        images={images}
+      />
+      <div className="content-container">
+        <FaqSection seo={seo} />
+        <GeoSection seo={seo} />
+        <SxoIntentLayout seo={seo} />
+      </div>
+    </>
   )
 }
