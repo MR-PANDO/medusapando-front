@@ -203,7 +203,7 @@ export async function deleteLineItem(lineId: string) {
   }
 
   await sdk.store.cart
-    .deleteLineItem(cartId, lineId, headers)
+    .deleteLineItem(cartId, lineId, {}, headers)
     .then(async () => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
@@ -232,7 +232,7 @@ export async function clearCart() {
   }
 
   for (const item of cart.items) {
-    await sdk.store.cart.deleteLineItem(cartId, item.id, headers)
+    await sdk.store.cart.deleteLineItem(cartId, item.id, {}, headers)
   }
 
   const cartCacheTag = await getCacheTag("carts")
