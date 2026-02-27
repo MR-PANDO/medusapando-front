@@ -1596,13 +1596,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@medusajs/js-sdk@npm:latest":
-  version: 2.13.1
-  resolution: "@medusajs/js-sdk@npm:2.13.1"
+"@medusajs/js-sdk@npm:2.12.1":
+  version: 2.12.1
+  resolution: "@medusajs/js-sdk@npm:2.12.1"
   dependencies:
     fetch-event-stream: "npm:^0.1.5"
     qs: "npm:^6.12.1"
-  checksum: 10/ee3fadcc32eb37a6f5a6095adf95bab376fdbbb8fd7a253d12b7b0aa8f9677ece5231a0b94aca68d80b3d645447769af0a56295da8ae00afa87f5cfc9a984a19
+  checksum: 10/d5adbca3697a323f624e4500c2697257f00250fa81a6128d607821decd173e43fc7e288ad543c2462976fb7ec8c2dfa45c362a383a5f94abbda88ede73467106
   languageName: node
   linkType: hard
 
@@ -8795,7 +8795,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:^3.940.0"
     "@babel/core": "npm:^7.17.5"
     "@headlessui/react": "npm:^2.2.0"
-    "@medusajs/js-sdk": "npm:latest"
+    "@medusajs/js-sdk": "npm:2.12.1"
     "@medusajs/types": "npm:latest"
     "@medusajs/ui": "npm:latest"
     "@medusajs/ui-preset": "npm:latest"
