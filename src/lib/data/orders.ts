@@ -2,8 +2,9 @@
 
 import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
-import { getAuthHeaders, getCacheOptions } from "./cookies"
+import { getAuthHeaders, getCacheOptions, getCacheTag } from "./cookies"
 import { HttpTypes } from "@medusajs/types"
+import { revalidateTag } from "next/cache"
 
 export const retrieveOrder = async (id: string) => {
   const headers = {
@@ -120,6 +121,33 @@ export type RecentlyPurchasedItem = {
   last_purchased: string
   purchase_count: number
   unit_price: number
+}
+
+export const reorder = async (orderId: string) => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const cart = await sdk.client
+    .fetch<{ cart: HttpTypes.StoreCart }>(
+      `/store/customers/me/orders/${orderId}/reorder`,
+      {
+        method: "POST",
+        headers,
+      }
+    )
+    .then(({ cart }) => cart)
+    .catch((err) => medusaError(err))
+
+  if (cart?.id) {
+    const { setCartId } = await import("./cookies")
+    await setCartId(cart.id)
+
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+  }
+
+  return cart
 }
 
 export const getRecentlyPurchased = async (
