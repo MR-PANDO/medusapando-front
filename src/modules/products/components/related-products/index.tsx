@@ -1,8 +1,9 @@
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { getEntityTranslations } from "@lib/data/translations"
 import { HttpTypes } from "@medusajs/types"
 import { getProductPrice } from "@lib/util/get-product-price"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 
@@ -148,6 +149,11 @@ export default async function RelatedProducts({
   const shuffledProducts = deterministicShuffle(products, product.id)
   const selectedProducts = shuffledProducts.slice(0, 4)
 
+  // Fetch translations for related products
+  const locale = await getLocale()
+  const relatedIds = selectedProducts.map((p) => p.id).filter(Boolean) as string[]
+  const translationsMap = await getEntityTranslations("product", relatedIds, locale)
+
   return (
     <div className="flex flex-col gap-4">
       {selectedProducts.map((relatedProduct) => {
@@ -179,7 +185,7 @@ export default async function RelatedProducts({
             {/* Product Info */}
             <div className="flex-1 min-w-0">
               <h4 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-emerald-600 transition-colors">
-                {relatedProduct.title}
+                {(relatedProduct.id && translationsMap.get(relatedProduct.id)?.title) || relatedProduct.title}
               </h4>
 
               {/* Price */}

@@ -196,7 +196,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
           {/* Product Details (Main Content with Tabs) */}
           <div className="lg:col-span-2 order-1 lg:order-2">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <ProductDetailsTabs product={product} />
+              <ProductDetailsTabs product={product} translatedDescription={translation?.description} />
             </div>
           </div>
         </div>

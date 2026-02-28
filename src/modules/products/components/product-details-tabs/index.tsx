@@ -7,9 +7,10 @@ import ProductNutrition from "@modules/products/components/product-nutrition"
 
 type ProductDetailsTabsProps = {
   product: HttpTypes.StoreProduct
+  translatedDescription?: string | null
 }
 
-const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
+const ProductDetailsTabs = ({ product, translatedDescription }: ProductDetailsTabsProps) => {
   const t = useTranslations("products")
   const [activeTab, setActiveTab] = useState<"details" | "nutrition">("details")
 
@@ -45,11 +46,11 @@ const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
         {activeTab === "details" && (
           <div className="animate-fadeIn">
             {/* Description */}
-            {product.description && (
+            {(translatedDescription || product.description) && (
               <div className="mb-6">
                 <h4 className="font-medium text-gray-800 mb-2">{t("description")}</h4>
                 <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                  {product.description}
+                  {translatedDescription || product.description}
                 </p>
               </div>
             )}
