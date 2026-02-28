@@ -2,15 +2,37 @@ import { Metadata } from "next"
 import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import foundersImage from "../../../../assets/fundadores.jpg"
+import { getSeoMetadata } from "@lib/data/seo"
+import { buildMetadata } from "@modules/seo/utils/build-metadata"
+import SeoHead from "@modules/seo/components/seo-head"
+import FaqSection from "@modules/seo/components/faq-section"
+import GeoSection from "@modules/seo/components/geo-section"
+import SxoIntentLayout from "@modules/seo/components/sxo-intent-layout"
 
-export const metadata: Metadata = {
+const FALLBACK_META = {
   title: "Quiénes Somos | Vita Integral",
   description:
     "Conoce la historia de Vita Integral, un mercado saludable fundado en 2012 en Medellín por Carlos y Patricia, pioneros en alimentación consciente en Colombia.",
 }
 
-export default function QuienesSomosPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const seo = await getSeoMetadata("page", "quienes-somos")
+    return buildMetadata(seo, FALLBACK_META)
+  } catch {
+    return buildMetadata(null, FALLBACK_META)
+  }
+}
+
+export default async function QuienesSomosPage() {
+  let seo = null
+  try {
+    seo = await getSeoMetadata("page", "quienes-somos")
+  } catch {}
+
   return (
+    <>
+    {seo && <SeoHead seo={seo} />}
     <div className="content-container py-12">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
@@ -218,5 +240,13 @@ export default function QuienesSomosPage() {
         </div>
       </div>
     </div>
+    {seo && (
+      <div className="content-container">
+        <FaqSection seo={seo} />
+        <GeoSection seo={seo} />
+        <SxoIntentLayout seo={seo} />
+      </div>
+    )}
+    </>
   )
 }
