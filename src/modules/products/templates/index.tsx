@@ -8,8 +8,9 @@ import RelatedProducts from "@modules/products/components/related-products"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { getEntityTranslation } from "@lib/data/translations"
 
 import ProductActionsWrapper from "./product-actions-wrapper"
 
@@ -32,6 +33,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
   if (!product || !product.id) {
     return notFound()
   }
+
+  // Fetch translation for current locale
+  const locale = await getLocale()
+  const translation = await getEntityTranslation("product", product.id, locale)
 
   // Check stock status
   const firstVariant = product.variants?.[0]
@@ -59,7 +64,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
                   className="text-2xl lg:text-3xl font-semibold text-gray-900 mb-2"
                   data-testid="product-title"
                 >
-                  {product.title}
+                  {translation?.title || product.title}
                 </h1>
 
                 {/* SKU and Stock Status */}
@@ -91,9 +96,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
               </div>
 
               {/* Short Description */}
-              {product.description && (
+              {(translation?.description || product.description) && (
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-4">
-                  {product.description}
+                  {translation?.description || product.description}
                 </p>
               )}
 

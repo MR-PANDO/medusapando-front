@@ -8,8 +8,10 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import PaginatedProducts from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import { getEntityTranslations } from "@lib/data/translations"
+import { getLocale } from "next-intl/server"
 
-export default function CategoryTemplate({
+export default async function CategoryTemplate({
   category,
   sortBy,
   page,
@@ -36,6 +38,17 @@ export default function CategoryTemplate({
 
   getParents(category)
 
+  // Fetch translations for current locale
+  const locale = await getLocale()
+  const allCategoryIds = [
+    category.id,
+    ...parents.map((p) => p.id),
+    ...(category.category_children?.map((c) => c.id) || []),
+  ].filter(Boolean) as string[]
+  const translationsMap = await getEntityTranslations("category", allCategoryIds, locale)
+
+  const categoryTranslation = category.id ? translationsMap.get(category.id) : undefined
+
   return (
     <div
       className="flex flex-col small:flex-row small:items-start py-6 content-container"
@@ -52,16 +65,16 @@ export default function CategoryTemplate({
                   href={`/categories/${parent.handle}`}
                   data-testid="sort-by-link"
                 >
-                  {parent.name}
+                  {translationsMap.get(parent.id)?.title || parent.name}
                 </LocalizedClientLink>
                 /
               </span>
             ))}
-          <h1 data-testid="category-page-title">{category.name}</h1>
+          <h1 data-testid="category-page-title">{categoryTranslation?.title || category.name}</h1>
         </div>
-        {category.description && (
+        {(categoryTranslation?.description || category.description) && (
           <div className="mb-8 text-base-regular">
-            <p>{category.description}</p>
+            <p>{categoryTranslation?.description || category.description}</p>
           </div>
         )}
         {category.category_children && (
@@ -70,7 +83,7 @@ export default function CategoryTemplate({
               {category.category_children?.map((c) => (
                 <li key={c.id}>
                   <InteractiveLink href={`/categories/${c.handle}`}>
-                    {c.name}
+                    {translationsMap.get(c.id)?.title || c.name}
                   </InteractiveLink>
                 </li>
               ))}

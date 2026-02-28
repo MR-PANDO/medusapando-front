@@ -11,7 +11,9 @@ import FaqSection from "@modules/seo/components/faq-section"
 import GeoSection from "@modules/seo/components/geo-section"
 import SxoIntentLayout from "@modules/seo/components/sxo-intent-layout"
 import ProductTemplate from "@modules/products/templates"
+import { getEntityTranslation } from "@lib/data/translations"
 import { HttpTypes } from "@medusajs/types"
+import { getLocale } from "next-intl/server"
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>
@@ -95,9 +97,13 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     notFound()
   }
 
+  // Use translated title/description for metadata when available
+  const locale = await getLocale()
+  const translation = await getEntityTranslation("product", product.id, locale)
+
   const fallback = {
-    title: `${product.title} | Medusa Store`,
-    description: product.description || product.title,
+    title: `${translation?.title || product.title} | Medusa Store`,
+    description: translation?.description || product.description || product.title,
     image: product.thumbnail || undefined,
   }
 

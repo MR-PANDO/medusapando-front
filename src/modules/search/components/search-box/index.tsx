@@ -3,7 +3,7 @@
 import { instantMeiliSearch } from "@meilisearch/instant-meilisearch"
 import { useParams } from "next/navigation"
 import { useState, useRef, useEffect, useCallback } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { InstantSearch, useSearchBox, useHits } from "react-instantsearch"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
@@ -17,8 +17,10 @@ const { searchClient } = instantMeiliSearch(
 type ProductHit = {
   id: string
   title: string
+  title_en?: string
   handle: string
   description?: string
+  description_en?: string
   thumbnail?: string
   variant_id?: string
 }
@@ -149,6 +151,7 @@ function AddToCartButton({
 
 function SearchResults({ onResultClick }: { onResultClick: () => void }) {
   const t = useTranslations("search")
+  const locale = useLocale()
   const { hits } = useHits<ProductHit>()
   const params = useParams()
   const countryCode = (params.countryCode as string) || "ve"
@@ -181,12 +184,12 @@ function SearchResults({ onResultClick }: { onResultClick: () => void }) {
               onClick={onResultClick}
             >
               <p className="text-sm font-medium text-gray-900 truncate hover:text-gray-600">
-                {hit.title}
+                {locale === "en" ? (hit.title_en || hit.title) : hit.title}
               </p>
             </LocalizedClientLink>
-            {hit.description && (
+            {(hit.description || hit.description_en) && (
               <p className="text-xs text-gray-500 truncate">
-                {hit.description}
+                {locale === "en" ? (hit.description_en || hit.description) : hit.description}
               </p>
             )}
           </div>

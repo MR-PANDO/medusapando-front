@@ -23,11 +23,13 @@ export default async function ProductPreview({
   isFeatured,
   region,
   countryCode,
+  translation,
 }: {
   product: ProductWithBrand
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
   countryCode?: string
+  translation?: { title?: string | null; description?: string | null }
 }) {
   const t = await getTranslations("products")
   const { cheapestPrice } = getProductPrice({
@@ -109,7 +111,7 @@ export default async function ProductPreview({
             className="text-sm font-medium text-gray-900 line-clamp-2 hover:text-emerald-600 transition-colors min-h-[2.5rem]"
             data-testid="product-title"
           >
-            {product.title}
+            {translation?.title || product.title}
           </Text>
         </LocalizedClientLink>
 
