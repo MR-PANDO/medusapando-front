@@ -1,5 +1,5 @@
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+import { sdk } from "@lib/config"
+import { getCacheOptions } from "./cookies"
 
 const DEFAULT_LOCALE = "es"
 
@@ -23,16 +23,21 @@ export async function getEntityTranslations(
 
   try {
     const ids = entityIds.join(",")
-    const res = await fetch(
-      `${BACKEND_URL}/store/translations/${entityType}?locale=${locale}&entity_ids=${ids}`,
-      { next: { revalidate: 60 } }
-    )
-
-    if (!res.ok) {
-      return new Map()
+    const next = {
+      ...(await getCacheOptions("translations")),
     }
 
-    const data = await res.json()
+    const data = await sdk.client.fetch<{
+      translations: Record<string, TranslationData>
+    }>(
+      `/store/translations/${entityType}?locale=${locale}&entity_ids=${ids}`,
+      {
+        method: "GET",
+        next,
+        cache: "force-cache",
+      }
+    )
+
     const translations = data.translations || {}
 
     const map = new Map<string, TranslationData>()
@@ -60,16 +65,21 @@ export async function getEntityTranslation(
   }
 
   try {
-    const res = await fetch(
-      `${BACKEND_URL}/store/translations/${entityType}/${entityId}?locale=${locale}`,
-      { next: { revalidate: 60 } }
-    )
-
-    if (!res.ok) {
-      return null
+    const next = {
+      ...(await getCacheOptions("translations")),
     }
 
-    const data = await res.json()
+    const data = await sdk.client.fetch<{
+      translation: TranslationData | null
+    }>(
+      `/store/translations/${entityType}/${entityId}?locale=${locale}`,
+      {
+        method: "GET",
+        next,
+        cache: "force-cache",
+      }
+    )
+
     return data.translation || null
   } catch (error) {
     console.error("Error fetching translation:", error)
