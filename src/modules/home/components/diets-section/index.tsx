@@ -1,11 +1,13 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import brushPattern from "@assets/brush-pattern.png"
 import Image from "next/image"
-import { DIETS_DATA } from "@lib/data/diets"
+import { getTranslatedDiets } from "@lib/data/diets"
 import { getTranslations } from "next-intl/server"
 
 export default async function DietsSection() {
   const t = await getTranslations("home")
+  const tDiet = await getTranslations("dietContent")
+  const diets = getTranslatedDiets(tDiet)
   return (
     <section className="py-16 bg-gradient-to-b from-white to-gray-50">
       <div className="content-container">
@@ -25,7 +27,7 @@ export default async function DietsSection() {
 
         {/* Diets Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {DIETS_DATA.map((diet, index) => (
+          {diets.map((diet, index) => (
             <LocalizedClientLink
               key={diet.id}
               href={`/dietas/${diet.slug}`}

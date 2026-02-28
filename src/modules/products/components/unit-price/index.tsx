@@ -1,4 +1,7 @@
+"use client"
+
 import { Text } from "@medusajs/ui"
+import { useTranslations, useLocale } from "next-intl"
 
 type UnitPricing = {
   unit_type: string
@@ -13,8 +16,8 @@ type UnitPriceProps = {
   className?: string
 }
 
-// Unit type labels in Spanish
-const UNIT_LABELS: Record<string, string> = {
+// Standard unit labels that don't need translation
+const STANDARD_UNITS: Record<string, string> = {
   g: "g",
   kg: "kg",
   mg: "mg",
@@ -22,11 +25,10 @@ const UNIT_LABELS: Record<string, string> = {
   L: "L",
   oz: "oz",
   lb: "lb",
-  capsule: "cáps",
-  tablet: "tab",
-  unit: "und",
-  serving: "porción",
 }
+
+// Unit types that need translation
+const TRANSLATABLE_UNITS = ["capsule", "tablet", "unit", "serving"]
 
 export function calculatePricePerUnit(
   price: number,
@@ -39,31 +41,30 @@ export function calculatePricePerUnit(
   return price / unitPricing.unit_amount
 }
 
-export function formatPricePerUnit(
-  pricePerUnit: number,
-  currencyCode: string
-): string {
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: currencyCode,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(pricePerUnit)
-}
-
 export default function UnitPrice({
   price,
   currencyCode,
   unitPricing,
   className = "",
 }: UnitPriceProps) {
+  const tUnits = useTranslations("units")
+  const locale = useLocale()
+
   if (!unitPricing || !unitPricing.unit_amount || unitPricing.unit_amount === 0) {
     return null
   }
 
   const pricePerUnit = calculatePricePerUnit(price, unitPricing)
-  const formattedPrice = formatPricePerUnit(pricePerUnit, currencyCode)
-  const unitLabel = UNIT_LABELS[unitPricing.unit_type] || unitPricing.unit_type
+  const formattedPrice = new Intl.NumberFormat(locale === "es" ? "es-CO" : "en-US", {
+    style: "currency",
+    currency: currencyCode,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(pricePerUnit)
+
+  const unitLabel = TRANSLATABLE_UNITS.includes(unitPricing.unit_type)
+    ? tUnits(unitPricing.unit_type)
+    : STANDARD_UNITS[unitPricing.unit_type] || unitPricing.unit_type
 
   return (
     <Text

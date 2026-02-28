@@ -27,7 +27,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
 
       const htmlContent = `
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,9 +72,9 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
       <h1>${recipe.title}</h1>
       <p style="opacity: 0.9; margin-bottom: 16px;">${recipe.description}</p>
       <div class="meta">
-        <div class="meta-item">⏱️ Prep: ${recipe.prepTime}</div>
-        <div class="meta-item">🔥 Cocción: ${recipe.cookTime}</div>
-        <div class="meta-item">👥 ${recipe.servings} porciones</div>
+        <div class="meta-item">⏱️ ${t("downloadPrep")} ${recipe.prepTime}</div>
+        <div class="meta-item">🔥 ${t("downloadCooking")} ${recipe.cookTime}</div>
+        <div class="meta-item">👥 ${t("downloadPortions", { count: recipe.servings })}</div>
       </div>
     </div>
 
@@ -82,38 +82,38 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
 
     ${recipe.nutrition ? `
     <div class="section">
-      <h2>🥗 Información Nutricional</h2>
-      <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Por porción (valores aproximados)</p>
+      <h2>🥗 ${t("downloadNutritionTitle")}</h2>
+      <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">${t("perServingApprox")}</p>
       <div class="nutrition">
         <div class="nutrition-item">
           <div class="nutrition-value">${recipe.nutrition.calories}</div>
-          <div class="nutrition-label">Calorías</div>
+          <div class="nutrition-label">${t("downloadCalories")}</div>
         </div>
         <div class="nutrition-item">
           <div class="nutrition-value">${recipe.nutrition.carbs}g</div>
-          <div class="nutrition-label">Carbohidratos</div>
+          <div class="nutrition-label">${t("downloadCarbs")}</div>
         </div>
         <div class="nutrition-item">
           <div class="nutrition-value">${recipe.nutrition.protein}g</div>
-          <div class="nutrition-label">Proteína</div>
+          <div class="nutrition-label">${t("downloadProtein")}</div>
         </div>
         <div class="nutrition-item">
           <div class="nutrition-value">${recipe.nutrition.fat}g</div>
-          <div class="nutrition-label">Grasa</div>
+          <div class="nutrition-label">${t("downloadFat")}</div>
         </div>
       </div>
     </div>
     ` : ''}
 
     <div class="section">
-      <h2>📝 Ingredientes</h2>
+      <h2>📝 ${t("downloadIngredients")}</h2>
       <div class="ingredients">
         ${recipe.ingredients.map(ing => `<div class="ingredient">${ing}</div>`).join('')}
       </div>
     </div>
 
     <div class="section">
-      <h2>👨‍🍳 Instrucciones</h2>
+      <h2>👨‍🍳 ${t("downloadInstructions")}</h2>
       <div class="instructions">
         ${recipe.instructions.map((step, i) => `
           <div class="step">
@@ -127,14 +127,14 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
     ${recipe.tips ? `
     <div class="section">
       <div class="tips">
-        <strong>💡 Tip:</strong> ${recipe.tips}
+        <strong>💡 ${t("tip")}</strong> ${recipe.tips}
       </div>
     </div>
     ` : ''}
 
     <div class="footer">
-      <p>Receta de Vita Integral • nutrimercados.com</p>
-      <p>Generada con ❤️ para una alimentación saludable</p>
+      <p>${t("downloadFooter1")}</p>
+      <p>${t("downloadFooter2")}</p>
     </div>
   </div>
 </body>
@@ -270,7 +270,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {recipe.servings} porc.
+            {recipe.servings} {t("portions")}
           </span>
         </div>
       </div>
@@ -285,18 +285,18 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
             </div>
             <div className="bg-amber-50 rounded-lg p-2">
               <div className="text-amber-600 font-bold text-sm">{recipe.nutrition.carbs}g</div>
-              <div className="text-[10px] text-gray-500 uppercase">Carbs</div>
+              <div className="text-[10px] text-gray-500 uppercase">{t("carbs")}</div>
             </div>
             <div className="bg-red-50 rounded-lg p-2">
               <div className="text-red-600 font-bold text-sm">{recipe.nutrition.protein}g</div>
-              <div className="text-[10px] text-gray-500 uppercase">Proteína</div>
+              <div className="text-[10px] text-gray-500 uppercase">{t("protein_label")}</div>
             </div>
             <div className="bg-blue-50 rounded-lg p-2">
               <div className="text-blue-600 font-bold text-sm">{recipe.nutrition.fat}g</div>
-              <div className="text-[10px] text-gray-500 uppercase">Grasa</div>
+              <div className="text-[10px] text-gray-500 uppercase">{t("fat_label")}</div>
             </div>
           </div>
-          <p className="text-[10px] text-gray-400 text-center mt-2">Por porción (valores aproximados)</p>
+          <p className="text-[10px] text-gray-400 text-center mt-2">{t("perServingApprox")}</p>
         </div>
       )}
 
@@ -322,7 +322,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
               onClick={() => setIsExpanded(true)}
               className="mt-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
             >
-              <span>... y {recipe.ingredients.length - 5} más</span>
+              <span>{t("andMore", { count: recipe.ingredients.length - 5 })}</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -435,7 +435,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
           onClick={handleDownloadRecipe}
           disabled={isDownloading}
           className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
-          title="Descargar receta"
+          title={t("downloadRecipe")}
         >
           {isDownloading ? (
             <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
@@ -481,7 +481,7 @@ export default function RecipeCard({ recipe, countryCode }: RecipeCardProps) {
                 <svg className="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
-                <span><strong>Tip:</strong> {recipe.tips}</span>
+                <span><strong>{t("tip")}</strong> {recipe.tips}</span>
               </p>
             </div>
           )}

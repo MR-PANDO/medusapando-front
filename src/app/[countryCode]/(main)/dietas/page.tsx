@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
-import { DIETS_DATA } from "@lib/data/diets"
+import { getTranslatedDiets } from "@lib/data/diets"
 import brushPattern from "@assets/brush-pattern.png"
 
 // Force dynamic rendering to avoid static/cookies conflict with layout
@@ -17,6 +17,8 @@ export async function generateMetadata() {
 
 export default async function DietasPage() {
   const t = await getTranslations("dietPages")
+  const tDiet = await getTranslations("dietContent")
+  const diets = getTranslatedDiets(tDiet)
   return (
     <div className="content-container py-12">
       {/* Hero Section */}
@@ -57,7 +59,7 @@ export default async function DietasPage() {
 
       {/* Diets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        {DIETS_DATA.map((diet, index) => (
+        {diets.map((diet, index) => (
           <LocalizedClientLink
             key={diet.id}
             href={`/dietas/${diet.slug}`}

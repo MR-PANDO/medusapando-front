@@ -110,6 +110,7 @@ const SUB_NUTRIENTS = [
 
 const ProductNutrition = ({ productId }: ProductNutritionProps) => {
   const t = useTranslations("products")
+  const tNutrition = useTranslations("nutrition")
   const [nutrition, setNutrition] = useState<NutritionData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -145,67 +146,14 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
     fetchNutrition()
   }, [productId])
 
-  // Format nutrition key for display
+  // Format nutrition key for display using translations
   const formatKey = (key: string) => {
-    const translations: Record<string, string> = {
-      calorias: "Calorías",
-      calories: "Calorías",
-      energia: "Energía",
-      energy: "Energía",
-      calorias_de_grasa: "Calorías de grasa",
-      grasa_total: "Grasa Total",
-      total_fat: "Grasa Total",
-      grasa_saturada: "Grasa Saturada",
-      saturated_fat: "Grasa Saturada",
-      grasas_saturadas: "Grasas Saturadas",
-      grasa_trans: "Grasa Trans",
-      trans_fat: "Grasa Trans",
-      grasas_trans: "Grasas Trans",
-      grasa_monoinsaturada: "Grasa Monoinsaturada",
-      grasa_poliinsaturada: "Grasa Poliinsaturada",
-      colesterol: "Colesterol",
-      cholesterol: "Colesterol",
-      sodio: "Sodio",
-      sodium: "Sodio",
-      carbohidratos_totales: "Carbohidratos Totales",
-      total_carbohydrates: "Carbohidratos Totales",
-      carbohidratos: "Carbohidratos",
-      carbohydrates: "Carbohidratos",
-      fibra_dietetica: "Fibra Dietética",
-      dietary_fiber: "Fibra Dietética",
-      fibra: "Fibra",
-      fiber: "Fibra",
-      azucares: "Azúcares",
-      sugars: "Azúcares",
-      azucares_anadidos: "Azúcares Añadidos",
-      added_sugars: "Azúcares Añadidos",
-      proteina: "Proteína",
-      protein: "Proteína",
-      proteinas: "Proteínas",
-      vitamina_a: "Vitamina A",
-      vitamin_a: "Vitamina A",
-      vitamina_c: "Vitamina C",
-      vitamin_c: "Vitamina C",
-      vitamina_d: "Vitamina D",
-      vitamin_d: "Vitamina D",
-      vitamina_e: "Vitamina E",
-      vitamina_b12: "Vitamina B12",
-      calcio: "Calcio",
-      calcium: "Calcio",
-      hierro: "Hierro",
-      iron: "Hierro",
-      potasio: "Potasio",
-      potassium: "Potasio",
-      magnesio: "Magnesio",
-      zinc: "Zinc",
-      fosforo: "Fósforo",
-    }
-
     const lowerKey = key.toLowerCase()
-    if (translations[lowerKey]) {
-      return translations[lowerKey]
+    // Check if we have a translation for this nutrient key
+    if (tNutrition.has(lowerKey)) {
+      return tNutrition(lowerKey)
     }
-
+    // Fallback: format the raw key
     return key
       .replace(/_/g, " ")
       .replace(/\b\w/g, (l) => l.toUpperCase())

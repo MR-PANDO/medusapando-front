@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { getDietBySlug, getAllDietSlugs, DIETS_DATA } from "@lib/data/diets"
+import { getTranslatedDietBySlug, getTranslatedDiets, getAllDietSlugs } from "@lib/data/diets"
 import brushPattern from "@assets/brush-pattern.png"
 
 // Force dynamic rendering to avoid static/cookies conflict with layout
@@ -15,8 +15,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const diet = getDietBySlug(slug)
   const t = await getTranslations("dietPages")
+  const tDiet = await getTranslations("dietContent")
+  const diet = getTranslatedDietBySlug(tDiet, slug)
 
   if (!diet) {
     return {
@@ -36,16 +37,18 @@ export async function generateStaticParams() {
 
 export default async function DietPage({ params }: Props) {
   const { slug, countryCode } = await params
-  const diet = getDietBySlug(slug)
   const t = await getTranslations("dietPages")
   const tCommon = await getTranslations("common")
+  const tDiet = await getTranslations("dietContent")
+  const diet = getTranslatedDietBySlug(tDiet, slug)
 
   if (!diet) {
     notFound()
   }
 
   // Get other diets for the sidebar
-  const otherDiets = DIETS_DATA.filter((d) => d.slug !== slug)
+  const allDiets = getTranslatedDiets(tDiet)
+  const otherDiets = allDiets.filter((d) => d.slug !== slug)
 
   return (
     <div className="content-container py-12">

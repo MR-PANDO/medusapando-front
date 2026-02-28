@@ -1,6 +1,9 @@
+"use client"
+
 import brushPattern from "@assets/brush-pattern.png"
 import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useTranslations } from "next-intl"
 
 // Import SVG icons
 import VeganoSvg from "@assets/vegano.svg"
@@ -12,16 +15,16 @@ import PaleoSvg from "@assets/paleo.svg"
 import SinGlutenSvg from "@assets/sin_gluten.svg"
 import KetoSvg from "@assets/keto.svg"
 
-// Diet badge data - maps tag values to icons and colors
-const DIET_BADGES: Record<string, { name: string; slug: string; icon: any; brushColor: string }> = {
-  "VEGANO": { name: "Vegano", slug: "vegano", icon: VeganoSvg, brushColor: "#4ade80" },
-  "VEGETARIANO": { name: "Vegetariano", slug: "vegetariano", icon: VegetarianoSvg, brushColor: "#bef264" },
-  "SIN LACTOSA": { name: "Sin Lactosa", slug: "sin-lactosa", icon: SinLactosaSvg, brushColor: "#fbcfe8" },
-  "ORGANICO": { name: "Orgánico", slug: "organico", icon: OrganicoSvg, brushColor: "#22c55e" },
-  "SIN AZUCAR AÑADIDA": { name: "Sin Azúcar", slug: "sin-azucar", icon: SinAzucarSvg, brushColor: "#fef08a" },
-  "PALEO": { name: "Paleo", slug: "paleo", icon: PaleoSvg, brushColor: "#fcd34d" },
-  "NATURALMENTE SIN GLUTEN": { name: "Sin Gluten", slug: "sin-gluten", icon: SinGlutenSvg, brushColor: "#f9a8d4" },
-  "KETO": { name: "Keto", slug: "keto", icon: KetoSvg, brushColor: "#bfdbfe" },
+// Diet badge data - maps tag values to icons and colors (name resolved via translation)
+const DIET_BADGES: Record<string, { id: string; slug: string; icon: any; brushColor: string }> = {
+  "VEGANO": { id: "vegano", slug: "vegano", icon: VeganoSvg, brushColor: "#4ade80" },
+  "VEGETARIANO": { id: "vegetariano", slug: "vegetariano", icon: VegetarianoSvg, brushColor: "#bef264" },
+  "SIN LACTOSA": { id: "sin-lactosa", slug: "sin-lactosa", icon: SinLactosaSvg, brushColor: "#fbcfe8" },
+  "ORGANICO": { id: "organico", slug: "organico", icon: OrganicoSvg, brushColor: "#22c55e" },
+  "SIN AZUCAR AÑADIDA": { id: "sin-azucar", slug: "sin-azucar", icon: SinAzucarSvg, brushColor: "#fef08a" },
+  "PALEO": { id: "paleo", slug: "paleo", icon: PaleoSvg, brushColor: "#fcd34d" },
+  "NATURALMENTE SIN GLUTEN": { id: "sin-gluten", slug: "sin-gluten", icon: SinGlutenSvg, brushColor: "#f9a8d4" },
+  "KETO": { id: "keto", slug: "keto", icon: KetoSvg, brushColor: "#bfdbfe" },
 }
 
 type ProductDietBadgesProps = {
@@ -31,6 +34,9 @@ type ProductDietBadgesProps = {
 }
 
 export default function ProductDietBadges({ tags, className = "", compact = false }: ProductDietBadgesProps) {
+  const tDiet = useTranslations("dietContent")
+  const tProducts = useTranslations("products")
+
   if (!tags || tags.length === 0) return null
 
   // Filter tags that have matching diet badges
@@ -44,12 +50,13 @@ export default function ProductDietBadges({ tags, className = "", compact = fals
       <div className={`flex flex-wrap gap-3 ${className}`}>
         {dietTags.map((tag) => {
           const badge = DIET_BADGES[tag.value]
+          const name = tDiet(`${badge.id}.name`)
           return (
             <LocalizedClientLink
               key={tag.id}
               href={`/store?tags=${badge.slug}`}
               className="flex items-center gap-2 cursor-pointer transition-all duration-300 group"
-              title={badge.name}
+              title={name}
             >
               {/* Brush stroke background with icon - smaller */}
               <div className="relative w-[40px] h-[40px]
@@ -75,7 +82,7 @@ export default function ProductDietBadges({ tags, className = "", compact = fals
                 <div className="relative z-10 w-[22px] h-[22px] transition-all duration-300">
                   <Image
                     src={badge.icon}
-                    alt={badge.name}
+                    alt={name}
                     width={22}
                     height={22}
                     className="w-full h-full object-contain
@@ -88,7 +95,7 @@ export default function ProductDietBadges({ tags, className = "", compact = fals
               {/* Label - small */}
               <span className="text-gray-600 text-xs font-medium
                                group-hover:text-emerald-600 transition-colors duration-300">
-                {badge.name}
+                {name}
               </span>
             </LocalizedClientLink>
           )
@@ -100,10 +107,11 @@ export default function ProductDietBadges({ tags, className = "", compact = fals
   // Full mode - with title
   return (
     <div className={`${className}`}>
-      <h4 className="font-medium text-gray-800 mb-4">Estilo de Vida</h4>
+      <h4 className="font-medium text-gray-800 mb-4">{tProducts("lifestyle")}</h4>
       <div className="flex flex-wrap gap-4">
         {dietTags.map((tag) => {
           const badge = DIET_BADGES[tag.value]
+          const name = tDiet(`${badge.id}.name`)
           return (
             <LocalizedClientLink
               key={tag.id}
@@ -135,7 +143,7 @@ export default function ProductDietBadges({ tags, className = "", compact = fals
                                 transition-all duration-300">
                   <Image
                     src={badge.icon}
-                    alt={badge.name}
+                    alt={name}
                     width={38}
                     height={38}
                     className="w-full h-full object-contain
@@ -148,7 +156,7 @@ export default function ProductDietBadges({ tags, className = "", compact = fals
               {/* Label */}
               <span className="mt-1 text-gray-700 font-medium text-xs sm:text-sm text-center whitespace-nowrap
                                group-hover:text-emerald-600 transition-colors duration-300">
-                {badge.name}
+                {name}
               </span>
             </LocalizedClientLink>
           )

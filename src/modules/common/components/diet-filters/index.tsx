@@ -2,28 +2,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import brushPattern from "@assets/brush-pattern.png"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
-
-// Import SVG icons
-import VeganoSvg from "@assets/vegano.svg"
-import VegetarianoSvg from "@assets/vegetariano.svg"
-import SinLactosaSvg from "@assets/sin_lactosa.svg"
-import OrganicoSvg from "@assets/organico.svg"
-import SinAzucarSvg from "@assets/sin_azucar.svg"
-import PaleoSvg from "@assets/paleo.svg"
-import SinGlutenSvg from "@assets/sin_gluten.svg"
-import KetoSvg from "@assets/keto.svg"
-
-// Diet filter data with icons and hex colors for brush
-const DIET_FILTERS = [
-  { id: "vegano", name: "Vegano", tag: "vegano", icon: VeganoSvg, brushColor: "#4ade80" },
-  { id: "vegetariano", name: "Vegetariano", tag: "vegetariano", icon: VegetarianoSvg, brushColor: "#bef264" },
-  { id: "sin-lactosa", name: "Sin Lactosa", tag: "sin-lactosa", icon: SinLactosaSvg, brushColor: "#fbcfe8" },
-  { id: "organico", name: "Orgánico", tag: "organico", icon: OrganicoSvg, brushColor: "#22c55e" },
-  { id: "sin-azucar", name: "Sin Azúcar", tag: "sin-azucar", icon: SinAzucarSvg, brushColor: "#fef08a" },
-  { id: "paleo", name: "Paleo", tag: "paleo", icon: PaleoSvg, brushColor: "#fcd34d" },
-  { id: "sin-gluten", name: "Sin Gluten", tag: "sin-gluten", icon: SinGlutenSvg, brushColor: "#f9a8d4" },
-  { id: "keto", name: "Keto", tag: "keto", icon: KetoSvg, brushColor: "#bfdbfe" },
-]
+import { DIETS_STATIC } from "@lib/data/diets"
 
 type DietFiltersProps = {
   className?: string
@@ -31,6 +10,7 @@ type DietFiltersProps = {
 
 export default async function DietFilters({ className = "" }: DietFiltersProps) {
   const t = await getTranslations("dietFilters")
+  const tDiet = await getTranslations("dietContent")
   return (
     <div className={`content-container py-8 mb-8 ${className}`}>
       {/* Section Title */}
@@ -46,7 +26,8 @@ export default async function DietFilters({ className = "" }: DietFiltersProps) 
       {/* Two rows of 4 items each */}
       <div className="flex justify-center">
         <div className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6 px-4">
-          {DIET_FILTERS.map((diet) => {
+          {DIETS_STATIC.map((diet) => {
+            const name = tDiet(`${diet.id}.name`)
             return (
               <LocalizedClientLink
                 key={diet.id}
@@ -79,7 +60,7 @@ export default async function DietFilters({ className = "" }: DietFiltersProps) 
                                   transition-all duration-300">
                     <Image
                       src={diet.icon}
-                      alt={diet.name}
+                      alt={name}
                       width={58}
                       height={58}
                       className="w-full h-full object-contain
@@ -92,7 +73,7 @@ export default async function DietFilters({ className = "" }: DietFiltersProps) 
                 {/* Label - black by default, emerald on hover */}
                 <span className="mt-1 sm:mt-2 text-gray-800 font-bold text-[10px] sm:text-xs md:text-sm lg:text-base capitalize text-center whitespace-nowrap
                                  group-hover:text-emerald-600 transition-colors duration-300">
-                  {diet.name}
+                  {name}
                 </span>
               </LocalizedClientLink>
             )

@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
@@ -13,18 +14,17 @@ import FaqSection from "@modules/seo/components/faq-section"
 import GeoSection from "@modules/seo/components/geo-section"
 import SxoIntentLayout from "@modules/seo/components/sxo-intent-layout"
 
-const FALLBACK_META = {
-  title: "Vita Integral - Tienda de Productos Saludables",
-  description:
-    "Descubre nuestra selección de productos naturales, orgánicos y adaptados a tu estilo de vida saludable.",
-}
-
 export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("home")
+  const fallback = {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
   try {
     const seo = await getSeoMetadata("page", "home")
-    return buildMetadata(seo, FALLBACK_META)
+    return buildMetadata(seo, fallback)
   } catch {
-    return buildMetadata(null, FALLBACK_META)
+    return buildMetadata(null, fallback)
   }
 }
 

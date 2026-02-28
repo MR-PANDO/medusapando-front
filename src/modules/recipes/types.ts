@@ -47,20 +47,18 @@ export interface RecipesData {
 
 export interface DietOption {
   id: string
-  name: string
   tag: string
   color: string
 }
 
 export const DIET_OPTIONS: DietOption[] = [
-  { id: "all", name: "Todas", tag: "all", color: "#6b7280" },
-  { id: "vegano", name: "Vegano", tag: "vegano", color: "#4ade80" },
-  { id: "vegetariano", name: "Vegetariano", tag: "vegetariano", color: "#bef264" },
-  { id: "sin-lactosa", name: "Sin Lactosa", tag: "sin-lactosa", color: "#fbcfe8" },
-  { id: "organico", name: "Orgánico", tag: "organico", color: "#22c55e" },
-  { id: "sin-azucar", name: "Sin Azúcar", tag: "sin-azucar", color: "#fef08a" },
-  { id: "paleo", name: "Paleo", tag: "paleo", color: "#fcd34d" },
-  { id: "sin-gluten", name: "Sin Gluten", tag: "sin-gluten", color: "#f9a8d4" },
-  { id: "keto", name: "Keto", tag: "keto", color: "#bfdbfe" },
-  { id: "saludable", name: "Saludable", tag: "saludable", color: "#10b981" },
+  { id: "vegano", tag: "vegano", color: "#4ade80" },
+  { id: "vegetariano", tag: "vegetariano", color: "#bef264" },
+  { id: "sin-lactosa", tag: "sin-lactosa", color: "#fbcfe8" },
+  { id: "organico", tag: "organico", color: "#22c55e" },
+  { id: "sin-azucar", tag: "sin-azucar", color: "#fef08a" },
+  { id: "paleo", tag: "paleo", color: "#fcd34d" },
+  { id: "sin-gluten", tag: "sin-gluten", color: "#f9a8d4" },
+  { id: "keto", tag: "keto", color: "#bfdbfe" },
+  { id: "saludable", tag: "saludable", color: "#10b981" },
 ]

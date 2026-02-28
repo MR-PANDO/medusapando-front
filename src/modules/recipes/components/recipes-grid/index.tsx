@@ -23,6 +23,7 @@ function getRecipeDiets(recipe: Recipe): string[] {
 
 export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) {
   const t = useTranslations("recipes")
+  const tDiet = useTranslations("dietContent")
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null)
 
   // Filter recipes - a recipe matches if it has the selected diet in its diets array
@@ -50,9 +51,12 @@ export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) 
           >
             {t("all", { count: recipes.length })}
           </button>
-          {DIET_OPTIONS.filter(d => d.id !== "all").map((diet) => {
+          {DIET_OPTIONS.map((diet) => {
             const count = getDietCount(diet.id)
             if (count === 0) return null
+            const name = diet.id === "saludable"
+              ? t("healthy")
+              : tDiet(`${diet.id}.name`)
             return (
               <button
                 key={diet.id}
@@ -67,7 +71,7 @@ export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) 
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: diet.color }}
                 />
-                {diet.name} ({count})
+                {name} ({count})
               </button>
             )
           })}
