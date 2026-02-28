@@ -333,7 +333,17 @@
     "priceHighLow": "Price: High to Low",
     "resultsFor": "Results for \"{query}\"",
     "productsInCategory": "Products: {name}",
-    "allProducts": "All products"
+    "allProducts": "All products",
+    "tagVegano": "Vegan",
+    "tagVegetariano": "Vegetarian",
+    "tagSinGluten": "Gluten Free",
+    "tagSinLactosa": "Lactose Free",
+    "tagSinAzucar": "Sugar Free",
+    "tagKeto": "Keto",
+    "tagPaleo": "Paleo",
+    "tagOrganico": "Organic",
+    "tagOfertas": "Deals",
+    "tagNuevo": "New"
   },
   "home": {
     "heroLine1": "Natural",

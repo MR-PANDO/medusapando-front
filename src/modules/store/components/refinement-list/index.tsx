@@ -11,22 +11,22 @@ type CategoryWithChildren = HttpTypes.StoreProductCategory & {
   category_children?: HttpTypes.StoreProductCategory[]
 }
 
-// Diet/lifestyle tags
+// Diet/lifestyle tags - labels are translation keys in the "store" namespace
 const DIET_TAGS = [
-  { value: "vegano", label: "Vegano" },
-  { value: "vegetariano", label: "Vegetariano" },
-  { value: "sin-gluten", label: "Sin Gluten" },
-  { value: "sin-lactosa", label: "Sin Lactosa" },
-  { value: "sin-azucar", label: "Sin Azúcar" },
-  { value: "keto", label: "Keto" },
-  { value: "paleo", label: "Paleo" },
-  { value: "organico", label: "Orgánico" },
+  { value: "vegano", labelKey: "tagVegano" },
+  { value: "vegetariano", labelKey: "tagVegetariano" },
+  { value: "sin-gluten", labelKey: "tagSinGluten" },
+  { value: "sin-lactosa", labelKey: "tagSinLactosa" },
+  { value: "sin-azucar", labelKey: "tagSinAzucar" },
+  { value: "keto", labelKey: "tagKeto" },
+  { value: "paleo", labelKey: "tagPaleo" },
+  { value: "organico", labelKey: "tagOrganico" },
 ]
 
 // Promotions tags
 const PROMO_TAGS = [
-  { value: "ofertas", label: "Ofertas", highlight: true },
-  { value: "nuevo", label: "Nuevos" },
+  { value: "ofertas", labelKey: "tagOfertas", highlight: true },
+  { value: "nuevo", labelKey: "tagNuevo" },
 ]
 
 type RefinementListProps = {
@@ -211,7 +211,7 @@ const RefinementList = ({
                 <span className={`text-sm text-gray-700 group-hover:text-emerald-600 transition-colors ${
                   isChecked ? "font-medium text-emerald-600" : ""
                 }`}>
-                  {tag.label}
+                  {t(tag.labelKey)}
                 </span>
               </label>
             )
@@ -250,7 +250,7 @@ const RefinementList = ({
               <span className={`text-sm group-hover:text-emerald-600 transition-colors ${
                 tag.highlight ? "text-red-600 font-medium" : "text-gray-700"
               } ${selectedTags === tag.value ? "font-medium text-emerald-600" : ""}`}>
-                {tag.label}
+                {t(tag.labelKey)}
                 {tag.highlight && (
                   <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded uppercase">
                     Sale

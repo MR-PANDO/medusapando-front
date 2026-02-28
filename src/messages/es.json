@@ -333,7 +333,17 @@
     "priceHighLow": "Precio: Mayor a Menor",
     "resultsFor": "Resultados para \"{query}\"",
     "productsInCategory": "Productos: {name}",
-    "allProducts": "Todos los productos"
+    "allProducts": "Todos los productos",
+    "tagVegano": "Vegano",
+    "tagVegetariano": "Vegetariano",
+    "tagSinGluten": "Sin Gluten",
+    "tagSinLactosa": "Sin Lactosa",
+    "tagSinAzucar": "Sin Azúcar",
+    "tagKeto": "Keto",
+    "tagPaleo": "Paleo",
+    "tagOrganico": "Orgánico",
+    "tagOfertas": "Ofertas",
+    "tagNuevo": "Nuevos"
   },
   "home": {
     "heroLine1": "Sabor",
