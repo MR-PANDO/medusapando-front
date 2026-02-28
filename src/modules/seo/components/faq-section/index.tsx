@@ -8,7 +8,7 @@ type FaqSectionProps = {
 }
 
 const FaqSection = ({ seo }: FaqSectionProps) => {
-  const faqs = seo?.aeo_faqs || []
+  const faqs = Array.isArray(seo?.aeo_faqs) ? seo.aeo_faqs : []
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   if (faqs.length === 0) return null

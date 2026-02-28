@@ -7,10 +7,15 @@ type GeoSectionProps = {
 const GeoSection = ({ seo }: GeoSectionProps) => {
   if (!seo) return null
 
+  const attrs = Array.isArray(seo.geo_key_attributes)
+    ? seo.geo_key_attributes
+    : []
+  const citations = Array.isArray(seo.geo_citations)
+    ? seo.geo_citations
+    : []
+
   const hasContent =
-    seo.geo_entity_summary ||
-    (seo.geo_key_attributes && seo.geo_key_attributes.length > 0) ||
-    (seo.geo_citations && seo.geo_citations.length > 0)
+    seo.geo_entity_summary || attrs.length > 0 || citations.length > 0
 
   if (!hasContent) return null
 
@@ -26,13 +31,13 @@ const GeoSection = ({ seo }: GeoSectionProps) => {
       )}
 
       {/* Key Attributes */}
-      {seo.geo_key_attributes && seo.geo_key_attributes.length > 0 && (
+      {attrs.length > 0 && (
         <div className="mb-6">
           <h3 className="text-lg font-semibold mb-3">
             Atributos Principales
           </h3>
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
-            {seo.geo_key_attributes.map((attr, idx) => (
+            {attrs.map((attr, idx) => (
               <div key={idx} className="flex gap-x-2">
                 <dt className="font-medium text-gray-900">
                   {attr.attribute}:
@@ -45,11 +50,11 @@ const GeoSection = ({ seo }: GeoSectionProps) => {
       )}
 
       {/* Citations */}
-      {seo.geo_citations && seo.geo_citations.length > 0 && (
+      {citations.length > 0 && (
         <div>
           <h3 className="text-sm font-medium text-gray-500 mb-2">Fuentes</h3>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            {seo.geo_citations.map((cit, idx) => (
+            {citations.map((cit, idx) => (
               <li key={idx}>
                 <a
                   href={cit.url}

@@ -7,6 +7,21 @@ type FallbackData = {
   image?: string
 }
 
+const VALID_OG_TYPES = [
+  "website",
+  "article",
+  "book",
+  "profile",
+  "music.song",
+  "music.album",
+  "music.playlist",
+  "music.radio_station",
+  "video.movie",
+  "video.episode",
+  "video.tv_show",
+  "video.other",
+]
+
 export function buildMetadata(
   seo: SeoMetadata | null,
   fallback: FallbackData
@@ -26,18 +41,32 @@ export function buildMetadata(
   const title = seo.seo_title || fallback.title || ""
   const description = seo.seo_description || fallback.description || ""
 
+  const keywords =
+    Array.isArray(seo.seo_keywords) && seo.seo_keywords.length > 0
+      ? seo.seo_keywords
+      : undefined
+
+  const hreflangEntries = Array.isArray(seo.hreflang_entries)
+    ? seo.hreflang_entries
+    : []
+
+  const ogType = VALID_OG_TYPES.includes(seo.og_type || "")
+    ? seo.og_type
+    : "website"
+
   const metadata: Metadata = {
     title,
     description,
-    keywords: seo.seo_keywords?.length ? seo.seo_keywords : undefined,
+    keywords,
     robots: seo.robots || undefined,
     alternates: {
       canonical: seo.canonical_url || undefined,
-      languages: seo.hreflang_entries?.length
-        ? Object.fromEntries(
-            seo.hreflang_entries.map((e) => [e.lang, e.url])
-          )
-        : undefined,
+      languages:
+        hreflangEntries.length > 0
+          ? Object.fromEntries(
+              hreflangEntries.map((e) => [e.lang, e.url])
+            )
+          : undefined,
     },
     openGraph: {
       title: seo.og_title || title,
@@ -47,7 +76,7 @@ export function buildMetadata(
         : fallback.image
           ? [fallback.image]
           : [],
-      type: (seo.og_type as any) || "website",
+      type: ogType as any,
     },
     twitter: {
       card: (seo.twitter_card as any) || "summary_large_image",

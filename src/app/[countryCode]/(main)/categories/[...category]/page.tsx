@@ -56,12 +56,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     const title = productCategory.name + " | Medusa Store"
     const description = productCategory.description ?? `${title} category.`
 
-    const seo = await getSeoMetadata("category", productCategory.id)
+    const fallback = { title, description }
 
-    return buildMetadata(seo, {
-      title,
-      description,
-    })
+    try {
+      const seo = await getSeoMetadata("category", productCategory.id)
+      return buildMetadata(seo, fallback)
+    } catch {
+      return buildMetadata(null, fallback)
+    }
   } catch (error) {
     notFound()
   }
@@ -78,22 +80,29 @@ export default async function CategoryPage(props: Props) {
     notFound()
   }
 
-  const seo = await getSeoMetadata("category", productCategory.id)
+  let seo = null
+  try {
+    seo = await getSeoMetadata("category", productCategory.id)
+  } catch {
+    // SEO fetch failed — render page without SEO enhancements
+  }
 
   return (
     <>
-      <SeoHead seo={seo} />
+      {seo && <SeoHead seo={seo} />}
       <CategoryTemplate
         category={productCategory}
         sortBy={sortBy}
         page={page}
         countryCode={params.countryCode}
       />
-      <div className="content-container">
-        <FaqSection seo={seo} />
-        <GeoSection seo={seo} />
-        <SxoIntentLayout seo={seo} />
-      </div>
+      {seo && (
+        <div className="content-container">
+          <FaqSection seo={seo} />
+          <GeoSection seo={seo} />
+          <SxoIntentLayout seo={seo} />
+        </div>
+      )}
     </>
   )
 }

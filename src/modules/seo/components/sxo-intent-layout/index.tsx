@@ -7,9 +7,11 @@ type SxoIntentLayoutProps = {
 const SxoIntentLayout = ({ seo }: SxoIntentLayoutProps) => {
   if (!seo) return null
 
-  const hasCta = seo.sxo_cta_text
-  const hasLinks =
-    seo.sxo_internal_links && seo.sxo_internal_links.length > 0
+  const links = Array.isArray(seo.sxo_internal_links)
+    ? seo.sxo_internal_links
+    : []
+  const hasCta = !!seo.sxo_cta_text
+  const hasLinks = links.length > 0
 
   if (!hasCta && !hasLinks) return null
 
@@ -34,7 +36,7 @@ const SxoIntentLayout = ({ seo }: SxoIntentLayoutProps) => {
             Tambien te puede interesar
           </h3>
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
-            {seo.sxo_internal_links.map((link, idx) => (
+            {links.map((link, idx) => (
               <li key={idx}>
                 <a
                   href={link.target_url}
