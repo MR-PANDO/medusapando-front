@@ -1,31 +1,35 @@
-import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-export const metadata: Metadata = {
-  title: "Política Habeas Data | Vita Integral",
-  description:
-    "Política de Habeas Data de Vita Integral SAS conforme a la Ley 1581 de 2012. Conoce tus derechos sobre el tratamiento de tus datos personales.",
+export async function generateMetadata() {
+  const t = await getTranslations("pages.habeasData")
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
-export default function HabeasDataPage() {
+export default async function HabeasDataPage() {
+  const t = await getTranslations("pages.habeasData")
+  const tCommon = await getTranslations("common")
   return (
     <div className="content-container py-12">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <LocalizedClientLink href="/" className="hover:text-[#5B8C3E]">
-          Inicio
+          {tCommon("breadcrumbHome")}
         </LocalizedClientLink>
         <span>/</span>
-        <span className="text-gray-800 font-medium">Habeas Data</span>
+        <span className="text-gray-800 font-medium">{t("breadcrumb")}</span>
       </nav>
 
       {/* Header */}
       <div className="mb-12">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-          Política de Habeas Data
+          {t("title")}
         </h1>
         <p className="text-gray-600">
-          Conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013
+          {t("subtitle")}
         </p>
       </div>
 
@@ -33,9 +37,7 @@ export default function HabeasDataPage() {
       <div className="prose prose-lg max-w-none">
         <div className="bg-[#5B8C3E]/5 border-l-4 border-[#5B8C3E] p-6 rounded-r-xl mb-8">
           <p className="text-gray-700 m-0">
-            El derecho de Habeas Data es un derecho fundamental que te permite conocer,
-            actualizar y rectificar la información que sobre ti se haya recogido en bases
-            de datos. Vita Integral SAS garantiza el ejercicio pleno de este derecho.
+            {t("intro")}
           </p>
         </div>
 

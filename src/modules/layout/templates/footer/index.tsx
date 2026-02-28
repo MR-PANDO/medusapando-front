@@ -1,43 +1,6 @@
 import Image from "next/image"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-
-// Footer navigation data
-const FOOTER_LINKS = {
-  empresa: {
-    title: "Empresa",
-    links: [
-      { name: "Quiénes Somos", href: "/quienes-somos" },
-      { name: "Misión y Visión", href: "/mision-vision" },
-      { name: "Nuestras Sedes", href: "/sedes" },
-    ],
-  },
-  ayuda: {
-    title: "Ayuda",
-    links: [
-      { name: "Servicio al Cliente", href: "/servicio-cliente" },
-      { name: "Horarios y Pedidos", href: "/horarios-pedidos" },
-      { name: "Preguntas Frecuentes", href: "/servicio-cliente#faq" },
-    ],
-  },
-  legal: {
-    title: "Legal",
-    links: [
-      { name: "Términos y Condiciones", href: "/terminos-condiciones" },
-      { name: "Política de Privacidad", href: "/tratamiento-datos" },
-      { name: "Habeas Data", href: "/habeas-data" },
-    ],
-  },
-  tienda: {
-    title: "Tienda",
-    links: [
-      { name: "Todos los Productos", href: "/store" },
-      { name: "Ofertas", href: "/store?tags=ofertas" },
-      { name: "Nuevos", href: "/store?tags=nuevo" },
-      { name: "Marcas", href: "/brands" },
-      { name: "Recetas", href: "/recetas" },
-    ],
-  },
-}
 
 const SOCIAL_LINKS = [
   {
@@ -70,6 +33,45 @@ const SOCIAL_LINKS = [
 ]
 
 export default async function Footer() {
+  const t = await getTranslations("footer")
+
+  const FOOTER_LINKS = {
+    empresa: {
+      title: t("company"),
+      links: [
+        { name: t("aboutUs"), href: "/quienes-somos" },
+        { name: t("missionVision"), href: "/mision-vision" },
+        { name: t("locations"), href: "/sedes" },
+      ],
+    },
+    ayuda: {
+      title: t("help"),
+      links: [
+        { name: t("customerService"), href: "/servicio-cliente" },
+        { name: t("scheduleOrders"), href: "/horarios-pedidos" },
+        { name: t("faq"), href: "/servicio-cliente#faq" },
+      ],
+    },
+    legal: {
+      title: t("legal"),
+      links: [
+        { name: t("termsConditions"), href: "/terminos-condiciones" },
+        { name: t("privacyPolicy"), href: "/tratamiento-datos" },
+        { name: t("habeasData"), href: "/habeas-data" },
+      ],
+    },
+    tienda: {
+      title: t("store"),
+      links: [
+        { name: t("allProducts"), href: "/store" },
+        { name: t("offers"), href: "/store?tags=ofertas" },
+        { name: t("new"), href: "/store?tags=nuevo" },
+        { name: t("brands"), href: "/brands" },
+        { name: t("recipes"), href: "/recetas" },
+      ],
+    },
+  }
+
   return (
     <footer className="bg-gradient-to-b from-gray-50 to-gray-100 border-t border-gray-200">
       {/* Decorative top border with brand color */}
@@ -89,8 +91,7 @@ export default async function Footer() {
               />
             </LocalizedClientLink>
             <p className="text-gray-600 text-sm leading-relaxed mb-6 max-w-sm">
-              Mercado saludable desde 2012. Ofrecemos una amplia variedad de productos naturales
-              que se alinean con las verdaderas necesidades de tu cuerpo a precios justos.
+              {t("brandDescription")}
             </p>
 
             {/* Contact Info */}
@@ -226,15 +227,15 @@ export default async function Footer() {
                 <svg className="w-4 h-4 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Horarios
+                {t("schedule")}
               </h4>
               <div className="text-gray-600 text-sm space-y-1">
                 <p className="flex justify-between">
-                  <span>Lun - Sáb:</span>
+                  <span>{t("monSat")}</span>
                   <span className="font-medium">9:00 - 19:30</span>
                 </p>
                 <p className="flex justify-between">
-                  <span>Dom y Festivos:</span>
+                  <span>{t("sunHolidays")}</span>
                   <span className="font-medium">9:30 - 16:00</span>
                 </p>
               </div>
@@ -248,12 +249,12 @@ export default async function Footer() {
         <div className="content-container py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
-              © 2025 Vita Integral SAS. NIT: 900779886. Todos los derechos reservados.
+              {t("copyright", { year: new Date().getFullYear() })}
             </p>
 
             {/* Payment Methods */}
             <div className="flex items-center gap-3">
-              <span className="text-gray-500 text-xs mr-2">Métodos de pago:</span>
+              <span className="text-gray-500 text-xs mr-2">{t("paymentMethods")}</span>
               <div className="flex items-center gap-2">
                 <div className="bg-white border border-gray-200 rounded px-2.5 py-1.5 shadow-sm">
                   <span className="text-blue-600 text-xs font-bold">VISA</span>

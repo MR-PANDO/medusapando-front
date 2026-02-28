@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
+import { countryToLocale, defaultLocale } from "./i18n/routing"
 
 const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
@@ -121,7 +122,16 @@ export async function middleware(request: NextRequest) {
 
   // if one of the country codes is in the url and the cache id is set, return next
   if (urlHasCountryCode && cacheIdCookie) {
-    return NextResponse.next()
+    const nextResp = NextResponse.next()
+    // Infer locale from country code if NEXT_LOCALE cookie is not set
+    if (!request.cookies.get("NEXT_LOCALE")?.value && countryCode) {
+      const inferredLocale = countryToLocale[countryCode] || defaultLocale
+      nextResp.cookies.set("NEXT_LOCALE", inferredLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      })
+    }
+    return nextResp
   }
 
   // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
@@ -129,6 +139,14 @@ export async function middleware(request: NextRequest) {
     response.cookies.set("_medusa_cache_id", cacheId, {
       maxAge: 60 * 60 * 24,
     })
+    // Infer locale from country code if NEXT_LOCALE cookie is not set
+    if (!request.cookies.get("NEXT_LOCALE")?.value && countryCode) {
+      const inferredLocale = countryToLocale[countryCode] || defaultLocale
+      response.cookies.set("NEXT_LOCALE", inferredLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      })
+    }
 
     return response
   }
@@ -147,6 +165,14 @@ export async function middleware(request: NextRequest) {
   if (!urlHasCountryCode && countryCode) {
     redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
     response = NextResponse.redirect(`${redirectUrl}`, 307)
+    // Infer locale from country code if NEXT_LOCALE cookie is not set
+    if (!request.cookies.get("NEXT_LOCALE")?.value) {
+      const inferredLocale = countryToLocale[countryCode] || defaultLocale
+      response.cookies.set("NEXT_LOCALE", inferredLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      })
+    }
   } else if (!urlHasCountryCode && !countryCode) {
     // Handle case where no valid country code exists (empty regions)
     return new NextResponse(

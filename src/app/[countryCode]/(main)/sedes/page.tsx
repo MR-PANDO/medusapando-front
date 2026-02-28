@@ -1,98 +1,102 @@
-import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
-export const metadata: Metadata = {
-  title: "Nuestras Sedes | Vita Integral",
-  description:
-    "Encuentra la sede Vita Integral más cercana a ti. Tiendas en Laureles, Poblado y Envigado. Horarios, teléfonos y direcciones.",
+export async function generateMetadata() {
+  const t = await getTranslations("pages.locations")
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
-const SEDES = [
-  {
-    name: "Vita Integral Laureles",
-    area: "Laureles",
-    address: "Av. Nutibara Trv. 39B 77-40",
-    reference: "Entre La Avenida Jardín y La Consolata",
-    city: "Medellín, Antioquia",
-    phone: "302 279 8531",
-    phoneLink: "573022798531",
-    extension: "Ext. 1",
-    features: [
-      "Sede principal",
-      "Panadería artesanal",
-      "Gran variedad vegana",
-      "Asesoría nutricional",
-    ],
-    lat: 6.247709459721946,
-    lng: -75.59736040892075,
-    color: "emerald",
-  },
-  {
-    name: "Vita Integral Poblado",
-    area: "El Poblado",
-    address: "Carrera 42 #5 Sur 43",
-    reference: "Cerca a la Milla de Oro",
-    city: "Medellín, Antioquia",
-    phone: "300 200 4516",
-    phoneLink: "573002004516",
-    extension: "Ext. 2",
-    features: [
-      "Amplia variedad",
-      "Productos importados",
-      "Suplementos deportivos",
-      "Productos orgánicos",
-    ],
-    lat: 6.2086,
-    lng: -75.5659,
-    color: "orange",
-  },
-  {
-    name: "Vita Integral Envigado",
-    area: "Envigado",
-    address: "Carrera 27 #36 Sur 199 LC 103",
-    reference: "Centro de Envigado",
-    city: "Envigado, Antioquia",
-    phone: "324 443 0201",
-    phoneLink: "573244430201",
-    extension: "Ext. 3",
-    features: [
-      "Tofu fresco",
-      "Papel de arroz",
-      "Quesos artesanales",
-      "Chocolate oscuro",
-    ],
-    lat: 6.1710,
-    lng: -75.5831,
-    color: "pink",
-  },
-]
+export default async function SedesPage() {
+  const t = await getTranslations("pages.locations")
+  const tCommon = await getTranslations("common")
 
-export default function SedesPage() {
+  const SEDES = [
+    {
+      name: "Vita Integral Laureles",
+      area: "Laureles",
+      address: "Av. Nutibara Trv. 39B 77-40",
+      reference: "Entre La Avenida Jardín y La Consolata",
+      city: "Medellín, Antioquia",
+      phone: "302 279 8531",
+      phoneLink: "573022798531",
+      extension: t("ext", { number: 1 }),
+      features: [
+        t("mainLocation"),
+        t("artisanBakery"),
+        t("veganVariety"),
+        t("nutritionalAdvice"),
+      ],
+      lat: 6.247709459721946,
+      lng: -75.59736040892075,
+      color: "emerald",
+    },
+    {
+      name: "Vita Integral Poblado",
+      area: "El Poblado",
+      address: "Carrera 42 #5 Sur 43",
+      reference: "Cerca a la Milla de Oro",
+      city: "Medellín, Antioquia",
+      phone: "300 200 4516",
+      phoneLink: "573002004516",
+      extension: t("ext", { number: 2 }),
+      features: [
+        t("wideVariety"),
+        t("importedProducts"),
+        t("sportsSupplements"),
+        t("organicProducts"),
+      ],
+      lat: 6.2086,
+      lng: -75.5659,
+      color: "orange",
+    },
+    {
+      name: "Vita Integral Envigado",
+      area: "Envigado",
+      address: "Carrera 27 #36 Sur 199 LC 103",
+      reference: "Centro de Envigado",
+      city: "Envigado, Antioquia",
+      phone: "324 443 0201",
+      phoneLink: "573244430201",
+      extension: t("ext", { number: 3 }),
+      features: [
+        t("freshTofu"),
+        t("ricePaper"),
+        t("artisanCheeses"),
+        t("darkChocolate"),
+      ],
+      lat: 6.1710,
+      lng: -75.5831,
+      color: "pink",
+    },
+  ]
+
   return (
     <div className="content-container py-12">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <LocalizedClientLink href="/" className="hover:text-[#5B8C3E]">
-          Inicio
+          {tCommon("breadcrumbHome")}
         </LocalizedClientLink>
         <span>/</span>
-        <span className="text-gray-800 font-medium">Nuestras Sedes</span>
+        <span className="text-gray-800 font-medium">{t("breadcrumb")}</span>
       </nav>
 
       {/* Hero Section */}
       <div className="text-center mb-16">
         <span className="inline-block px-4 py-1 bg-[#5B8C3E]/10 text-[#5B8C3E] text-sm font-medium rounded-full mb-4">
-          Encuéntranos
+          {t("heroTag")}
         </span>
         <h1
           className="text-4xl md:text-5xl font-bold text-gray-800 mb-6"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Nuestras <span className="text-[#5B8C3E]">Sedes</span>
+          {t("heroTitle")}
         </h1>
         <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
-          Visítanos en cualquiera de nuestras tiendas en Medellín y el área metropolitana.
-          Espacios cálidos y acogedores con asesoría personalizada para orientar tus decisiones alimentarias.
+          {t("heroDescription")}
         </p>
       </div>
 
@@ -106,7 +110,7 @@ export default function SedesPage() {
               </svg>
             </div>
             <div>
-              <p className="text-white/70 text-sm">Línea Única</p>
+              <p className="text-white/70 text-sm">{t("singleLine")}</p>
               <p className="text-xl font-bold">604 322 84 82</p>
             </div>
           </div>
@@ -117,7 +121,7 @@ export default function SedesPage() {
               </svg>
             </div>
             <div>
-              <p className="text-white/70 text-sm">Email</p>
+              <p className="text-white/70 text-sm">{t("email")}</p>
               <p className="text-xl font-bold">info@vitaintegral.co</p>
             </div>
           </div>
@@ -128,8 +132,8 @@ export default function SedesPage() {
               </svg>
             </div>
             <div>
-              <p className="text-white/70 text-sm">Horario</p>
-              <p className="text-xl font-bold">Lun-Sáb 9:00-19:30</p>
+              <p className="text-white/70 text-sm">{t("schedule")}</p>
+              <p className="text-xl font-bold">{t("scheduleValue")}</p>
             </div>
           </div>
         </div>
@@ -237,7 +241,7 @@ export default function SedesPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      Cómo Llegar
+                      {t("howToGet")}
                     </a>
                   </div>
                 </div>
@@ -268,8 +272,8 @@ export default function SedesPage() {
       {/* Schedule Section */}
       <div className="bg-gray-50 rounded-3xl p-8 md:p-12 mb-16">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Horarios de Atención</h2>
-          <p className="text-gray-600">Aplica para todas las sedes</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">{t("scheduleTitle")}</h2>
+          <p className="text-gray-600">{t("scheduleApplies")}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -279,8 +283,8 @@ export default function SedesPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="font-bold text-gray-800 mb-2">Lunes a Sábado</h3>
-            <p className="text-2xl font-bold text-[#5B8C3E]">9:00 AM - 7:30 PM</p>
+            <h3 className="font-bold text-gray-800 mb-2">{t("monSat")}</h3>
+            <p className="text-2xl font-bold text-[#5B8C3E]">{t("monSatHours")}</p>
           </div>
 
           <div className="bg-white rounded-xl p-6 text-center shadow-sm">
@@ -289,8 +293,8 @@ export default function SedesPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </div>
-            <h3 className="font-bold text-gray-800 mb-2">Domingos y Festivos</h3>
-            <p className="text-2xl font-bold text-orange-600">9:30 AM - 4:00 PM</p>
+            <h3 className="font-bold text-gray-800 mb-2">{t("sunHolidays")}</h3>
+            <p className="text-2xl font-bold text-orange-600">{t("sunHolidaysHours")}</p>
           </div>
         </div>
       </div>
@@ -298,11 +302,10 @@ export default function SedesPage() {
       {/* CTA */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          ¿Prefieres comprar desde casa?
+          {t("preferOnline")}
         </h2>
         <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-          Nuestra tienda online está disponible 24/7 con entrega a domicilio
-          en Medellín, área metropolitana y envíos nacionales.
+          {t("onlineDescription")}
         </p>
         <LocalizedClientLink
           href="/store"
@@ -312,7 +315,7 @@ export default function SedesPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
           </svg>
-          Comprar Online
+          {t("shopOnline")}
         </LocalizedClientLink>
       </div>
     </div>

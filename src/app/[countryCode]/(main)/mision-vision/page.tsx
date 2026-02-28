@@ -2,78 +2,80 @@ import { Metadata } from "next"
 import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import misionVisionImage from "../../../../assets/mision-vision.jpg"
+import { getTranslations } from "next-intl/server"
 
-export const metadata: Metadata = {
-  title: "Misión y Visión | Vita Integral",
-  description:
-    "Conoce la misión, visión y valores de Vita Integral. Coherencia, consciencia y servir con amor son los pilares de nuestro mercado saludable.",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.missionVision")
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
-const VALUES = [
-  {
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-      </svg>
-    ),
-    title: "Coherencia",
-    description:
-      "Mantenemos consistencia entre nuestra filosofía y acciones cotidianas. Lo que decimos es lo que hacemos.",
-    color: "emerald",
-  },
-  {
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-      </svg>
-    ),
-    title: "Consciencia",
-    description:
-      "Promovemos la armonía integral del ser humano (cuerpo, mente, espíritu) y el respeto por el medio ambiente.",
-    color: "orange",
-  },
-  {
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    ),
-    title: "Servir con Amor",
-    description:
-      "Cultivamos espacios acogedores donde acompañamos la evolución de nuestros clientes mediante opciones nutricionales saludables.",
-    color: "pink",
-  },
-]
+export default async function MisionVisionPage() {
+  const t = await getTranslations("pages.missionVision")
+  const tCommon = await getTranslations("common")
 
-const PRINCIPLES = [
-  {
-    title: "Evaluación Rigurosa",
-    description: "Evaluamos cuidadosamente a nuestros proveedores, considerando ingredientes, información nutricional y procesos productivos.",
-  },
-  {
-    title: "Prácticas Agroecológicas",
-    description: "Priorizamos productos de proveedores que siguen prácticas agroecológicas y sostenibles.",
-  },
-  {
-    title: "Productos Funcionales",
-    description: "Seleccionamos productos que aportan beneficios reales a la salud y el bienestar.",
-  },
-  {
-    title: "Responsabilidad Ambiental",
-    description: "Favorecemos presentaciones y empaques ambientalmente responsables.",
-  },
-]
+  const VALUES = [
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      ),
+      title: t("coherenceTitle"),
+      description: t("coherenceText"),
+      color: "emerald",
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      ),
+      title: t("consciousnessTitle"),
+      description: t("consciousnessText"),
+      color: "orange",
+    },
+    {
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+      title: t("loveTitle"),
+      description: t("loveText"),
+      color: "pink",
+    },
+  ]
 
-export default function MisionVisionPage() {
+  const PRINCIPLES = [
+    {
+      title: t("evaluationTitle"),
+      description: t("evaluationText"),
+    },
+    {
+      title: t("agroTitle"),
+      description: t("agroText"),
+    },
+    {
+      title: t("functionalTitle"),
+      description: t("functionalText"),
+    },
+    {
+      title: t("environmentTitle"),
+      description: t("environmentText"),
+    },
+  ]
   return (
     <div className="content-container py-12">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <LocalizedClientLink href="/" className="hover:text-[#5B8C3E]">
-          Inicio
+          {tCommon("breadcrumbHome")}
         </LocalizedClientLink>
         <span>/</span>
-        <span className="text-gray-800 font-medium">Misión y Visión</span>
+        <span className="text-gray-800 font-medium">{t("breadcrumb")}</span>
       </nav>
 
       {/* Hero Section with Image */}

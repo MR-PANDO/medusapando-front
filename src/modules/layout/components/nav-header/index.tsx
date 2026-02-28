@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback, ReactNode } from "react"
 import Image from 'next/image'
+import { useTranslations } from "next-intl"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import LanguageSwitcher from "@modules/common/components/language-switcher"
 import brushPattern from "@assets/brush-pattern.png"
 
 // Import diet icons
@@ -15,27 +17,27 @@ import PaleoSvg from "@assets/paleo.svg"
 import SinGlutenSvg from "@assets/sin_gluten.svg"
 import KetoSvg from "@assets/keto.svg"
 
-// Diet data for dropdown
+// Diet data for dropdown (nameKey maps to diets.* translations)
 const DIET_NAV_ITEMS = [
-  { id: "vegano", name: "Vegano", slug: "vegano", icon: VeganoSvg, brushColor: "#4ade80" },
-  { id: "vegetariano", name: "Vegetariano", slug: "vegetariano", icon: VegetarianoSvg, brushColor: "#bef264" },
-  { id: "sin-lactosa", name: "Sin Lactosa", slug: "sin-lactosa", icon: SinLactosaSvg, brushColor: "#fbcfe8" },
-  { id: "organico", name: "Orgánico", slug: "organico", icon: OrganicoSvg, brushColor: "#22c55e" },
-  { id: "sin-azucar", name: "Sin Azúcar", slug: "sin-azucar", icon: SinAzucarSvg, brushColor: "#fef08a" },
-  { id: "paleo", name: "Paleo", slug: "paleo", icon: PaleoSvg, brushColor: "#fcd34d" },
-  { id: "sin-gluten", name: "Sin Gluten", slug: "sin-gluten", icon: SinGlutenSvg, brushColor: "#f9a8d4" },
-  { id: "keto", name: "Keto", slug: "keto", icon: KetoSvg, brushColor: "#bfdbfe" },
+  { id: "vegano", nameKey: "vegan" as const, slug: "vegano", icon: VeganoSvg, brushColor: "#4ade80" },
+  { id: "vegetariano", nameKey: "vegetarian" as const, slug: "vegetariano", icon: VegetarianoSvg, brushColor: "#bef264" },
+  { id: "sin-lactosa", nameKey: "lactoseFree" as const, slug: "sin-lactosa", icon: SinLactosaSvg, brushColor: "#fbcfe8" },
+  { id: "organico", nameKey: "organic" as const, slug: "organico", icon: OrganicoSvg, brushColor: "#22c55e" },
+  { id: "sin-azucar", nameKey: "sugarFree" as const, slug: "sin-azucar", icon: SinAzucarSvg, brushColor: "#fef08a" },
+  { id: "paleo", nameKey: "paleo" as const, slug: "paleo", icon: PaleoSvg, brushColor: "#fcd34d" },
+  { id: "sin-gluten", nameKey: "glutenFree" as const, slug: "sin-gluten", icon: SinGlutenSvg, brushColor: "#f9a8d4" },
+  { id: "keto", nameKey: "keto" as const, slug: "keto", icon: KetoSvg, brushColor: "#bfdbfe" },
 ]
 
-// Quick nav links for the second row
+// Quick nav links for the second row (nameKey maps to nav.* translations)
 const NAV_LINKS = [
-  { name: "Inicio", href: "/" },
-  { name: "Tienda", href: "/store" },
-  { name: "Ofertas", href: "/store?tags=ofertas", highlight: true },
-  { name: "Nuevos", href: "/store?tags=nuevo" },
-  { name: "Marcas", href: "/brands" },
-  { name: "Dietas", href: "/dietas", hasDropdown: true },
-  { name: "Recetas", href: "/recetas", isNew: true },
+  { nameKey: "home" as const, href: "/" },
+  { nameKey: "store" as const, href: "/store" },
+  { nameKey: "offers" as const, href: "/store?tags=ofertas", highlight: true },
+  { nameKey: "new" as const, href: "/store?tags=nuevo" },
+  { nameKey: "brands" as const, href: "/brands" },
+  { nameKey: "diets" as const, href: "/dietas", hasDropdown: true },
+  { nameKey: "recipes" as const, href: "/recetas", isNew: true },
 ]
 
 type NavHeaderProps = {
@@ -46,6 +48,8 @@ type NavHeaderProps = {
 }
 
 export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonCompact }: NavHeaderProps) {
+  const t = useTranslations("nav")
+  const tDiets = useTranslations("diets")
   const [isScrolled, setIsScrolled] = useState(false)
   const [isDietsOpen, setIsDietsOpen] = useState(false)
   const dietsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -151,8 +155,11 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
               {searchBox}
             </div>
 
-            {/* Right side - Account & Cart */}
+            {/* Right side - Language, Account & Cart */}
             <div className="flex items-center gap-4 sm:gap-6">
+              {/* Language Switcher */}
+              <LanguageSwitcher />
+
               {/* Account */}
               <LocalizedClientLink
                 className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-emerald-600 transition-colors"
@@ -163,8 +170,8 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
                 <div className="hidden lg:block">
-                  <span className="text-xs text-gray-500">Iniciar Sesión</span>
-                  <p className="text-sm font-medium">Mi Cuenta</p>
+                  <span className="text-xs text-gray-500">{t("signIn")}</span>
+                  <p className="text-sm font-medium">{t("myAccount")}</p>
                 </div>
               </LocalizedClientLink>
 
@@ -207,7 +214,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
               {NAV_LINKS.map((link) => (
                 link.hasDropdown ? (
                   <div
-                    key={link.name}
+                    key={link.nameKey}
                     className="relative"
                     onMouseEnter={handleDietsMouseEnter}
                     onMouseLeave={handleDietsMouseLeave}
@@ -216,7 +223,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                       href={link.href}
                       className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
                     >
-                      {link.name}
+                      {t(link.nameKey)}
                       <svg
                         className={`w-4 h-4 transition-transform duration-200 ${isDietsOpen ? 'rotate-180' : ''}`}
                         fill="none"
@@ -235,12 +242,12 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                     >
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-bold text-gray-800">Explora por Dieta</h3>
+                          <h3 className="text-sm font-bold text-gray-800">{t("exploreByDiet")}</h3>
                           <LocalizedClientLink
                             href="/dietas"
                             className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
                           >
-                            Ver todas
+                            {t("viewAll")}
                           </LocalizedClientLink>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
@@ -268,7 +275,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                                 <div className="absolute inset-0 flex items-center justify-center">
                                   <Image
                                     src={diet.icon}
-                                    alt={diet.name}
+                                    alt={tDiets(diet.nameKey)}
                                     width={22}
                                     height={22}
                                     className="object-contain transition-all duration-200 group-hover:brightness-0 group-hover:invert"
@@ -276,7 +283,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                                 </div>
                               </div>
                               <span className="text-sm text-gray-700 group-hover:text-emerald-600 font-medium transition-colors">
-                                {diet.name}
+                                {tDiets(diet.nameKey)}
                               </span>
                             </LocalizedClientLink>
                           ))}
@@ -289,7 +296,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
-                            Ver Todos los Productos
+                            {t("viewAllProducts")}
                           </LocalizedClientLink>
                         </div>
                       </div>
@@ -297,7 +304,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                   </div>
                 ) : (
                   <LocalizedClientLink
-                    key={link.name}
+                    key={link.nameKey}
                     href={link.href}
                     className={`px-4 py-2 text-sm font-medium transition-colors ${
                       link.highlight
@@ -305,15 +312,15 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                         : 'text-gray-700 hover:text-emerald-600'
                     }`}
                   >
-                    {link.name}
+                    {t(link.nameKey)}
                     {link.highlight && (
                       <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-red-500 text-white rounded uppercase">
-                        Sale
+                        {t("sale")}
                       </span>
                     )}
                     {link.isNew && (
                       <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-emerald-500 text-white rounded uppercase">
-                        IA
+                        {t("ai")}
                       </span>
                     )}
                   </LocalizedClientLink>

@@ -8,14 +8,14 @@ import SeoHead from "@modules/seo/components/seo-head"
 import FaqSection from "@modules/seo/components/faq-section"
 import GeoSection from "@modules/seo/components/geo-section"
 import SxoIntentLayout from "@modules/seo/components/sxo-intent-layout"
-
-const FALLBACK_META = {
-  title: "Quiénes Somos | Vita Integral",
-  description:
-    "Conoce la historia de Vita Integral, un mercado saludable fundado en 2012 en Medellín por Carlos y Patricia, pioneros en alimentación consciente en Colombia.",
-}
+import { getTranslations } from "next-intl/server"
 
 export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pages.about")
+  const FALLBACK_META = {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
   try {
     const seo = await getSeoMetadata("page", "quienes-somos")
     return buildMetadata(seo, FALLBACK_META)
@@ -25,6 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function QuienesSomosPage() {
+  const t = await getTranslations("pages.about")
+  const tCommon = await getTranslations("common")
+
   let seo = null
   try {
     seo = await getSeoMetadata("page", "quienes-somos")
@@ -37,28 +40,26 @@ export default async function QuienesSomosPage() {
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <LocalizedClientLink href="/" className="hover:text-[#5B8C3E]">
-          Inicio
+          {tCommon("breadcrumbHome")}
         </LocalizedClientLink>
         <span>/</span>
-        <span className="text-gray-800 font-medium">Quiénes Somos</span>
+        <span className="text-gray-800 font-medium">{t("breadcrumb")}</span>
       </nav>
 
       {/* Hero Section with Founders Image */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
         <div>
           <span className="inline-block px-4 py-1 bg-[#5B8C3E]/10 text-[#5B8C3E] text-sm font-medium rounded-full mb-4">
-            Nuestra Historia
+            {t("heroTitle")}
           </span>
           <h1
             className="text-4xl md:text-5xl font-bold text-gray-800 mb-6"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
-            Más de <span className="text-[#5B8C3E]">40 años</span> de pasión
-            por la alimentación saludable
+            {t("heroSubtitle")}
           </h1>
           <p className="text-gray-600 text-lg leading-relaxed mb-6">
-            Una historia de amor por la vida, la salud y el bienestar que comenzó
-            mucho antes de que existiera Vita Integral.
+            {t("heroDescription")}
           </p>
           <div className="flex items-center gap-4">
             <div className="flex -space-x-2">
@@ -70,8 +71,8 @@ export default async function QuienesSomosPage() {
               </div>
             </div>
             <div>
-              <p className="font-bold text-gray-800">Carlos y Patricia</p>
-              <p className="text-sm text-gray-500">Fundadores de Vita Integral</p>
+              <p className="font-bold text-gray-800">{t("founders")}</p>
+              <p className="text-sm text-gray-500">{t("foundersRole")}</p>
             </div>
           </div>
         </div>
@@ -107,15 +108,12 @@ export default async function QuienesSomosPage() {
         <div className="relative pl-8 pb-12 border-l-2 border-[#5B8C3E]/30">
           <div className="absolute left-0 top-0 w-4 h-4 bg-[#5B8C3E] rounded-full -translate-x-[9px]"></div>
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-8">
-            <span className="text-[#5B8C3E] font-bold text-sm">Los Inicios</span>
+            <span className="text-[#5B8C3E] font-bold text-sm">{t("beginningsTag")}</span>
             <h2 className="text-2xl font-bold text-gray-800 mt-2 mb-4">
-              Carlos y Patricia: Pioneros de lo Natural
+              {t("beginningsTitle")}
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              Carlos y Patricia, fundadores de esta hermosa empresa, llevan más de{" "}
-              <strong>40 años trabajando en el medio de alimentación saludable</strong>.
-              Iniciaron con tiendas naturistas en Medellín durante una época cuando
-              muy pocas personas buscaban estas alternativas alimenticias.
+              {t("beginningsText")}
             </p>
           </div>
         </div>
@@ -124,14 +122,12 @@ export default async function QuienesSomosPage() {
         <div className="relative pl-8 pb-12 border-l-2 border-[#5B8C3E]/30">
           <div className="absolute left-0 top-0 w-4 h-4 bg-[#5B8C3E] rounded-full -translate-x-[9px]"></div>
           <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
-            <span className="text-[#5B8C3E] font-bold text-sm">Experiencia Internacional</span>
+            <span className="text-[#5B8C3E] font-bold text-sm">{t("internationalTag")}</span>
             <h2 className="text-2xl font-bold text-gray-800 mt-2 mb-4">
-              Aprendiendo del Mundo
+              {t("internationalTitle")}
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              Después de vivir en el extranjero y conocer diferentes culturas alimentarias,
-              los fundadores retornaron a Medellín con una visión clara: crear un espacio
-              donde las personas pudieran encontrar todo lo que necesitan para una vida saludable.
+              {t("internationalText")}
             </p>
           </div>
         </div>
@@ -140,14 +136,12 @@ export default async function QuienesSomosPage() {
         <div className="relative pl-8 pb-12 border-l-2 border-[#5B8C3E]/30">
           <div className="absolute left-0 top-0 w-4 h-4 bg-[#5B8C3E] rounded-full -translate-x-[9px]"></div>
           <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8">
-            <span className="text-orange-600 font-bold text-sm">5 de Junio de 2012</span>
+            <span className="text-orange-600 font-bold text-sm">{t("foundingDate")}</span>
             <h2 className="text-2xl font-bold text-gray-800 mt-2 mb-4">
-              Nace Vita Integral
+              {t("foundingTitle")}
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              <strong>Vita Integral</strong>, un mercado saludable pionero en Colombia,
-              abrió sus puertas con la misión de ofrecer una alta variedad de productos
-              saludables a precios justos en un solo lugar.
+              {t("foundingText")}
             </p>
           </div>
         </div>
@@ -156,14 +150,12 @@ export default async function QuienesSomosPage() {
         <div className="relative pl-8 pb-12 border-l-2 border-[#5B8C3E]/30">
           <div className="absolute left-0 top-0 w-4 h-4 bg-[#5B8C3E] rounded-full -translate-x-[9px]"></div>
           <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
-            <span className="text-[#5B8C3E] font-bold text-sm">Los Desafíos</span>
+            <span className="text-[#5B8C3E] font-bold text-sm">{t("challengesTag")}</span>
             <h2 className="text-2xl font-bold text-gray-800 mt-2 mb-4">
-              Construyendo un Ecosistema
+              {t("challengesTitle")}
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              Al principio enfrentamos dificultades por la falta de proveedores locales.
-              Tuvimos que importar productos o traerlos desde Bogotá mientras desarrollábamos
-              relaciones con emprendedores locales que compartían nuestra visión.
+              {t("challengesText")}
             </p>
           </div>
         </div>
@@ -172,15 +164,12 @@ export default async function QuienesSomosPage() {
         <div className="relative pl-8">
           <div className="absolute left-0 top-0 w-4 h-4 bg-[#5B8C3E] rounded-full -translate-x-[9px]"></div>
           <div className="bg-gradient-to-br from-[#5B8C3E]/10 to-emerald-50 rounded-2xl p-8">
-            <span className="text-[#5B8C3E] font-bold text-sm">Hoy</span>
+            <span className="text-[#5B8C3E] font-bold text-sm">{t("todayTag")}</span>
             <h2 className="text-2xl font-bold text-gray-800 mt-2 mb-4">
-              Un Legado que Crece
+              {t("todayTitle")}
             </h2>
             <p className="text-gray-600 leading-relaxed">
-              Hoy contamos con múltiples sedes en Medellín y el área metropolitana,
-              y hemos ayudado a posicionar proveedores locales a nivel nacional e internacional.
-              Nuestra tienda evolucionó para ofrecer una alta variedad de productos saludables
-              a precios justos en un solo lugar.
+              {t("todayText")}
             </p>
           </div>
         </div>
@@ -190,30 +179,29 @@ export default async function QuienesSomosPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
         <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center shadow-sm">
           <div className="text-4xl font-bold text-[#5B8C3E] mb-2">40+</div>
-          <div className="text-gray-600 text-sm">Años de Experiencia</div>
+          <div className="text-gray-600 text-sm">{t("stat1")}</div>
         </div>
         <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center shadow-sm">
           <div className="text-4xl font-bold text-[#5B8C3E] mb-2">2012</div>
-          <div className="text-gray-600 text-sm">Año de Fundación</div>
+          <div className="text-gray-600 text-sm">{t("stat2")}</div>
         </div>
         <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center shadow-sm">
           <div className="text-4xl font-bold text-[#5B8C3E] mb-2">3</div>
-          <div className="text-gray-600 text-sm">Sedes en Medellín</div>
+          <div className="text-gray-600 text-sm">{t("stat3")}</div>
         </div>
         <div className="bg-white border border-gray-100 rounded-2xl p-6 text-center shadow-sm">
           <div className="text-4xl font-bold text-[#5B8C3E] mb-2">500+</div>
-          <div className="text-gray-600 text-sm">Productos Disponibles</div>
+          <div className="text-gray-600 text-sm">{t("stat4")}</div>
         </div>
       </div>
 
       {/* CTA Section */}
       <div className="bg-gradient-to-r from-[#5B8C3E] to-emerald-600 rounded-3xl p-8 md:p-12 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-          Sé parte de nuestra historia
+          {t("ctaTitle")}
         </h2>
         <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-          Visita nuestras tiendas y descubre por qué miles de familias confían en
-          Vita Integral para su alimentación saludable.
+          {t("ctaDescription")}
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <LocalizedClientLink
@@ -224,7 +212,7 @@ export default async function QuienesSomosPage() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            Explorar Productos
+            {t("ctaExplore")}
           </LocalizedClientLink>
           <LocalizedClientLink
             href="/sedes"
@@ -235,7 +223,7 @@ export default async function QuienesSomosPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Ver Nuestras Sedes
+            {t("ctaLocations")}
           </LocalizedClientLink>
         </div>
       </div>
