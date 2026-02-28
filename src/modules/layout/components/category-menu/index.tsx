@@ -13,12 +13,14 @@ const MenuItem = ({
   category,
   isExpanded,
   onToggle,
-  onClose
+  onClose,
+  categoryTranslations = {},
 }: {
   category: CategoryWithChildren
   isExpanded: boolean
   onToggle: () => void
   onClose?: () => void
+  categoryTranslations?: Record<string, string>
 }) => {
   const hasChildren = category.category_children && category.category_children.length > 0
 
@@ -30,7 +32,7 @@ const MenuItem = ({
           className="flex-1 px-5 py-3 text-sm text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
           onClick={onClose}
         >
-          {category.name}
+          {categoryTranslations[category.id] || category.name}
         </LocalizedClientLink>
         {hasChildren && (
           <button
@@ -59,7 +61,7 @@ const MenuItem = ({
               className="block px-8 py-2.5 text-sm text-gray-600 hover:text-emerald-600 hover:bg-emerald-100 transition-colors"
               onClick={onClose}
             >
-              {child.name}
+              {categoryTranslations[child.id] || child.name}
             </LocalizedClientLink>
           ))}
         </div>
@@ -70,10 +72,12 @@ const MenuItem = ({
 
 export default function CategoryMenu({
   categories,
-  onClose
+  onClose,
+  categoryTranslations = {},
 }: {
   categories: CategoryWithChildren[]
   onClose?: () => void
+  categoryTranslations?: Record<string, string>
 }) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const t = useTranslations("layout")
@@ -114,6 +118,7 @@ export default function CategoryMenu({
               isExpanded={expandedCategory === category.id}
               onToggle={() => toggleCategory(category.id)}
               onClose={onClose}
+              categoryTranslations={categoryTranslations}
             />
           ))
         ) : (

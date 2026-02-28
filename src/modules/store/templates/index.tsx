@@ -64,6 +64,17 @@ const StoreTemplate = async ({
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
 
+  // Fetch category translations for the refinement list
+  const allCategoryIds = (categories || []).flatMap((cat) => [
+    cat.id,
+    ...(cat.category_children?.map((c) => c.id) || []),
+  ]).filter(Boolean) as string[]
+  const catTranslationsMap = await getEntityTranslations("category", allCategoryIds, locale)
+  const categoryTranslations: Record<string, string> = {}
+  catTranslationsMap.forEach((val, id) => {
+    if (val.title) categoryTranslations[id] = val.title
+  })
+
   // Get display title based on filters
   const getTitle = async () => {
     const tagNames = TAG_DISPLAY_NAMES[locale] || TAG_DISPLAY_NAMES["es"]
@@ -101,6 +112,7 @@ const StoreTemplate = async ({
         categories={categories}
         selectedCategory={categoryHandle}
         selectedTags={tags}
+        categoryTranslations={categoryTranslations}
       />
       <div className="w-full">
         <div className="mb-8 text-2xl-semi">

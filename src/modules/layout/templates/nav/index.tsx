@@ -2,8 +2,10 @@ import { Suspense } from "react"
 
 import { listRegions } from "@lib/data/regions"
 import { listCategories } from "@lib/data/categories"
+import { getEntityTranslations } from "@lib/data/translations"
 import { StoreRegion } from "@medusajs/types"
 import { HttpTypes } from "@medusajs/types"
+import { getLocale } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
@@ -30,9 +32,10 @@ const CATEGORY_ORDER = [
 ]
 
 export default async function Nav() {
-  const [regions, categories] = await Promise.all([
+  const [regions, categories, locale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
-    listCategories()
+    listCategories(),
+    getLocale()
   ])
 
   // Filter to only show parent categories that are in our predefined order
@@ -48,9 +51,20 @@ export default async function Nav() {
     return indexA - indexB
   })
 
+  // Fetch category translations for non-default locales
+  const allCategoryIds = sortedCategories.flatMap((cat) => [
+    cat.id,
+    ...(cat.category_children?.map((c) => c.id) || []),
+  ]).filter(Boolean) as string[]
+  const translationsMap = await getEntityTranslations("category", allCategoryIds, locale)
+  const categoryTranslations: Record<string, string> = {}
+  translationsMap.forEach((val, id) => {
+    if (val.title) categoryTranslations[id] = val.title
+  })
+
   return (
     <NavHeader
-      sideMenu={<SideMenu regions={regions} categories={sortedCategories} />}
+      sideMenu={<SideMenu regions={regions} categories={sortedCategories} categoryTranslations={categoryTranslations} />}
       searchBox={<SearchBox />}
       cartButton={
         <Suspense

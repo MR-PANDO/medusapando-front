@@ -13,10 +13,12 @@ type CategoryWithChildren = HttpTypes.StoreProductCategory & {
 }
 
 const SideMenu = ({
-  categories
+  categories,
+  categoryTranslations = {},
 }: {
   regions?: HttpTypes.StoreRegion[] | null
   categories: CategoryWithChildren[]
+  categoryTranslations?: Record<string, string>
 }) => {
   const { isOpen, open, close } = useSideMenu()
   const t = useTranslations("layout")
@@ -77,7 +79,7 @@ const SideMenu = ({
               </button>
 
               {/* Category Menu */}
-              <CategoryMenu categories={categories} onClose={close} />
+              <CategoryMenu categories={categories} onClose={close} categoryTranslations={categoryTranslations} />
             </div>
           </Transition>
         </div>

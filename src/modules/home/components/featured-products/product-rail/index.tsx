@@ -1,7 +1,8 @@
 import { listProducts } from "@lib/data/products"
+import { getEntityTranslations } from "@lib/data/translations"
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 
 import InteractiveLink from "@modules/common/components/interactive-link"
 import ProductPreview from "@modules/products/components/product-preview"
@@ -23,11 +24,18 @@ export default async function ProductRail({
     },
   })
 
-  const t = await getTranslations("home")
+  const [t, locale] = await Promise.all([
+    getTranslations("home"),
+    getLocale(),
+  ])
 
   if (!pricedProducts) {
     return null
   }
+
+  // Fetch product translations for non-default locales
+  const productIds = pricedProducts.map((p) => p.id).filter(Boolean) as string[]
+  const translationsMap = await getEntityTranslations("product", productIds, locale)
 
   return (
     <div className="content-container py-12 small:py-24">
@@ -39,11 +47,14 @@ export default async function ProductRail({
       </div>
       <ul className="grid grid-cols-2 small:grid-cols-3 gap-x-6 gap-y-24 small:gap-y-36">
         {pricedProducts &&
-          pricedProducts.map((product) => (
-            <li key={product.id}>
-              <ProductPreview product={product} region={region} isFeatured />
-            </li>
-          ))}
+          pricedProducts.map((product) => {
+            const translation = product.id ? translationsMap.get(product.id) : undefined
+            return (
+              <li key={product.id}>
+                <ProductPreview product={product} region={region} isFeatured translation={translation} />
+              </li>
+            )
+          })}
       </ul>
     </div>
   )

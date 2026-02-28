@@ -34,6 +34,7 @@ type RefinementListProps = {
   categories?: CategoryWithChildren[]
   selectedCategory?: string
   selectedTags?: string
+  categoryTranslations?: Record<string, string>
   'data-testid'?: string
 }
 
@@ -42,6 +43,7 @@ const RefinementList = ({
   categories,
   selectedCategory,
   selectedTags,
+  categoryTranslations = {},
   'data-testid': dataTestId
 }: RefinementListProps) => {
   const t = useTranslations("store")
@@ -142,13 +144,15 @@ const RefinementList = ({
             <div className="max-h-[180px] overflow-y-auto pr-1 scrollbar-thin">
               <div className="flex flex-col gap-1">
                 {rootCategories
-                  .filter((cat) =>
-                    !categorySearch ||
-                    cat.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
-                    cat.category_children?.some((child) =>
-                      child.name.toLowerCase().includes(categorySearch.toLowerCase())
-                    )
-                  )
+                  .filter((cat) => {
+                    if (!categorySearch) return true
+                    const catName = (categoryTranslations[cat.id] || cat.name).toLowerCase()
+                    const search = categorySearch.toLowerCase()
+                    return catName.includes(search) ||
+                      cat.category_children?.some((child) =>
+                        (categoryTranslations[child.id] || child.name).toLowerCase().includes(search)
+                      )
+                  })
                   .map((category) => (
                     <CategoryItem
                       key={category.id}
@@ -156,14 +160,17 @@ const RefinementList = ({
                       selectedCategory={selectedCategory}
                       onSelect={(handle) => setQueryParams("category", selectedCategory === handle ? "" : handle)}
                       searchFilter={categorySearch}
+                      categoryTranslations={categoryTranslations}
                     />
                   ))}
-                {categorySearch && rootCategories.filter((cat) =>
-                  cat.name.toLowerCase().includes(categorySearch.toLowerCase()) ||
-                  cat.category_children?.some((child) =>
-                    child.name.toLowerCase().includes(categorySearch.toLowerCase())
-                  )
-                ).length === 0 && (
+                {categorySearch && rootCategories.filter((cat) => {
+                  const catName = (categoryTranslations[cat.id] || cat.name).toLowerCase()
+                  const search = categorySearch.toLowerCase()
+                  return catName.includes(search) ||
+                    cat.category_children?.some((child) =>
+                      (categoryTranslations[child.id] || child.name).toLowerCase().includes(search)
+                    )
+                }).length === 0 && (
                   <p className="text-sm text-gray-500 py-2">{t("noCategoriesFound")}</p>
                 )}
               </div>
@@ -366,12 +373,14 @@ function CategoryItem({
   onSelect,
   level = 0,
   searchFilter = "",
+  categoryTranslations = {},
 }: {
   category: CategoryWithChildren
   selectedCategory?: string
   onSelect: (handle: string) => void
   level?: number
   searchFilter?: string
+  categoryTranslations?: Record<string, string>
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const hasChildren = category.category_children && category.category_children.length > 0
@@ -379,7 +388,7 @@ function CategoryItem({
 
   // Auto-expand if search matches a child
   const hasMatchingChild = searchFilter && category.category_children?.some((child) =>
-    child.name.toLowerCase().includes(searchFilter.toLowerCase())
+    (categoryTranslations[child.id] || child.name).toLowerCase().includes(searchFilter.toLowerCase())
   )
   const shouldShowExpanded = isExpanded || hasMatchingChild
 
@@ -409,14 +418,14 @@ function CategoryItem({
             isSelected ? "font-medium text-emerald-600" : "text-gray-700"
           } ${!hasChildren ? "ml-5" : ""}`}
         >
-          {category.name}
+          {categoryTranslations[category.id] || category.name}
         </button>
       </div>
       {hasChildren && shouldShowExpanded && (
         <div className="mt-1">
           {category.category_children
             ?.filter((child) =>
-              !searchFilter || child.name.toLowerCase().includes(searchFilter.toLowerCase())
+              !searchFilter || (categoryTranslations[child.id] || child.name).toLowerCase().includes(searchFilter.toLowerCase())
             )
             .map((child) => (
               <CategoryItem
@@ -426,6 +435,7 @@ function CategoryItem({
                 onSelect={onSelect}
                 level={level + 1}
                 searchFilter={searchFilter}
+                categoryTranslations={categoryTranslations}
               />
             ))}
         </div>
