@@ -1,14 +1,18 @@
-import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { listBrands } from "@lib/data/brands"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { Heading } from "@medusajs/ui"
 
-export const metadata: Metadata = {
-  title: "Marcas | Vita Integral",
-  description: "Explora todas nuestras marcas de productos saludables",
+export async function generateMetadata() {
+  const t = await getTranslations("brands")
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
 export default async function BrandsPage() {
+  const t = await getTranslations("brands")
   const { brands } = await listBrands({ limit: 500 })
 
   // Sort brands alphabetically
@@ -32,7 +36,7 @@ export default async function BrandsPage() {
   return (
     <div className="flex flex-col py-6 content-container">
       <Heading level="h1" className="text-2xl mb-8">
-        Todas las Marcas
+        {t("allBrands")}
       </Heading>
 
       <div className="grid gap-8">

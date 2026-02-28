@@ -2,6 +2,7 @@ import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { HttpTypes } from "@medusajs/types"
 import { getProductPrice } from "@lib/util/get-product-price"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 
@@ -55,6 +56,7 @@ export default async function RelatedProducts({
   product,
   countryCode,
 }: RelatedProductsProps) {
+  const t = await getTranslations("products")
   const region = await getRegion(countryCode)
 
   if (!region) {
@@ -69,7 +71,7 @@ export default async function RelatedProducts({
         (dietTag) => tagValue === dietTag || tagValue.includes(dietTag)
       )
     })
-    .map((t) => t.id)
+    .map((tag) => tag.id)
     .filter(Boolean) as string[]
 
   // Build query params - prioritize diet tags
@@ -136,7 +138,7 @@ export default async function RelatedProducts({
   if (!products.length) {
     return (
       <p className="text-sm text-gray-500">
-        No hay productos relacionados disponibles.
+        {t("noRelatedProducts")}
       </p>
     )
   }

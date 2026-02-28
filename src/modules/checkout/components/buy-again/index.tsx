@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef } from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import { RecentlyPurchasedItem } from "@lib/data/orders"
 import { addToCart } from "@lib/data/cart"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -12,6 +13,7 @@ type BuyAgainProps = {
 }
 
 export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
+  const t = useTranslations("checkout")
   const [addingItems, setAddingItems] = useState<Record<string, boolean>>({})
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({})
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -88,7 +90,7 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          <span className="font-medium text-sm">Comprar de Nuevo</span>
+          <span className="font-medium text-sm">{t("buyAgain")}</span>
           <span className="text-emerald-200 text-xs">
             ({items.length})
           </span>

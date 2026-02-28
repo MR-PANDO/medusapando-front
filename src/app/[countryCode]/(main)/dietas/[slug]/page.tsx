@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -15,15 +16,16 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const diet = getDietBySlug(slug)
+  const t = await getTranslations("dietPages")
 
   if (!diet) {
     return {
-      title: "Dieta no encontrada | Vita Integral",
+      title: t("dietNotFound"),
     }
   }
 
   return {
-    title: `Dieta ${diet.name} - Guía Completa | Vita Integral`,
+    title: t("dietMetaTitle", { name: diet.name }),
     description: diet.fullDescription.substring(0, 160),
   }
 }
@@ -35,6 +37,8 @@ export async function generateStaticParams() {
 export default async function DietPage({ params }: Props) {
   const { slug, countryCode } = await params
   const diet = getDietBySlug(slug)
+  const t = await getTranslations("dietPages")
+  const tCommon = await getTranslations("common")
 
   if (!diet) {
     notFound()
@@ -48,11 +52,11 @@ export default async function DietPage({ params }: Props) {
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <LocalizedClientLink href="/" className="hover:text-[#5B8C3E]">
-          Inicio
+          {tCommon("breadcrumbHome")}
         </LocalizedClientLink>
         <span>/</span>
         <LocalizedClientLink href="/dietas" className="hover:text-[#5B8C3E]">
-          Dietas
+          {t("diets")}
         </LocalizedClientLink>
         <span>/</span>
         <span className="text-gray-800 font-medium">{diet.name}</span>
@@ -95,7 +99,7 @@ export default async function DietPage({ params }: Props) {
                 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
               >
-                Dieta <span className="text-[#5B8C3E]">{diet.name}</span>
+                {t("dietLabel")} <span className="text-[#5B8C3E]">{diet.name}</span>
               </h1>
               <p className="text-gray-600 text-lg">{diet.shortDescription}</p>
             </div>
@@ -114,7 +118,7 @@ export default async function DietPage({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              Beneficios
+              {t("benefits")}
             </h2>
             <ul className="space-y-4">
               {diet.benefits.map((benefit, idx) => (
@@ -144,7 +148,7 @@ export default async function DietPage({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              Consideraciones Importantes
+              {t("importantConsiderations")}
             </h2>
             <ul className="space-y-4">
               {diet.considerations.map((consideration, idx) => (
@@ -174,7 +178,7 @@ export default async function DietPage({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              Consejos Prácticos
+              {t("practicalTips")}
             </h2>
             <ul className="space-y-4">
               {diet.tips.map((tip, idx) => (
@@ -200,7 +204,7 @@ export default async function DietPage({ params }: Props) {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Alimentos Permitidos
+                {t("allowedFoods")}
               </h3>
               <ul className="space-y-2">
                 {diet.allowedFoods.map((food, idx) => (
@@ -218,7 +222,7 @@ export default async function DietPage({ params }: Props) {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Alimentos a Evitar
+                {t("foodsToAvoid")}
               </h3>
               <ul className="space-y-2">
                 {diet.avoidFoods.map((food, idx) => (
@@ -237,11 +241,10 @@ export default async function DietPage({ params }: Props) {
             style={{ backgroundColor: `${diet.brushColor}20` }}
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              ¿Listo para comenzar tu dieta {diet.name}?
+              {t("readyToStart", { name: diet.name })}
             </h2>
             <p className="text-gray-600 mb-6 max-w-xl mx-auto">
-              Descubre nuestra selección de productos {diet.name.toLowerCase()} cuidadosamente
-              seleccionados para ayudarte a mantener tu estilo de vida.
+              {t("readyToStartDesc", { name: diet.name.toLowerCase() })}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <LocalizedClientLink
@@ -253,7 +256,7 @@ export default async function DietPage({ params }: Props) {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                Ver Productos {diet.name}
+                {t("shopProducts", { name: diet.name })}
               </LocalizedClientLink>
               <LocalizedClientLink
                 href="/recetas"
@@ -264,7 +267,7 @@ export default async function DietPage({ params }: Props) {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                Ver Recetas
+                {t("viewRecipes")}
               </LocalizedClientLink>
             </div>
           </div>
@@ -275,7 +278,7 @@ export default async function DietPage({ params }: Props) {
           <div className="sticky top-24 space-y-6">
             {/* Quick Actions */}
             <div className="bg-white border border-gray-200 rounded-2xl p-6">
-              <h3 className="font-bold text-gray-800 mb-4">Acciones Rápidas</h3>
+              <h3 className="font-bold text-gray-800 mb-4">{t("quickActions")}</h3>
               <div className="space-y-3">
                 <LocalizedClientLink
                   href={`/store?tags=${diet.tag}`}
@@ -285,7 +288,7 @@ export default async function DietPage({ params }: Props) {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  <span className="font-medium text-sm">Productos {diet.name}</span>
+                  <span className="font-medium text-sm">{t("productsFor", { name: diet.name })}</span>
                 </LocalizedClientLink>
                 <LocalizedClientLink
                   href="/recetas"
@@ -295,14 +298,14 @@ export default async function DietPage({ params }: Props) {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  <span className="font-medium text-sm">Recetas</span>
+                  <span className="font-medium text-sm">{t("recipes")}</span>
                 </LocalizedClientLink>
               </div>
             </div>
 
             {/* Other Diets */}
             <div className="bg-white border border-gray-200 rounded-2xl p-6">
-              <h3 className="font-bold text-gray-800 mb-4">Otras Dietas</h3>
+              <h3 className="font-bold text-gray-800 mb-4">{t("otherDiets")}</h3>
               <div className="space-y-2">
                 {otherDiets.map((otherDiet) => (
                   <LocalizedClientLink
@@ -350,7 +353,7 @@ export default async function DietPage({ params }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <p className="text-amber-700 text-xs leading-relaxed">
-                  Esta información es solo con fines educativos. Consulta con un profesional antes de iniciar cualquier dieta.
+                  {t("disclaimerText")}
                 </p>
               </div>
             </div>

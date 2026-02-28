@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { HttpTypes } from "@medusajs/types"
+import { useTranslations } from "next-intl"
 import ProductNutrition from "@modules/products/components/product-nutrition"
 
 type ProductDetailsTabsProps = {
@@ -9,6 +10,7 @@ type ProductDetailsTabsProps = {
 }
 
 const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
+  const t = useTranslations("products")
   const [activeTab, setActiveTab] = useState<"details" | "nutrition">("details")
 
   return (
@@ -23,7 +25,7 @@ const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
               : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
           }`}
         >
-          Detalles del Producto
+          {t("productDetails")}
         </button>
         <button
           onClick={() => setActiveTab("nutrition")}
@@ -33,7 +35,7 @@ const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
               : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
           }`}
         >
-          Informacion Nutricional
+          {t("nutritionInfo")}
         </button>
       </div>
 
@@ -45,7 +47,7 @@ const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
             {/* Description */}
             {product.description && (
               <div className="mb-6">
-                <h4 className="font-medium text-gray-800 mb-2">Descripcion</h4>
+                <h4 className="font-medium text-gray-800 mb-2">{t("description")}</h4>
                 <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
                   {product.description}
                 </p>
@@ -56,7 +58,7 @@ const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
             {product.metadata && Object.keys(product.metadata).length > 0 && (
               <div className="mb-6">
                 <h4 className="font-medium text-gray-800 mb-2">
-                  Especificaciones
+                  {t("specifications")}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {Object.entries(product.metadata)
@@ -81,7 +83,7 @@ const ProductDetailsTabs = ({ product }: ProductDetailsTabsProps) => {
             {/* Tags */}
             {product.tags && product.tags.length > 0 && (
               <div>
-                <h4 className="font-medium text-gray-800 mb-2">Etiquetas</h4>
+                <h4 className="font-medium text-gray-800 mb-2">{t("tags")}</h4>
                 <div className="flex flex-wrap gap-2">
                   {product.tags.map((tag) => (
                     <span

@@ -1,14 +1,16 @@
-import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { RecipesData } from "@modules/recipes/types"
 import RecipesGrid from "@modules/recipes/components/recipes-grid"
 
 // Force dynamic rendering to avoid DYNAMIC_SERVER_USAGE errors
 export const dynamic = "force-dynamic"
 
-export const metadata: Metadata = {
-  title: "Recetas Saludables | Vita Integral",
-  description:
-    "Descubre recetas saludables generadas con IA usando productos de nuestra tienda. Recetas veganas, keto, sin gluten y más.",
+export async function generateMetadata() {
+  const t = await getTranslations("recipes")
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
 async function getRecipes(): Promise<RecipesData | null> {
@@ -60,6 +62,7 @@ export default async function RecetasPage(props: {
   const params = await props.params
   const { countryCode } = params
 
+  const t = await getTranslations("recipes")
   const recipesData = await getRecipes()
   const recipes = recipesData?.recipes || []
 
@@ -68,15 +71,14 @@ export default async function RecetasPage(props: {
       {/* Hero Section */}
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-          Recetas Saludables del Día
+          {t("pageTitle")}
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-          Descubre recetas deliciosas generadas con IA, perfectas para tu estilo de vida.
-          Cada receta usa productos disponibles en nuestra tienda.
+          {t("pageDescription")}
         </p>
         {recipesData?.generatedAt && (
           <p className="text-sm text-gray-400 mt-2">
-            Actualizado: {new Date(recipesData.generatedAt).toLocaleDateString("es-CO", {
+            {t("updated")} {new Date(recipesData.generatedAt).toLocaleDateString("es-CO", {
               weekday: "long",
               year: "numeric",
               month: "long",
@@ -94,9 +96,9 @@ export default async function RecetasPage(props: {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <h3 className="font-bold text-gray-800 mb-2">Generadas con IA</h3>
+          <h3 className="font-bold text-gray-800 mb-2">{t("aiGenerated")}</h3>
           <p className="text-gray-600 text-sm">
-            Recetas únicas creadas diariamente con inteligencia artificial
+            {t("aiGeneratedDesc")}
           </p>
         </div>
 
@@ -106,9 +108,9 @@ export default async function RecetasPage(props: {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
           </div>
-          <h3 className="font-bold text-gray-800 mb-2">Compra Fácil</h3>
+          <h3 className="font-bold text-gray-800 mb-2">{t("easyPurchase")}</h3>
           <p className="text-gray-600 text-sm">
-            Agrega todos los productos al carrito con un solo clic
+            {t("easyPurchaseDesc")}
           </p>
         </div>
 
@@ -118,9 +120,9 @@ export default async function RecetasPage(props: {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </div>
-          <h3 className="font-bold text-gray-800 mb-2">Para Cada Dieta</h3>
+          <h3 className="font-bold text-gray-800 mb-2">{t("forEveryDiet")}</h3>
           <p className="text-gray-600 text-sm">
-            Vegano, keto, sin gluten, paleo y más opciones
+            {t("forEveryDietDesc")}
           </p>
         </div>
       </div>
@@ -144,11 +146,10 @@ export default async function RecetasPage(props: {
             />
           </svg>
           <h2 className="text-xl font-bold text-gray-700 mb-2">
-            Las recetas se están preparando
+            {t("recipesLoading")}
           </h2>
           <p className="text-gray-500 max-w-md mx-auto">
-            Nuestro chef con IA está creando deliciosas recetas para ti.
-            ¡Vuelve pronto para descubrir nuevas ideas!
+            {t("recipesLoadingDesc")}
           </p>
         </div>
       )}
@@ -156,7 +157,7 @@ export default async function RecetasPage(props: {
       {/* Info Section */}
       <div className="mt-16 bg-gray-50 rounded-2xl p-8">
         <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
-          ¿Cómo funciona?
+          {t("howItWorks")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="text-center">
@@ -164,7 +165,7 @@ export default async function RecetasPage(props: {
               1
             </div>
             <p className="text-gray-600 text-sm">
-              Filtra por tu tipo de dieta favorita
+              {t("step1Desc")}
             </p>
           </div>
           <div className="text-center">
@@ -172,7 +173,7 @@ export default async function RecetasPage(props: {
               2
             </div>
             <p className="text-gray-600 text-sm">
-              Explora las recetas del día
+              {t("step2Desc")}
             </p>
           </div>
           <div className="text-center">
@@ -180,7 +181,7 @@ export default async function RecetasPage(props: {
               3
             </div>
             <p className="text-gray-600 text-sm">
-              Agrega todos los productos al carrito
+              {t("step3Desc")}
             </p>
           </div>
           <div className="text-center">
@@ -188,7 +189,7 @@ export default async function RecetasPage(props: {
               4
             </div>
             <p className="text-gray-600 text-sm">
-              ¡Cocina y disfruta!
+              {t("step4Desc")}
             </p>
           </div>
         </div>

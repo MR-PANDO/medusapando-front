@@ -3,6 +3,7 @@
 import { reorder } from "@lib/data/orders"
 import { ArrowUpRightMini } from "@medusajs/icons"
 import { useParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import React, { useState } from "react"
 
 type ReorderButtonProps = {
@@ -13,6 +14,7 @@ const ReorderButton: React.FC<ReorderButtonProps> = ({ orderId }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { countryCode } = useParams()
+  const t = useTranslations("order")
 
   const handleReorder = async () => {
     setIsLoading(true)
@@ -26,7 +28,7 @@ const ReorderButton: React.FC<ReorderButtonProps> = ({ orderId }) => {
         window.location.href = `/${countryCode}/cart`
       }
     } catch (err: any) {
-      setError(err?.message || "Error al crear el nuevo pedido")
+      setError(err?.message || t("createOrderError"))
       setIsLoading(false)
     }
   }
@@ -39,7 +41,7 @@ const ReorderButton: React.FC<ReorderButtonProps> = ({ orderId }) => {
         className="flex gap-2 items-center text-ui-fg-interactive hover:text-ui-fg-interactive-hover disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <ArrowUpRightMini />
-        {isLoading ? "Creando pedido..." : "Volver a Pedir"}
+        {isLoading ? t("creatingOrder") : t("reorder")}
       </button>
       {error && (
         <span className="text-sm text-ui-fg-error">{error}</span>

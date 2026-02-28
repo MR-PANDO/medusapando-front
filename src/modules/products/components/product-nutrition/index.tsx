@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 
 type NutritionData = {
   id: string
@@ -108,6 +109,7 @@ const SUB_NUTRIENTS = [
 ]
 
 const ProductNutrition = ({ productId }: ProductNutritionProps) => {
+  const t = useTranslations("products")
   const [nutrition, setNutrition] = useState<NutritionData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -254,7 +256,7 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
           />
         </svg>
         <p className="text-gray-500 text-sm">
-          No hay informacion nutricional disponible para este producto.
+          {t("noNutritionInfo")}
         </p>
       </div>
     )
@@ -280,7 +282,7 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
           />
         </svg>
         <p className="text-gray-500 text-sm">
-          No hay informacion nutricional disponible para este producto.
+          {t("noNutritionInfo")}
         </p>
       </div>
     )
@@ -297,7 +299,7 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
         {/* Header */}
         <div className="bg-emerald-700 text-white px-4 py-3">
           <h3 className="text-xl font-bold text-center">
-            Informacion Nutricional
+            {t("nutritionInfo")}
           </h3>
         </div>
 
@@ -306,12 +308,12 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
           <div className="px-4 py-3 border-b-2 border-black bg-emerald-50">
             {nutrition.servingSize && (
               <div className="text-sm font-medium">
-                Tamano de porcion: <span className="font-bold">{nutrition.servingSize}</span>
+                {t("servingSize")} <span className="font-bold">{nutrition.servingSize}</span>
               </div>
             )}
             {nutrition.servingsPerContainer && (
               <div className="text-sm text-gray-600">
-                Porciones por envase: {nutrition.servingsPerContainer}
+                {t("servingsPerContainer")} {nutrition.servingsPerContainer}
               </div>
             )}
           </div>
@@ -322,13 +324,13 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
           <>
             <div className="grid grid-cols-3 bg-gray-100 border-b border-gray-300">
               <div className="px-3 py-2 text-sm font-bold text-gray-800 border-r border-gray-300">
-                Nutriente
+                {t("nutrient")}
               </div>
               <div className="px-3 py-2 text-sm font-bold text-gray-800 text-center border-r border-gray-300">
-                Por 100g
+                {t("per100g")}
               </div>
               <div className="px-3 py-2 text-sm font-bold text-gray-800 text-center">
-                Por porcion
+                {t("perServing")}
               </div>
             </div>
 
@@ -395,7 +397,7 @@ const ProductNutrition = ({ productId }: ProductNutritionProps) => {
       {/* Last Updated */}
       {nutrition.scannedAt && (
         <p className="text-xs text-gray-400 mt-3 text-center">
-          Informacion escaneada el {new Date(nutrition.scannedAt).toLocaleDateString("es-ES")}
+          {t("scannedOn", { date: new Date(nutrition.scannedAt).toLocaleDateString("es-ES") })}
         </p>
       )}
     </div>

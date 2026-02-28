@@ -3,6 +3,7 @@
 import { instantMeiliSearch } from "@meilisearch/instant-meilisearch"
 import { useParams } from "next/navigation"
 import { useState, useRef, useEffect, useCallback } from "react"
+import { useTranslations } from "next-intl"
 import { InstantSearch, useSearchBox, useHits } from "react-instantsearch"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
@@ -29,6 +30,7 @@ function SearchInput({
   onFocus: () => void
   onBlur: () => void
 }) {
+  const t = useTranslations("search")
   const { query, refine } = useSearchBox()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -41,7 +43,7 @@ function SearchInput({
         onChange={(e) => refine(e.target.value)}
         onFocus={onFocus}
         onBlur={onBlur}
-        placeholder="Search products..."
+        placeholder={t("placeholder")}
         className="w-full h-10 px-4 pr-10 text-sm bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white transition-colors"
         autoComplete="off"
       />
@@ -69,6 +71,7 @@ function AddToCartButton({
   variantId: string
   countryCode: string
 }) {
+  const t = useTranslations("search")
   const [quantity, setQuantity] = useState(1)
   const [isAdding, setIsAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -138,13 +141,14 @@ function AddToCartButton({
         }`}
         type="button"
       >
-        {added ? "Added!" : isAdding ? "..." : "Add"}
+        {added ? t("added") : isAdding ? "..." : t("add")}
       </button>
     </div>
   )
 }
 
 function SearchResults({ onResultClick }: { onResultClick: () => void }) {
+  const t = useTranslations("search")
   const { hits } = useHits<ProductHit>()
   const params = useParams()
   const countryCode = (params.countryCode as string) || "ve"
@@ -152,7 +156,7 @@ function SearchResults({ onResultClick }: { onResultClick: () => void }) {
   if (hits.length === 0) {
     return (
       <div className="p-4 text-center text-gray-500">
-        No products found
+        {t("noResults")}
       </div>
     )
   }

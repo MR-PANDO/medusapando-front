@@ -5,6 +5,7 @@ import { XMark } from "@medusajs/icons"
 import { Fragment } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useSideMenu } from "@lib/context/side-menu-context"
+import { useTranslations } from "next-intl"
 import CategoryMenu from "../category-menu"
 
 type CategoryWithChildren = HttpTypes.StoreProductCategory & {
@@ -18,6 +19,7 @@ const SideMenu = ({
   categories: CategoryWithChildren[]
 }) => {
   const { isOpen, open, close } = useSideMenu()
+  const t = useTranslations("layout")
 
   return (
     <div className="h-full flex items-center">
@@ -32,8 +34,8 @@ const SideMenu = ({
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
-              <span className="hidden sm:inline font-semibold text-sm uppercase tracking-wide whitespace-nowrap">Comprar por Categorías</span>
-              <span className="sm:hidden font-semibold text-sm uppercase tracking-wide">Categorías</span>
+              <span className="hidden sm:inline font-semibold text-sm uppercase tracking-wide whitespace-nowrap">{t("shopByCategories")}</span>
+              <span className="sm:hidden font-semibold text-sm uppercase tracking-wide">{t("categoriesShort")}</span>
             </button>
           </div>
 

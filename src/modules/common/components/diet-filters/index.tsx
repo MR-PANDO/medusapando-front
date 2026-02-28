@@ -1,6 +1,7 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import brushPattern from "@assets/brush-pattern.png"
 import Image from "next/image"
+import { getTranslations } from "next-intl/server"
 
 // Import SVG icons
 import VeganoSvg from "@assets/vegano.svg"
@@ -28,16 +29,17 @@ type DietFiltersProps = {
   className?: string
 }
 
-export default function DietFilters({ className = "" }: DietFiltersProps) {
+export default async function DietFilters({ className = "" }: DietFiltersProps) {
+  const t = await getTranslations("dietFilters")
   return (
     <div className={`content-container py-8 mb-8 ${className}`}>
       {/* Section Title */}
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-          Encuentra tu Estilo de Vida
+          {t("title")}
         </h2>
         <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
-          Filtra nuestros productos según tus preferencias alimenticias y descubre opciones perfectas para ti
+          {t("description")}
         </p>
       </div>
 

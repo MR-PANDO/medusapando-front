@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
 import { DIETS_DATA } from "@lib/data/diets"
@@ -7,31 +7,31 @@ import brushPattern from "@assets/brush-pattern.png"
 // Force dynamic rendering to avoid static/cookies conflict with layout
 export const dynamic = "force-dynamic"
 
-export const metadata: Metadata = {
-  title: "Guía de Dietas | Vita Integral",
-  description:
-    "Descubre las diferentes dietas que manejamos: vegana, vegetariana, sin gluten, keto, paleo y más. Información basada en evidencia científica.",
+export async function generateMetadata() {
+  const t = await getTranslations("dietPages")
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  }
 }
 
-export default function DietasPage() {
+export default async function DietasPage() {
+  const t = await getTranslations("dietPages")
   return (
     <div className="content-container py-12">
       {/* Hero Section */}
       <div className="text-center mb-16">
         <span className="inline-block px-4 py-1 bg-[#5B8C3E]/10 text-[#5B8C3E] text-sm font-medium rounded-full mb-4">
-          Guía Nutricional
+          {t("nutritionalGuide")}
         </span>
         <h1
           className="text-4xl md:text-5xl font-bold text-gray-800 mb-6"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
-          Encuentra tu{" "}
-          <span className="text-[#5B8C3E]">Estilo de Vida</span>
+          {t("findYourLifestyle")}
         </h1>
         <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
-          Cada persona es única, y su alimentación también debería serlo.
-          Explora nuestras guías de dietas basadas en evidencia científica
-          y encuentra productos adaptados a tus necesidades.
+          {t("heroDescription")}
         </p>
       </div>
 
@@ -39,19 +39,19 @@ export default function DietasPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
         <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 text-center">
           <div className="text-3xl font-bold text-[#5B8C3E] mb-1">8</div>
-          <div className="text-gray-600 text-sm">Tipos de Dieta</div>
+          <div className="text-gray-600 text-sm">{t("dietTypes")}</div>
         </div>
         <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-6 text-center">
           <div className="text-3xl font-bold text-orange-600 mb-1">500+</div>
-          <div className="text-gray-600 text-sm">Productos</div>
+          <div className="text-gray-600 text-sm">{t("products")}</div>
         </div>
         <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 text-center">
           <div className="text-3xl font-bold text-pink-600 mb-1">100%</div>
-          <div className="text-gray-600 text-sm">Info Verificada</div>
+          <div className="text-gray-600 text-sm">{t("verifiedInfo")}</div>
         </div>
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 text-center">
           <div className="text-3xl font-bold text-blue-600 mb-1">24h</div>
-          <div className="text-gray-600 text-sm">Entrega Rápida</div>
+          <div className="text-gray-600 text-sm">{t("fastDelivery")}</div>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function DietasPage() {
 
                 {/* CTA */}
                 <div className="flex items-center text-[#5B8C3E] text-sm font-medium">
-                  <span>Conocer más sobre {diet.name}</span>
+                  <span>{t("learnMoreAbout", { name: diet.name })}</span>
                   <svg
                     className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-2"
                     fill="none"
@@ -154,13 +154,10 @@ export default function DietasPage() {
       <div className="bg-gradient-to-r from-[#5B8C3E]/5 to-emerald-50 rounded-3xl p-8 md:p-12">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-            Información basada en evidencia científica
+            {t("evidenceBasedInfo")}
           </h2>
           <p className="text-gray-600 mb-6 leading-relaxed">
-            Toda la información presentada en nuestras guías de dietas está respaldada por
-            fuentes científicas reconocidas como el NIDDK (Instituto Nacional de Diabetes y
-            Enfermedades Digestivas), la OMS, Mayo Clinic, y publicaciones en revistas
-            científicas indexadas como SciELO.
+            {t("evidenceBasedDescription")}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <LocalizedClientLink
@@ -172,7 +169,7 @@ export default function DietasPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              Explorar Productos
+              {t("exploreProducts")}
             </LocalizedClientLink>
             <LocalizedClientLink
               href="/recetas"
@@ -183,7 +180,7 @@ export default function DietasPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              Ver Recetas
+              {t("viewRecipes")}
             </LocalizedClientLink>
           </div>
         </div>
@@ -196,11 +193,9 @@ export default function DietasPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           <div>
-            <h3 className="font-bold text-amber-800 mb-1">Aviso Importante</h3>
+            <h3 className="font-bold text-amber-800 mb-1">{t("importantNotice")}</h3>
             <p className="text-amber-700 text-sm leading-relaxed">
-              La información proporcionada es solo con fines educativos y no sustituye el consejo médico profesional.
-              Antes de iniciar cualquier dieta, especialmente si tienes condiciones de salud preexistentes,
-              consulta con un profesional de la salud o un nutricionista certificado.
+              {t("disclaimerText")}
             </p>
           </div>
         </div>

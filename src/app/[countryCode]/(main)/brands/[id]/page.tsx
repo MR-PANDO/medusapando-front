@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 import { retrieveBrand, listProductsByBrand } from "@lib/data/brands"
 import { getRegion } from "@lib/data/regions"
@@ -12,20 +13,22 @@ type Props = {
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
   const brand = await retrieveBrand(params.id)
+  const t = await getTranslations("brands")
 
   if (!brand) {
     return {
-      title: "Marca no encontrada",
+      title: t("brandNotFound"),
     }
   }
 
   return {
-    title: `${brand.name} | Vita Integral`,
-    description: `Productos de la marca ${brand.name}`,
+    title: t("brandMetaTitle", { name: brand.name }),
+    description: t("brandMetaDescription", { name: brand.name }),
   }
 }
 
 export default async function BrandPage(props: Props) {
+  const t = await getTranslations("brands")
   const params = await props.params
   const { countryCode, id } = params
 
@@ -52,7 +55,7 @@ export default async function BrandPage(props: Props) {
           {brand.name}
         </Heading>
         <Text className="text-ui-fg-subtle">
-          {count} producto{count !== 1 ? "s" : ""}
+          {count !== 1 ? t("productCount", { count }) : t("productCountSingular", { count })}
         </Text>
       </div>
 
@@ -66,7 +69,7 @@ export default async function BrandPage(props: Props) {
         </ul>
       ) : (
         <Text className="text-ui-fg-subtle">
-          No hay productos disponibles para esta marca.
+          {t("noProducts")}
         </Text>
       )}
     </div>

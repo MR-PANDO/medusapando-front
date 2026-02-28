@@ -6,6 +6,7 @@ import { HttpTypes } from "@medusajs/types"
 import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
@@ -29,6 +30,7 @@ export default function ProductActions({
   product,
   disabled,
 }: ProductActionsProps) {
+  const t = useTranslations("products")
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -217,7 +219,7 @@ export default function ProductActions({
                 ? "bg-red-50 border-red-200 text-red-500"
                 : "border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600"
             }`}
-            title={isWishlisted ? "Quitar de favoritos" : "Agregar a favoritos"}
+            title={isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -272,12 +274,12 @@ export default function ProductActions({
           </svg>
           <span>
             {!selectedVariant && !options
-              ? "Seleccionar variante"
+              ? t("selectVariant")
               : !inStock || !isValidVariant
-              ? "Agotado"
+              ? t("outOfStock")
               : isAdding
-              ? "Agregando..."
-              : "Agregar al carrito"}
+              ? t("adding")
+              : t("addToCart")}
           </span>
         </button>
 
@@ -297,7 +299,7 @@ export default function ProductActions({
               : "border-emerald-600 text-emerald-600 hover:bg-emerald-50"
           }`}
         >
-          Comprar ahora
+          {t("buyNow")}
         </button>
 
         <MobileActions

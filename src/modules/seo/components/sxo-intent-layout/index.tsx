@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl"
 import { SeoMetadata } from "@lib/data/seo"
 
 type SxoIntentLayoutProps = {
@@ -14,6 +15,7 @@ function isSafeHref(url: string): boolean {
 }
 
 const SxoIntentLayout = ({ seo }: SxoIntentLayoutProps) => {
+  const t = useTranslations("seo")
   if (!seo) return null
 
   const links = Array.isArray(seo.sxo_internal_links)
@@ -42,7 +44,7 @@ const SxoIntentLayout = ({ seo }: SxoIntentLayoutProps) => {
       {hasLinks && (
         <div>
           <h3 className="text-sm font-medium text-gray-500 mb-2">
-            Tambien te puede interesar
+            {t("youMayAlsoLike")}
           </h3>
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
             {links

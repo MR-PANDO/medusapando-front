@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useState } from "react"
+import { useTranslations } from "next-intl"
 import { HttpTypes } from "@medusajs/types"
 
 import SortProducts, { SortOptions } from "./sort-products"
@@ -43,6 +44,7 @@ const RefinementList = ({
   selectedTags,
   'data-testid': dataTestId
 }: RefinementListProps) => {
+  const t = useTranslations("store")
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -99,14 +101,14 @@ const RefinementList = ({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
-          Limpiar filtros
+          {t("clearFilters")}
         </button>
       )}
 
       {/* Categories Section */}
       {rootCategories.length > 0 && (
         <FilterSection
-          title="Categorías"
+          title={t("categories")}
           isExpanded={expandedSections.categories}
           onToggle={() => toggleSection("categories")}
         >
@@ -117,7 +119,7 @@ const RefinementList = ({
                 type="text"
                 value={categorySearch}
                 onChange={(e) => setCategorySearch(e.target.value)}
-                placeholder="Buscar categoría..."
+                placeholder={t("searchCategory")}
                 className="w-full px-3 py-2 pr-8 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
               />
               {categorySearch ? (
@@ -162,7 +164,7 @@ const RefinementList = ({
                     child.name.toLowerCase().includes(categorySearch.toLowerCase())
                   )
                 ).length === 0 && (
-                  <p className="text-sm text-gray-500 py-2">No se encontraron categorías</p>
+                  <p className="text-sm text-gray-500 py-2">{t("noCategoriesFound")}</p>
                 )}
               </div>
             </div>
@@ -172,7 +174,7 @@ const RefinementList = ({
 
       {/* Diet Tags Section */}
       <FilterSection
-        title="Dieta / Estilo de Vida"
+        title={t("dietLifestyle")}
         isExpanded={expandedSections.diets}
         onToggle={() => toggleSection("diets")}
       >
@@ -212,7 +214,7 @@ const RefinementList = ({
 
       {/* Sort Section */}
       <FilterSection
-        title="Ordenar por"
+        title={t("sortBy")}
         isExpanded={expandedSections.sort}
         onToggle={() => toggleSection("sort")}
       >
@@ -221,7 +223,7 @@ const RefinementList = ({
 
       {/* Promotions Section */}
       <FilterSection
-        title="Promociones"
+        title={t("promotions")}
         isExpanded={expandedSections.promotions}
         onToggle={() => toggleSection("promotions")}
       >
@@ -266,10 +268,10 @@ const RefinementList = ({
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-          Filtros
+          {t("filters")}
           {hasActiveFilters && (
             <span className="ml-1 px-2 py-0.5 text-xs bg-emerald-600 text-white rounded-full">
-              Activos
+              {t("active")}
             </span>
           )}
         </button>
@@ -291,7 +293,7 @@ const RefinementList = ({
           {/* Drawer */}
           <div className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl small:hidden overflow-y-auto">
             <div className="sticky top-0 z-10 flex items-center justify-between p-4 bg-white border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Filtros</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("filters")}</h2>
               <button
                 onClick={() => setIsMobileOpen(false)}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
@@ -310,7 +312,7 @@ const RefinementList = ({
                 onClick={() => setIsMobileOpen(false)}
                 className="w-full py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
               >
-                Aplicar Filtros
+                {t("applyFilters")}
               </button>
             </div>
           </div>

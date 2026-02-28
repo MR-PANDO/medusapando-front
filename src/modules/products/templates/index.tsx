@@ -8,6 +8,7 @@ import RelatedProducts from "@modules/products/components/related-products"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 import ProductActionsWrapper from "./product-actions-wrapper"
@@ -21,12 +22,13 @@ type ProductTemplateProps = {
   images: HttpTypes.StoreProductImage[]
 }
 
-const ProductTemplate: React.FC<ProductTemplateProps> = ({
+const ProductTemplate: React.FC<ProductTemplateProps> = async ({
   product,
   region,
   countryCode,
   images,
 }) => {
+  const t = await getTranslations("products")
   if (!product || !product.id) {
     return notFound()
   }
@@ -73,7 +75,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                     <span
                       className={`w-2 h-2 rounded-full ${inStock ? "bg-green-500" : "bg-red-500"}`}
                     />
-                    {inStock ? "Disponible" : "Agotado"}
+                    {inStock ? t("available") : t("outOfStock")}
                   </span>
                 </div>
 
@@ -132,10 +134,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900 text-sm">
-                      Precios Justos
+                      {t("fairPrices")}
                     </h4>
                     <p className="text-xs text-gray-500">
-                      Productos saludables a precios accesibles para todos
+                      {t("fairPricesText")}
                     </p>
                   </div>
                 </div>
@@ -158,10 +160,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900 text-sm">
-                      Cambios y Devoluciones
+                      {t("returnsExchanges")}
                     </h4>
                     <p className="text-xs text-gray-500">
-                      48 horas para reportar productos dañados o incorrectos
+                      {t("returnsExchangesText")}
                     </p>
                   </div>
                 </div>
@@ -178,7 +180,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <div className="lg:col-span-1 order-2 lg:order-1">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Tambien te puede gustar
+                {t("youMayAlsoLike")}
               </h3>
               <Suspense fallback={<SkeletonRelatedProducts />}>
                 <RelatedProducts product={product} countryCode={countryCode} />

@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 export type SortOptions = "price_asc" | "price_desc" | "created_at" | "sales_count"
 
 type SortProductsProps = {
@@ -8,30 +10,32 @@ type SortProductsProps = {
   "data-testid"?: string
 }
 
-const sortOptions = [
-  {
-    value: "sales_count",
-    label: "Más Vendidos",
-  },
-  {
-    value: "created_at",
-    label: "Más Recientes",
-  },
-  {
-    value: "price_asc",
-    label: "Precio: Menor a Mayor",
-  },
-  {
-    value: "price_desc",
-    label: "Precio: Mayor a Menor",
-  },
-]
-
 const SortProducts = ({
   "data-testid": dataTestId,
   sortBy,
   setQueryParams,
 }: SortProductsProps) => {
+  const t = useTranslations("store")
+
+  const sortOptions = [
+    {
+      value: "sales_count",
+      label: t("bestSelling"),
+    },
+    {
+      value: "created_at",
+      label: t("newest"),
+    },
+    {
+      value: "price_asc",
+      label: t("priceLowHigh"),
+    },
+    {
+      value: "price_desc",
+      label: t("priceHighLow"),
+    },
+  ]
+
   const handleChange = (value: SortOptions) => {
     setQueryParams("sortBy", value)
   }

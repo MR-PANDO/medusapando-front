@@ -1,6 +1,7 @@
 import { Text } from "@medusajs/ui"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
+import { getTranslations } from "next-intl/server"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
@@ -28,6 +29,7 @@ export default async function ProductPreview({
   region: HttpTypes.StoreRegion
   countryCode?: string
 }) {
+  const t = await getTranslations("products")
   const { cheapestPrice } = getProductPrice({
     product,
   })
@@ -90,7 +92,7 @@ export default async function ProductPreview({
             className={`w-2 h-2 rounded-full ${inStock ? "bg-green-500" : "bg-red-500"}`}
           />
           <Text className="text-xs text-gray-600">
-            {inStock ? "Disponible" : "Agotado"}
+            {inStock ? t("available") : t("outOfStock")}
           </Text>
         </div>
 

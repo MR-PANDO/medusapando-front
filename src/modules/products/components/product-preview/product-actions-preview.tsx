@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { addToCart } from "@lib/data/cart"
+import { useTranslations } from "next-intl"
 
 type ProductActionsPreviewProps = {
   variantId: string
@@ -14,6 +15,7 @@ export default function ProductActionsPreview({
   countryCode,
   inStock = true,
 }: ProductActionsPreviewProps) {
+  const t = useTranslations("products")
   const [quantity, setQuantity] = useState(1)
   const [isAdding, setIsAdding] = useState(false)
   const [added, setAdded] = useState(false)
@@ -120,7 +122,7 @@ export default function ProductActionsPreview({
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}
         type="button"
-        title={added ? "Agregado!" : inStock ? "Agregar al carrito" : "Sin stock"}
+        title={added ? t("added") : inStock ? t("addToCart") : t("noStock")}
       >
         {added ? (
           <svg

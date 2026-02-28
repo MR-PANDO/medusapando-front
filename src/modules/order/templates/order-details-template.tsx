@@ -9,6 +9,7 @@ import OrderDetails from "@modules/order/components/order-details"
 import OrderSummary from "@modules/order/components/order-summary"
 import ReorderButton from "@modules/order/components/reorder-button"
 import ShippingDetails from "@modules/order/components/shipping-details"
+import { useTranslations } from "next-intl"
 import React from "react"
 
 type OrderDetailsTemplateProps = {
@@ -18,10 +19,11 @@ type OrderDetailsTemplateProps = {
 const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
   order,
 }) => {
+  const t = useTranslations("order")
   return (
     <div className="flex flex-col justify-center gap-y-4">
       <div className="flex gap-2 justify-between items-center">
-        <h1 className="text-2xl-semi">Order details</h1>
+        <h1 className="text-2xl-semi">{t("orderDetails")}</h1>
         <div className="flex gap-4 items-center">
           <ReorderButton orderId={order.id} />
           <LocalizedClientLink
@@ -29,7 +31,7 @@ const OrderDetailsTemplate: React.FC<OrderDetailsTemplateProps> = ({
             className="flex gap-2 items-center text-ui-fg-subtle hover:text-ui-fg-base"
             data-testid="back-to-overview-button"
           >
-            <XMark /> Back to overview
+            <XMark /> {t("backToOverview")}
           </LocalizedClientLink>
         </div>
       </div>

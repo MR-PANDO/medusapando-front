@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { SeoMetadata } from "@lib/data/seo"
 
 type FaqSectionProps = {
@@ -8,6 +9,7 @@ type FaqSectionProps = {
 }
 
 const FaqSection = ({ seo }: FaqSectionProps) => {
+  const t = useTranslations("seo")
   const faqs = Array.isArray(seo?.aeo_faqs) ? seo.aeo_faqs : []
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
@@ -15,7 +17,7 @@ const FaqSection = ({ seo }: FaqSectionProps) => {
 
   return (
     <section className="py-8">
-      <h2 className="text-xl font-semibold mb-4">Preguntas Frecuentes</h2>
+      <h2 className="text-xl font-semibold mb-4">{t("faq")}</h2>
       <div className="space-y-2">
         {faqs.map((faq, idx) => (
           <div key={idx} className="border rounded-lg overflow-hidden">

@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from "react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { useSideMenu } from "@lib/context/side-menu-context"
+import { useTranslations } from "next-intl"
 
 export default function HeroClient() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const { open: openSideMenu } = useSideMenu()
+  const t = useTranslations("home")
 
   useEffect(() => {
     setIsLoaded(true)
@@ -36,12 +38,12 @@ export default function HeroClient() {
               }`}
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
-              Sabor
+              {t("heroLine1")}
               <br />
-              <span className="text-[#5B8C3E] font-normal">Natural</span>
+              <span className="text-[#5B8C3E] font-normal">{t("heroLine2")}</span>
               <br />
               <span className="text-3xl sm:text-4xl md:text-5xl text-gray-600">
-                en tu mesa
+                {t("heroLine3")}
               </span>
             </h1>
 
@@ -51,8 +53,7 @@ export default function HeroClient() {
                 isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
-              Alimentos conscientes que nutren cuerpo, mente y espíritu.
-              Seleccionados con amor para tu bienestar.
+              {t("heroDescription")}
             </p>
 
             {/* CTA Buttons */}
@@ -70,7 +71,7 @@ export default function HeroClient() {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
-                Explorar Productos
+                {t("exploreProducts")}
                 <svg
                   className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
                   fill="none"
@@ -87,7 +88,7 @@ export default function HeroClient() {
                 font-medium text-xs sm:text-sm uppercase tracking-wider border border-gray-200
                 hover:bg-white hover:border-[#5B8C3E] hover:text-[#5B8C3E] transition-all duration-300"
               >
-                Ver Categorías
+                {t("viewCategories")}
               </button>
             </div>
 
@@ -101,19 +102,19 @@ export default function HeroClient() {
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-xs sm:text-sm text-gray-600">100% Natural</span>
+                <span className="text-xs sm:text-sm text-gray-600">{t("natural")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-xs sm:text-sm text-gray-600">Entrega 24-72h</span>
+                <span className="text-xs sm:text-sm text-gray-600">{t("delivery")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#5B8C3E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span className="text-xs sm:text-sm text-gray-600">Compra Segura</span>
+                <span className="text-xs sm:text-sm text-gray-600">{t("securePurchase")}</span>
               </div>
             </div>
           </div>

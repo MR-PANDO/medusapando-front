@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useTranslations } from "next-intl"
 
 type CategoryWithChildren = HttpTypes.StoreProductCategory & {
   category_children?: HttpTypes.StoreProductCategory[]
@@ -75,6 +76,7 @@ export default function CategoryMenu({
   onClose?: () => void
 }) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
+  const t = useTranslations("layout")
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId)
@@ -91,7 +93,7 @@ export default function CategoryMenu({
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
-        <span className="font-semibold text-sm uppercase tracking-wide">Ver Todos los Productos</span>
+        <span className="font-semibold text-sm uppercase tracking-wide">{t("viewAllProducts")}</span>
       </LocalizedClientLink>
 
       {/* Categories Header */}
@@ -99,7 +101,7 @@ export default function CategoryMenu({
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-        <span className="font-semibold text-sm uppercase tracking-wide">Categorías</span>
+        <span className="font-semibold text-sm uppercase tracking-wide">{t("shopByCategories")}</span>
       </div>
 
       {/* Menu Items - scrollable */}
@@ -116,7 +118,7 @@ export default function CategoryMenu({
           ))
         ) : (
           <div className="px-5 py-4 text-sm text-gray-500">
-            No hay categorías disponibles
+            {t("noCategoriesAvailable")}
           </div>
         )}
       </nav>

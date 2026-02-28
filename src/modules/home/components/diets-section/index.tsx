@@ -2,24 +2,24 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import brushPattern from "@assets/brush-pattern.png"
 import Image from "next/image"
 import { DIETS_DATA } from "@lib/data/diets"
+import { getTranslations } from "next-intl/server"
 
-export default function DietsSection() {
+export default async function DietsSection() {
+  const t = await getTranslations("home")
   return (
     <section className="py-16 bg-gradient-to-b from-white to-gray-50">
       <div className="content-container">
         {/* Section Header */}
         <div className="text-center mb-12">
           <span className="inline-block px-4 py-1 bg-[#5B8C3E]/10 text-[#5B8C3E] text-sm font-medium rounded-full mb-4">
-            Tu Estilo de Vida
+            {t("dietsTitle")}
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-            Alimentación para{" "}
-            <span className="text-[#5B8C3E]">Cada Necesidad</span>
+            {t("dietsSubtitle")}
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-base md:text-lg">
-            Descubre productos adaptados a tu dieta. Ya sea por salud, ética o preferencia,
-            tenemos opciones deliciosas para ti.
+            {t("dietsDescription")}
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export default function DietsSection() {
 
               {/* CTA */}
               <div className="flex items-center text-[#5B8C3E] text-sm font-medium">
-                <span>Descubrir más</span>
+                <span>{t("discoverMore")}</span>
                 <svg
                   className="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1"
                   fill="none"
@@ -123,7 +123,7 @@ export default function DietsSection() {
                        hover:bg-[#4A7A2E] transition-all duration-300
                        hover:shadow-xl hover:-translate-y-0.5"
           >
-            Ver Todas las Dietas
+            {t("viewAllDiets")}
             <svg
               className="w-4 h-4"
               fill="none"

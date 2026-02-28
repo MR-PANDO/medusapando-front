@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Recipe, DIET_OPTIONS } from "../../types"
 import RecipeCard from "../recipe-card"
 
@@ -21,6 +22,7 @@ function getRecipeDiets(recipe: Recipe): string[] {
 }
 
 export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) {
+  const t = useTranslations("recipes")
   const [selectedDiet, setSelectedDiet] = useState<string | null>(null)
 
   // Filter recipes - a recipe matches if it has the selected diet in its diets array
@@ -46,7 +48,7 @@ export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) 
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
-            Todas ({recipes.length})
+            {t("all", { count: recipes.length })}
           </button>
           {DIET_OPTIONS.filter(d => d.id !== "all").map((diet) => {
             const count = getDietCount(diet.id)
@@ -98,7 +100,7 @@ export default function RecipesGrid({ recipes, countryCode }: RecipesGridProps) 
               d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
             />
           </svg>
-          <p className="text-gray-500">No hay recetas disponibles para esta dieta</p>
+          <p className="text-gray-500">{t("noRecipesAvailable")}</p>
         </div>
       )}
     </div>
