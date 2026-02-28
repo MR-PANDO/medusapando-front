@@ -51,7 +51,7 @@ export const getSeoMetadata = async (
 
     const { seo_metadata } = await sdk.client.fetch<{
       seo_metadata: SeoMetadata
-    }>(`/store/seo/${resourceType}/${resourceId}`, {
+    }>(`/store/seo/${encodeURIComponent(resourceType)}/${encodeURIComponent(resourceId)}`, {
       method: "GET",
       next,
       cache: "force-cache",

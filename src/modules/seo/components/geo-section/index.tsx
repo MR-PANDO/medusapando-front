@@ -4,6 +4,15 @@ type GeoSectionProps = {
   seo: SeoMetadata | null
 }
 
+function isSafeHref(url: string): boolean {
+  try {
+    const parsed = new URL(url, "https://placeholder.com")
+    return ["http:", "https:"].includes(parsed.protocol)
+  } catch {
+    return url.startsWith("/")
+  }
+}
+
 const GeoSection = ({ seo }: GeoSectionProps) => {
   if (!seo) return null
 
@@ -54,18 +63,20 @@ const GeoSection = ({ seo }: GeoSectionProps) => {
         <div>
           <h3 className="text-sm font-medium text-gray-500 mb-2">Fuentes</h3>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            {citations.map((cit, idx) => (
-              <li key={idx}>
-                <a
-                  href={cit.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  {cit.source}
-                </a>
-              </li>
-            ))}
+            {citations
+              .filter((cit) => cit.url && isSafeHref(cit.url))
+              .map((cit, idx) => (
+                <li key={idx}>
+                  <a
+                    href={cit.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {cit.source}
+                  </a>
+                </li>
+              ))}
           </ul>
         </div>
       )}

@@ -4,6 +4,11 @@ type SeoHeadProps = {
   seo: SeoMetadata | null
 }
 
+/** Escape < to prevent </script> injection in JSON-LD */
+function safeJsonLd(data: Record<string, any>): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c")
+}
+
 const SeoHead = ({ seo }: SeoHeadProps) => {
   if (!seo) return null
 
@@ -73,7 +78,7 @@ const SeoHead = ({ seo }: SeoHeadProps) => {
             key={`seo-jsonld-${idx}`}
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify(script.data),
+              __html: safeJsonLd(script.data),
             }}
           />
         ))}

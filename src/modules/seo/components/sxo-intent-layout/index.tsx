@@ -4,6 +4,15 @@ type SxoIntentLayoutProps = {
   seo: SeoMetadata | null
 }
 
+function isSafeHref(url: string): boolean {
+  try {
+    const parsed = new URL(url, "https://placeholder.com")
+    return ["http:", "https:"].includes(parsed.protocol)
+  } catch {
+    return url.startsWith("/")
+  }
+}
+
 const SxoIntentLayout = ({ seo }: SxoIntentLayoutProps) => {
   if (!seo) return null
 
@@ -36,16 +45,18 @@ const SxoIntentLayout = ({ seo }: SxoIntentLayoutProps) => {
             Tambien te puede interesar
           </h3>
           <ul className="flex flex-wrap gap-x-4 gap-y-2">
-            {links.map((link, idx) => (
-              <li key={idx}>
-                <a
-                  href={link.target_url}
-                  className="text-blue-600 hover:underline text-sm"
-                >
-                  {link.anchor_text}
-                </a>
-              </li>
-            ))}
+            {links
+              .filter((link) => link.target_url && isSafeHref(link.target_url))
+              .map((link, idx) => (
+                <li key={idx}>
+                  <a
+                    href={link.target_url}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    {link.anchor_text}
+                  </a>
+                </li>
+              ))}
           </ul>
         </div>
       )}
