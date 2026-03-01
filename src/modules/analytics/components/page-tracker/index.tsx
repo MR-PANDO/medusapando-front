@@ -43,6 +43,7 @@ export default function PageTracker() {
             page_path: pathname,
             referrer: document.referrer || null,
             user_agent: navigator.userAgent,
+            country_code: pathname.split("/")[1] || null,
           }),
         })
       } catch (error) {
