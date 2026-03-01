@@ -31,10 +31,12 @@ export default function PageTracker() {
 
         const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
 
+        const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
         await fetch(`${backendUrl}/store/analytics/track`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...(publishableKey ? { "x-publishable-api-key": publishableKey } : {}),
           },
           body: JSON.stringify({
             session_id: sessionId,
