@@ -7,6 +7,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslations } from "next-intl"
+import { useParams } from "next/navigation"
 import { AbandonedCart } from "@lib/data/cart"
 import Image from "next/image"
 
@@ -148,6 +149,7 @@ const Overview = ({ customer, orders, abandonedCart }: OverviewProps) => {
 
 const AbandonedCartSection = ({ cart }: { cart: AbandonedCart }) => {
   const t = useTranslations("account")
+  const { countryCode } = useParams()
 
   const daysLeft = Math.max(
     0,
@@ -196,12 +198,13 @@ const AbandonedCartSection = ({ cart }: { cart: AbandonedCart }) => {
             </div>
           )}
         </div>
-        <LocalizedClientLink
-          href={`/cart/recover/${cart.id}`}
+        {/* Regular <a> tag forces full HTTP request to hit the Route Handler */}
+        <a
+          href={`/${countryCode}/cart/recover/${cart.id}`}
           className="inline-block bg-amber-600 text-white text-small-semi px-6 py-2 rounded-md hover:bg-amber-700 transition-colors"
         >
           {t("recoverCart")}
-        </LocalizedClientLink>
+        </a>
       </Container>
     </div>
   )
