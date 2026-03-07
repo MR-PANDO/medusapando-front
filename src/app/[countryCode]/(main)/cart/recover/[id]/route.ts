@@ -17,7 +17,10 @@ export async function GET(
     })
   }
 
-  return NextResponse.redirect(
-    new URL(`/${countryCode}/cart`, request.url)
-  )
+  // Use forwarded host/proto from reverse proxy, fall back to request.url
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host")
+  const proto = request.headers.get("x-forwarded-proto") || "https"
+  const baseUrl = host ? `${proto}://${host}` : request.url
+
+  return NextResponse.redirect(new URL(`/${countryCode}/cart`, baseUrl))
 }
