@@ -1,6 +1,6 @@
 import { Container, Heading, Text } from "@medusajs/ui"
 
-import { isStripeLike, paymentInfoMap } from "@lib/constants"
+import { paymentInfoMap } from "@lib/constants"
 import Divider from "@modules/common/components/divider"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
@@ -42,16 +42,15 @@ const PaymentDetails = async ({ order }: PaymentDetailsProps) => {
                   {paymentInfoMap[payment.provider_id].icon}
                 </Container>
                 <Text data-testid="payment-amount">
-                  {isStripeLike(payment.provider_id) && payment.data?.card_last4
-                    ? `**** **** **** ${payment.data.card_last4}`
-                    : t("paidAt", {
-                        date: `${convertToLocale({
-                          amount: payment.amount,
-                          currency_code: order.currency_code,
-                        })} - ${new Date(
-                          payment.created_at ?? ""
-                        ).toLocaleString()}`,
-                      })}
+                  {paymentInfoMap[payment.provider_id]?.title ??
+                    t("paidAt", {
+                      date: `${convertToLocale({
+                        amount: payment.amount,
+                        currency_code: order.currency_code,
+                      })} - ${new Date(
+                        payment.created_at ?? ""
+                      ).toLocaleString()}`,
+                    })}
                 </Text>
               </div>
             </div>
