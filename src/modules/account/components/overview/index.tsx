@@ -7,13 +7,16 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslations } from "next-intl"
+import { AbandonedCart } from "@lib/data/cart"
+import Image from "next/image"
 
 type OverviewProps = {
   customer: HttpTypes.StoreCustomer | null
   orders: HttpTypes.StoreOrder[] | null
+  abandonedCart: AbandonedCart | null
 }
 
-const Overview = ({ customer, orders }: OverviewProps) => {
+const Overview = ({ customer, orders, abandonedCart }: OverviewProps) => {
   const t = useTranslations("account")
   return (
     <div data-testid="overview-page-wrapper">
@@ -68,6 +71,10 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                 </div>
               </div>
             </div>
+
+            {abandonedCart && (
+              <AbandonedCartSection cart={abandonedCart} />
+            )}
 
             <div className="flex flex-col gap-y-4">
               <div className="flex items-center gap-x-2">
@@ -135,6 +142,67 @@ const Overview = ({ customer, orders }: OverviewProps) => {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+const AbandonedCartSection = ({ cart }: { cart: AbandonedCart }) => {
+  const t = useTranslations("account")
+
+  const daysLeft = Math.max(
+    0,
+    Math.ceil(
+      (new Date(cart.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    )
+  )
+
+  return (
+    <div className="flex flex-col gap-y-4 mb-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-large-semi">{t("abandonedCart")}</h3>
+        <span className="text-small-regular text-ui-fg-subtle">
+          {t("expiresIn", { days: daysLeft })}
+        </span>
+      </div>
+      <Container className="bg-amber-50 border border-amber-200 p-4">
+        <p className="text-small-regular text-ui-fg-base mb-4">
+          {t("abandonedCartMessage")}
+        </p>
+        <div className="flex gap-3 mb-4 overflow-x-auto">
+          {cart.items.slice(0, 4).map((item) => (
+            <div key={item.id} className="flex items-center gap-3 min-w-0">
+              {item.thumbnail && (
+                <Image
+                  src={item.thumbnail}
+                  alt={item.title}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                />
+              )}
+              <div className="min-w-0">
+                <p className="text-small-regular font-medium truncate">
+                  {item.title}
+                </p>
+                <p className="text-xs text-ui-fg-subtle">
+                  x{item.quantity}
+                </p>
+              </div>
+            </div>
+          ))}
+          {cart.items.length > 4 && (
+            <div className="flex items-center text-small-regular text-ui-fg-subtle flex-shrink-0">
+              +{cart.items.length - 4}
+            </div>
+          )}
+        </div>
+        <LocalizedClientLink
+          href={`/cart/recover/${cart.id}`}
+          className="inline-block bg-amber-600 text-white text-small-semi px-6 py-2 rounded-md hover:bg-amber-700 transition-colors"
+        >
+          {t("recoverCart")}
+        </LocalizedClientLink>
+      </Container>
     </div>
   )
 }

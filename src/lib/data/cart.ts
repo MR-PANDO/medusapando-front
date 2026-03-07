@@ -478,6 +478,39 @@ export async function updateRegion(countryCode: string, currentPath: string) {
   redirect(`/${countryCode}${currentPath}`)
 }
 
+export type AbandonedCartItem = {
+  id: string
+  title: string
+  quantity: number
+  thumbnail: string | null
+  variant_title: string | null
+  unit_price: number
+}
+
+export type AbandonedCart = {
+  id: string
+  updated_at: string
+  expires_at: string
+  items: AbandonedCartItem[]
+}
+
+export async function getAbandonedCart(): Promise<AbandonedCart | null> {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  return sdk.client
+    .fetch<{ abandoned_cart: AbandonedCart | null }>(
+      "/store/customers/me/abandoned-cart",
+      {
+        method: "GET",
+        headers,
+      }
+    )
+    .then(({ abandoned_cart }) => abandoned_cart)
+    .catch(() => null)
+}
+
 export async function listCartOptions() {
   const cartId = await getCartId()
   const headers = {
