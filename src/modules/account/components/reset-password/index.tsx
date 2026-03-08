@@ -1,0 +1,163 @@
+"use client"
+
+import { useMemo, useState } from "react"
+import { resetPassword } from "@lib/data/customer"
+import Input from "@modules/common/components/input"
+import { useTranslations } from "next-intl"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+
+const ResetPasswordForm = () => {
+  const t = useTranslations("account")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+
+  const searchParams = useMemo(() => {
+    if (typeof window === "undefined") return null
+    return new URLSearchParams(window.location.search)
+  }, [])
+
+  const token = searchParams?.get("token") ?? null
+  const email = searchParams?.get("email") ?? null
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError(null)
+
+    if (!token || !email) {
+      setError(t("invalidResetLink"))
+      return
+    }
+
+    const formData = new FormData(e.currentTarget)
+    const password = formData.get("password") as string
+    const confirmPassword = formData.get("confirm_password") as string
+
+    if (password !== confirmPassword) {
+      setError(t("confirmPassword"))
+      return
+    }
+
+    setLoading(true)
+
+    const result = await resetPassword(token, email, password)
+
+    if (result.success) {
+      setSuccess(true)
+    } else {
+      setError(t("passwordResetError"))
+    }
+
+    setLoading(false)
+  }
+
+  if (!token || !email) {
+    return (
+      <div
+        className="max-w-sm w-full flex flex-col items-center"
+        data-testid="reset-password-invalid"
+      >
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-50 mb-4">
+            <span className="text-2xl">&#9888;</span>
+          </div>
+        </div>
+        <h1 className="text-large-semi uppercase mb-6">
+          {t("resetPasswordTitle")}
+        </h1>
+        <p className="text-center text-base-regular text-ui-fg-muted mb-8">
+          {t("invalidResetLink")}
+        </p>
+        <LocalizedClientLink
+          href="/account"
+          className="text-ui-fg-interactive text-small-regular hover:underline"
+        >
+          {t("goToLogin")}
+        </LocalizedClientLink>
+      </div>
+    )
+  }
+
+  if (success) {
+    return (
+      <div
+        className="max-w-sm w-full flex flex-col items-center"
+        data-testid="reset-password-success"
+      >
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 mb-4">
+            <span className="text-2xl text-green-600">&#10003;</span>
+          </div>
+        </div>
+        <h1 className="text-large-semi uppercase mb-6">
+          {t("resetPasswordTitle")}
+        </h1>
+        <div className="bg-green-50 border border-green-200 rounded-md p-4 mb-6 w-full">
+          <p className="text-green-800 text-small-regular text-center">
+            {t("passwordResetSuccess")}
+          </p>
+        </div>
+        <LocalizedClientLink
+          href="/account"
+          className="text-ui-fg-interactive text-small-regular hover:underline"
+        >
+          {t("goToLogin")}
+        </LocalizedClientLink>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className="max-w-sm w-full flex flex-col items-center"
+      data-testid="reset-password-page"
+    >
+      <h1 className="text-large-semi uppercase mb-6">
+        {t("resetPasswordTitle")}
+      </h1>
+      <p className="text-center text-base-regular text-ui-fg-base mb-8">
+        {t("resetPasswordDescription")}
+      </p>
+      <form className="w-full" onSubmit={handleSubmit}>
+        <div className="flex flex-col w-full gap-y-2">
+          <Input
+            label={t("newPassword")}
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+            data-testid="reset-password-input"
+          />
+          <Input
+            label={t("confirmPassword")}
+            name="confirm_password"
+            type="password"
+            autoComplete="new-password"
+            required
+            data-testid="reset-confirm-password-input"
+          />
+        </div>
+        {error && (
+          <div className="text-rose-500 text-small-regular mt-2">{error}</div>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-6 bg-ui-button-neutral text-ui-fg-on-color h-10 rounded-md text-sm font-medium hover:bg-ui-button-neutral-hover disabled:opacity-50 transition-colors"
+          data-testid="reset-password-submit"
+        >
+          {loading ? "..." : t("resetPassword")}
+        </button>
+      </form>
+      <LocalizedClientLink
+        href="/account"
+        className="text-ui-fg-interactive text-small-regular mt-6 hover:underline"
+        data-testid="back-to-login-link"
+      >
+        {t("backToLogin")}
+      </LocalizedClientLink>
+    </div>
+  )
+}
+
+export default ResetPasswordForm

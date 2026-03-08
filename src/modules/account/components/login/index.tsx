@@ -1,5 +1,6 @@
 import { login } from "@lib/data/customer"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
+import SocialLogin from "@modules/account/components/social-login"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
@@ -48,6 +49,14 @@ const Login = ({ setCurrentView }: Props) => {
           {t("signIn")}
         </SubmitButton>
       </form>
+      <button
+        onClick={() => setCurrentView(LOGIN_VIEW.FORGOT_PASSWORD)}
+        className="text-ui-fg-interactive text-small-regular mt-4 hover:underline"
+        data-testid="forgot-password-button"
+      >
+        {t("forgotPassword")}
+      </button>
+      <SocialLogin />
       <span className="text-center text-ui-fg-base text-small-regular mt-6">
         {t("notMember")}{" "}
         <button

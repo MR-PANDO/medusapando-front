@@ -6,6 +6,7 @@ import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import SocialLogin from "@modules/account/components/social-login"
 import { signup } from "@lib/data/customer"
 import { useTranslations } from "next-intl"
 
@@ -90,6 +91,7 @@ const Register = ({ setCurrentView }: Props) => {
           {t("join")}
         </SubmitButton>
       </form>
+      <SocialLogin />
       <span className="text-center text-ui-fg-base text-small-regular mt-6">
         {t("alreadyMember")}{" "}
         <button

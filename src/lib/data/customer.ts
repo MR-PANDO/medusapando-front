@@ -143,6 +143,38 @@ export async function signout(countryCode: string) {
   redirect(`/${countryCode}/account`)
 }
 
+export async function requestPasswordReset(formData: FormData) {
+  const email = formData.get("email") as string
+
+  try {
+    await sdk.auth.resetPassword("customer", "emailpass", {
+      identifier: email,
+    })
+    return { success: true, error: null }
+  } catch (error: any) {
+    // Always return success to avoid leaking whether email exists
+    return { success: true, error: null }
+  }
+}
+
+export async function resetPassword(
+  token: string,
+  email: string,
+  password: string
+) {
+  try {
+    await sdk.auth.updateProvider(
+      "customer",
+      "emailpass",
+      { email, password },
+      token
+    )
+    return { success: true, error: null }
+  } catch (error: any) {
+    return { success: false, error: error.toString() }
+  }
+}
+
 export async function transferCart() {
   const cartId = await getCartId()
 
