@@ -154,7 +154,7 @@ const ResetPasswordForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-6 bg-ui-button-neutral text-ui-fg-on-color h-10 rounded-md text-sm font-medium hover:bg-ui-button-neutral-hover disabled:opacity-50 transition-colors"
+          className="w-full mt-6 h-10 rounded-rounded border border-transparent bg-ui-bg-interactive text-ui-fg-on-color text-sm font-medium shadow-buttons-neutral hover:bg-ui-bg-interactive-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           data-testid="reset-password-submit"
         >
           {loading ? "..." : t("resetPassword")}
