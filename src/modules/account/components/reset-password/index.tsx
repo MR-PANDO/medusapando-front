@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { resetPassword } from "@lib/data/customer"
 import Input from "@modules/common/components/input"
 import { useTranslations } from "next-intl"
@@ -11,14 +11,16 @@ const ResetPasswordForm = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
+  const [email, setEmail] = useState<string | null>(null)
+  const [ready, setReady] = useState(false)
 
-  const searchParams = useMemo(() => {
-    if (typeof window === "undefined") return null
-    return new URLSearchParams(window.location.search)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setToken(params.get("token"))
+    setEmail(params.get("email"))
+    setReady(true)
   }, [])
-
-  const token = searchParams?.get("token") ?? null
-  const email = searchParams?.get("email") ?? null
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -49,6 +51,15 @@ const ResetPasswordForm = () => {
     }
 
     setLoading(false)
+  }
+
+  if (!ready) {
+    return (
+      <div className="max-w-sm w-full flex flex-col items-center">
+        <div className="animate-pulse h-8 w-48 bg-gray-200 rounded mb-6" />
+        <div className="animate-pulse h-4 w-64 bg-gray-200 rounded mb-8" />
+      </div>
+    )
   }
 
   if (!token || !email) {
