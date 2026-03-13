@@ -89,7 +89,7 @@ export const listOrders = async (
           cache: "force-cache",
         })
         .then(({ orders }) => orders)
-        .catch((err) => medusaError(err))
+        .catch(() => null)
     })
 }
 
