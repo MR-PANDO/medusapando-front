@@ -106,14 +106,22 @@ export const listProductsByBrand = async ({
         limit,
         ...(regionId && { region_id: regionId }),
         fields:
-          "*variants.calculated_price,+variants.inventory_quantity,*variants.images,+metadata,+tags",
+          "*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,*variants.images,+metadata,+tags",
       },
       next,
       cache: "force-cache",
     })
 
+    // Filter out products where all variants have 0 stock
+    const inStockProducts = (fullProducts.products || []).filter((product) => {
+      if (!product.variants || product.variants.length === 0) return true
+      return product.variants.some(
+        (v: any) => !v.manage_inventory || (v.inventory_quantity ?? 0) > 0
+      )
+    })
+
     return {
-      products: fullProducts.products || [],
+      products: inStockProducts,
       count: brandProducts.count,
     }
   } catch (error) {
