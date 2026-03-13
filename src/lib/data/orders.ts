@@ -27,7 +27,21 @@ export const retrieveOrder = async (id: string) => {
       cache: "force-cache",
     })
     .then(({ order }) => order)
-    .catch((err) => medusaError(err))
+    .catch(async () => {
+      // Retry without variant/product expansion (may fail if products are in draft)
+      return sdk.client
+        .fetch<HttpTypes.StoreOrderResponse>(`/store/orders/${id}`, {
+          method: "GET",
+          query: {
+            fields: "*payment_collections.payments,*items,*items.metadata",
+          },
+          headers,
+          next,
+          cache: "force-cache",
+        })
+        .then(({ order }) => order)
+        .catch((err) => medusaError(err))
+    })
 }
 
 export const listOrders = async (
@@ -58,7 +72,25 @@ export const listOrders = async (
       cache: "force-cache",
     })
     .then(({ orders }) => orders)
-    .catch((err) => medusaError(err))
+    .catch(async () => {
+      // Retry without variant/product expansion (may fail if products are in draft)
+      return sdk.client
+        .fetch<HttpTypes.StoreOrderListResponse>(`/store/orders`, {
+          method: "GET",
+          query: {
+            limit,
+            offset,
+            order: "-created_at",
+            fields: "*items,+items.metadata",
+            ...filters,
+          },
+          headers,
+          next,
+          cache: "force-cache",
+        })
+        .then(({ orders }) => orders)
+        .catch((err) => medusaError(err))
+    })
 }
 
 export const createTransferRequest = async (

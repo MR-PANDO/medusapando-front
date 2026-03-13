@@ -7,6 +7,7 @@ import { isEqual } from "lodash"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
@@ -125,15 +126,25 @@ export default function ProductActions({
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return null
 
+    if (!inStock) {
+      toast.error(t("outOfStockMessage"))
+      return
+    }
+
     setIsAdding(true)
 
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity,
+        countryCode,
+      })
+      toast.success(t("addedToCart"))
+    } catch (error: any) {
+      toast.error(error?.message || t("addToCartError"))
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   const decrementQty = () => {

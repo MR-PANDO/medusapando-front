@@ -292,6 +292,9 @@
   "products": {
     "selectVariant": "Seleccionar variante",
     "outOfStock": "Agotado",
+    "outOfStockMessage": "Este producto no tiene stock disponible",
+    "addToCartError": "Error al agregar al carrito",
+    "addedToCart": "Producto agregado al carrito",
     "adding": "Agregando...",
     "addToCart": "Agregar al carrito",
     "buyNow": "Comprar ahora",

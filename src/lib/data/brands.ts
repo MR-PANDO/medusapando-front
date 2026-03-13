@@ -112,16 +112,8 @@ export const listProductsByBrand = async ({
       cache: "force-cache",
     })
 
-    // Filter out products where all variants have 0 stock
-    const inStockProducts = (fullProducts.products || []).filter((product) => {
-      if (!product.variants || product.variants.length === 0) return true
-      return product.variants.some(
-        (v: any) => !v.manage_inventory || (v.inventory_quantity ?? 0) > 0
-      )
-    })
-
     return {
-      products: inStockProducts,
+      products: fullProducts.products || [],
       count: brandProducts.count,
     }
   } catch (error) {

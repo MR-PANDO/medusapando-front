@@ -72,20 +72,11 @@ export const listProducts = async ({
       }
     )
     .then(({ products, count }) => {
-      // Filter out products where all variants have 0 stock
-      const inStockProducts = products.filter((product) => {
-        if (!product.variants || product.variants.length === 0) return true
-        // Show product if any variant has stock or doesn't manage inventory
-        return product.variants.some(
-          (v) => !v.manage_inventory || (v.inventory_quantity ?? 0) > 0
-        )
-      })
-
       const nextPage = count > offset + limit ? pageParam + 1 : null
 
       return {
         response: {
-          products: inStockProducts,
+          products,
           count,
         },
         nextPage: nextPage,

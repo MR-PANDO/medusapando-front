@@ -44,11 +44,13 @@ export default async function ProductPreview({
   const firstVariant = product.variants?.[0]
   const variantId = firstVariant?.id
 
-  // Check stock status - assume in stock if manage_inventory is false or inventory_quantity > 0
-  const inStock = firstVariant
-    ? !firstVariant.manage_inventory ||
-      (firstVariant.inventory_quantity && firstVariant.inventory_quantity > 0)
-    : true
+  // Check stock status — product is in stock if ANY variant has stock
+  const inStock =
+    !product.variants || product.variants.length === 0
+      ? true
+      : product.variants.some(
+          (v) => !v.manage_inventory || (v.inventory_quantity ?? 0) > 0
+        )
 
   // Calculate discount percentage
   const discountPercentage = Number(cheapestPrice?.percentage_diff) || 0

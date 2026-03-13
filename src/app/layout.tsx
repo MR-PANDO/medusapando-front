@@ -2,6 +2,7 @@ import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
 import { NextIntlClientProvider } from "next-intl"
 import { getLocale, getMessages } from "next-intl/server"
+import { Toaster } from "sonner"
 import "styles/globals.css"
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       <body>
         <NextIntlClientProvider messages={messages}>
           <main className="relative">{props.children}</main>
+          <Toaster position="top-center" richColors closeButton />
         </NextIntlClientProvider>
       </body>
     </html>

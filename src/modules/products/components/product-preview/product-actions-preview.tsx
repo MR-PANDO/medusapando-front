@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { addToCart } from "@lib/data/cart"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 
 type ProductActionsPreviewProps = {
   variantId: string
@@ -24,7 +25,12 @@ export default function ProductActionsPreview({
     e.preventDefault()
     e.stopPropagation()
 
-    if (!variantId || !inStock) return
+    if (!variantId) return
+
+    if (!inStock) {
+      toast.error(t("outOfStockMessage"))
+      return
+    }
 
     setIsAdding(true)
     try {
@@ -34,9 +40,10 @@ export default function ProductActionsPreview({
         countryCode,
       })
       setAdded(true)
+      toast.success(t("addedToCart"))
       setTimeout(() => setAdded(false), 2000)
-    } catch (error) {
-      console.error("Failed to add to cart:", error)
+    } catch (error: any) {
+      toast.error(error?.message || t("addToCartError"))
     } finally {
       setIsAdding(false)
     }
