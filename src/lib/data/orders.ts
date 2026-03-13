@@ -155,21 +155,35 @@ export type RecentlyPurchasedItem = {
   unit_price: number
 }
 
-export const reorder = async (orderId: string) => {
+export type SkippedItem = {
+  variant_id: string
+  product_title: string | null
+  variant_title: string | null
+  reason: "out_of_stock" | "no_inventory" | "variant_deleted"
+}
+
+export type ReorderResult = {
+  cart: HttpTypes.StoreCart | null
+  skipped_items: SkippedItem[]
+}
+
+export const reorder = async (orderId: string): Promise<ReorderResult> => {
   const headers = {
     ...(await getAuthHeaders()),
   }
 
-  const cart = await sdk.client
-    .fetch<{ cart: HttpTypes.StoreCart }>(
+  const response = await sdk.client
+    .fetch<{ cart: HttpTypes.StoreCart; skipped_items: SkippedItem[] }>(
       `/store/customers/me/orders/${orderId}/reorder`,
       {
         method: "POST",
         headers,
       }
     )
-    .then(({ cart }) => cart)
     .catch((err) => medusaError(err))
+
+  const cart = response?.cart || null
+  const skipped_items = response?.skipped_items || []
 
   if (cart?.id) {
     const { setCartId } = await import("./cookies")
@@ -179,7 +193,7 @@ export const reorder = async (orderId: string) => {
     revalidateTag(cartCacheTag)
   }
 
-  return cart
+  return { cart, skipped_items }
 }
 
 export const getRecentlyPurchased = async (

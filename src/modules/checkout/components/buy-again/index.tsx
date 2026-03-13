@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { RecentlyPurchasedItem } from "@lib/data/orders"
 import { addToCart } from "@lib/data/cart"
+import { toast } from "sonner"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type BuyAgainProps = {
@@ -40,8 +41,8 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
         setTimeout(() => {
           setAddedItems((prev) => ({ ...prev, [item.product_id]: false }))
         }, 2000)
-      } catch (error) {
-        console.error("Error adding to cart:", error)
+      } catch (error: any) {
+        toast.error(error?.message || t("addToCartError"))
       } finally {
         setAddingItems((prev) => ({ ...prev, [item.product_id]: false }))
       }
