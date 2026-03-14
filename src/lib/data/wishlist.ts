@@ -18,10 +18,6 @@ export type WishlistItem = {
       thumbnail: string | null
       status: string
     } | null
-    calculated_price?: {
-      calculated_amount: number
-      currency_code: string
-    } | null
   } | null
 }
 

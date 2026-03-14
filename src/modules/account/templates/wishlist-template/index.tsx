@@ -1,7 +1,6 @@
 "use client"
 
 import { Wishlist, removeFromWishlist } from "@lib/data/wishlist"
-import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import Image from "next/image"
 import { useState, useTransition } from "react"
@@ -68,7 +67,6 @@ export default function WishlistTemplate({ wishlist, region }: WishlistTemplateP
           {items.map((item) => {
             const variant = item.variant
             const product = variant?.product
-            const price = variant?.calculated_price
 
             return (
               <div
@@ -109,14 +107,6 @@ export default function WishlistTemplate({ wishlist, region }: WishlistTemplateP
                   </LocalizedClientLink>
                   {variant?.title && variant.title !== "Default" && (
                     <p className="text-xs text-gray-500 mt-1">{variant.title}</p>
-                  )}
-                  {price && (
-                    <p className="text-sm font-semibold text-gray-900 mt-1">
-                      {convertToLocale({
-                        amount: price.calculated_amount,
-                        currency_code: price.currency_code || region.currency_code,
-                      })}
-                    </p>
                   )}
                 </div>
 
