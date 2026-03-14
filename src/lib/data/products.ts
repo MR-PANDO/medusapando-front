@@ -1,7 +1,6 @@
 "use server"
 
 import { sdk } from "@lib/config"
-import { sortProducts } from "@lib/util/sort-products"
 import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
@@ -107,16 +106,15 @@ export const listProductsWithSort = async ({
   const limit = queryParams?.limit || 12
 
   // Map sortBy to API order parameter
-  // Always include ,id as tiebreaker to ensure stable pagination (no duplicates across pages)
   let orderParam: string | undefined
   if (sortBy === "price_asc") {
-    orderParam = "variants.calculated_price,id"
+    orderParam = "variants.calculated_price"
   } else if (sortBy === "price_desc") {
-    orderParam = "-variants.calculated_price,id"
+    orderParam = "-variants.calculated_price"
   } else if (sortBy === "created_at") {
-    orderParam = "-created_at,id"
+    orderParam = "-created_at"
   } else if (sortBy === "sales_count") {
-    orderParam = "-metadata.sales_count,id"
+    orderParam = "-metadata.sales_count"
   }
 
   const {
@@ -131,15 +129,12 @@ export const listProductsWithSort = async ({
     countryCode,
   })
 
-  // Sort products client-side for more complex sorting if needed
-  const sortedProducts = sortProducts(products, sortBy)
-
   const offset = (page - 1) * limit
   const nextPage = count > offset + limit ? page + 1 : null
 
   return {
     response: {
-      products: sortedProducts,
+      products,
       count,
     },
     nextPage,
