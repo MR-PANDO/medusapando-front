@@ -54,7 +54,14 @@ export default function LocationSelect({
       try {
         const res = await fetch(`/api/locations/municipalities?department=${encodeURIComponent(selectedDept)}`)
         const data = await res.json()
-        setMunicipalities(data.municipalities || [])
+        const munis = data.municipalities || []
+        setMunicipalities(munis)
+
+        // Auto-select if there's only one municipality (e.g., Bogotá D.C.)
+        if (munis.length === 1) {
+          setSelectedCity(munis[0].name)
+          onCityChange?.(munis[0].name)
+        }
       } catch {
         setMunicipalities([])
       }
