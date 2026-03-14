@@ -40,10 +40,7 @@ export const retrieveCustomer =
         cache: "force-cache",
       })
       .then(({ customer }) => customer)
-      .catch(async () => {
-        await removeAuthToken()
-        return null
-      })
+      .catch(() => null)
   }
 
 export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
