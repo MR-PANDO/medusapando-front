@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useCallback } from "react"
-import Image from "next/image"
 
 type ImageLightboxProps = {
   src: string
@@ -28,8 +27,9 @@ export default function ImageLightbox({ src, alt, onClose }: ImageLightboxProps)
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
       onClick={onClose}
+      style={{ animation: "fadeIn 0.2s ease-out" }}
     >
       {/* Close button */}
       <button
@@ -42,21 +42,26 @@ export default function ImageLightbox({ src, alt, onClose }: ImageLightboxProps)
         </svg>
       </button>
 
-      {/* Image */}
+      {/* Image — using native img for reliable sizing */}
       <div
-        className="relative max-w-[90vw] max-h-[90vh] w-auto h-auto"
+        className="relative flex items-center justify-center p-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={src}
           alt={alt}
-          width={800}
-          height={800}
-          className="object-contain max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl"
-          quality={90}
-          priority
+          className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl bg-white"
+          loading="eager"
         />
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -1,24 +1,31 @@
 "use client"
 
-import { addToWishlist, removeFromWishlist } from "@lib/data/wishlist"
-import { useState, useTransition } from "react"
+import { addToWishlist, removeFromWishlist, isInWishlist } from "@lib/data/wishlist"
+import { useState, useTransition, useEffect } from "react"
 
 type WishlistButtonProps = {
   productId: string
   variantId?: string
-  initialInWishlist?: boolean
-  initialItemId?: string | null
 }
 
 export default function WishlistButton({
   productId,
   variantId,
-  initialInWishlist = false,
-  initialItemId = null,
 }: WishlistButtonProps) {
-  const [inWishlist, setInWishlist] = useState(initialInWishlist)
-  const [itemId, setItemId] = useState<string | null>(initialItemId)
+  const [inWishlist, setInWishlist] = useState(false)
+  const [itemId, setItemId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [checked, setChecked] = useState(false)
+
+  // Check wishlist state on mount
+  useEffect(() => {
+    if (!variantId) return
+    isInWishlist(variantId).then((result) => {
+      setInWishlist(result.inWishlist)
+      setItemId(result.itemId)
+      setChecked(true)
+    }).catch(() => setChecked(true))
+  }, [variantId])
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -27,21 +34,25 @@ export default function WishlistButton({
     if (!variantId) return
 
     startTransition(async () => {
-      if (inWishlist && itemId) {
-        const result = await removeFromWishlist(itemId)
-        if (result) {
-          setInWishlist(false)
-          setItemId(null)
+      try {
+        if (inWishlist && itemId) {
+          const result = await removeFromWishlist(itemId)
+          if (result) {
+            setInWishlist(false)
+            setItemId(null)
+          }
+        } else {
+          const result = await addToWishlist(variantId)
+          if (result) {
+            const newItem = result.items.find(
+              (i) => i.product_variant_id === variantId
+            )
+            setInWishlist(true)
+            setItemId(newItem?.id || null)
+          }
         }
-      } else {
-        const result = await addToWishlist(variantId)
-        if (result) {
-          const newItem = result.items.find(
-            (i) => i.product_variant_id === variantId
-          )
-          setInWishlist(true)
-          setItemId(newItem?.id || null)
-        }
+      } catch {
+        // Silently fail — user might not be logged in
       }
     })
   }
@@ -49,7 +60,7 @@ export default function WishlistButton({
   return (
     <button
       onClick={toggleWishlist}
-      disabled={isPending || !variantId}
+      disabled={isPending || !variantId || !checked}
       className={`absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md hover:shadow-lg transition-all ${
         isPending ? "opacity-50 cursor-wait" : ""
       }`}
