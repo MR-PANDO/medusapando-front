@@ -14,10 +14,12 @@ export const metadata: Metadata = {
 
 type Props = {
   params: Promise<{ countryCode: string }>
+  searchParams: Promise<{ step?: string }>
 }
 
-export default async function Checkout({ params }: Props) {
+export default async function Checkout({ params, searchParams }: Props) {
   const { countryCode } = await params
+  const { step } = await searchParams
   const cart = await retrieveCart()
 
   if (!cart) {
@@ -29,6 +31,10 @@ export default async function Checkout({ params }: Props) {
   // Get recently purchased items if customer is logged in
   const recentlyPurchased = customer ? await getRecentlyPurchased(6) : []
 
+  // Show BuyAgain on address, delivery, and payment steps — hide on review
+  const showBuyAgain =
+    recentlyPurchased.length > 0 && step !== "review"
+
   return (
     <>
       <div className="grid grid-cols-1 small:grid-cols-[1fr_416px] content-container gap-x-40 py-12 pb-32">
@@ -37,8 +43,7 @@ export default async function Checkout({ params }: Props) {
         </PaymentWrapper>
         <CheckoutSummary cart={cart} />
       </div>
-      {recentlyPurchased.length > 0 &&
-        !cart.payment_collection && (
+      {showBuyAgain && (
         <BuyAgain items={recentlyPurchased} countryCode={countryCode} />
       )}
     </>
