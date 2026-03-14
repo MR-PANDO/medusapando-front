@@ -31,7 +31,7 @@ const AccountLayout: React.FC<AccountLayoutProps> = async ({
             </span>
           </div>
           <div>
-            <UnderlineLink href="/customer-service">
+            <UnderlineLink href="/servicio-cliente">
               {t("customerServiceLink")}
             </UnderlineLink>
           </div>
