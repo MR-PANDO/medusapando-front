@@ -75,12 +75,24 @@ const EditAddress: React.FC<EditAddressProps> = ({
         data-testid="address-container"
       >
         <div className="flex flex-col">
-          <Heading
-            className="text-left text-base-semi"
-            data-testid="address-name"
-          >
-            {address.first_name} {address.last_name}
-          </Heading>
+          <div className="flex items-center gap-2">
+            <Heading
+              className="text-left text-base-semi"
+              data-testid="address-name"
+            >
+              {address.address_name || `${address.first_name} ${address.last_name}`}
+            </Heading>
+            {address.is_default_shipping && (
+              <span className="px-2 py-0.5 text-[10px] font-medium bg-emerald-100 text-emerald-700 rounded-full uppercase">
+                {t("defaultAddress")}
+              </span>
+            )}
+          </div>
+          {address.address_name && (
+            <Text className="txt-compact-small text-ui-fg-subtle">
+              {address.first_name} {address.last_name}
+            </Text>
+          )}
           {address.company && (
             <Text
               className="txt-compact-small text-ui-fg-base"
@@ -131,6 +143,13 @@ const EditAddress: React.FC<EditAddressProps> = ({
           <input type="hidden" name="addressId" value={address.id} />
           <Modal.Body>
             <div className="grid grid-cols-1 gap-y-2">
+              <Input
+                label={t("addressName")}
+                name="address_name"
+                placeholder={t("addressNamePlaceholder")}
+                defaultValue={address.address_name || undefined}
+                data-testid="address-name-input"
+              />
               <div className="grid grid-cols-2 gap-x-2">
                 <Input
                   label={t("firstName")}
@@ -211,6 +230,15 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 defaultValue={address.phone || undefined}
                 data-testid="phone-input"
               />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="is_default_shipping"
+                  defaultChecked={address.is_default_shipping}
+                  className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                />
+                <span className="text-sm text-gray-700">{t("setAsDefault")}</span>
+              </label>
             </div>
             {formState.error && (
               <div className="text-rose-500 text-small-regular py-2">

@@ -33,7 +33,7 @@ export const retrieveCustomer =
       .fetch<{ customer: HttpTypes.StoreCustomer }>(`/store/customers/me`, {
         method: "GET",
         query: {
-          fields: "*orders",
+          fields: "*orders,*addresses",
         },
         headers,
         next,
@@ -197,10 +197,8 @@ export const addCustomerAddress = async (
   currentState: Record<string, unknown>,
   formData: FormData
 ): Promise<any> => {
-  const isDefaultBilling = (currentState.isDefaultBilling as boolean) || false
-  const isDefaultShipping = (currentState.isDefaultShipping as boolean) || false
-
   const address = {
+    address_name: (formData.get("address_name") as string) || null,
     first_name: formData.get("first_name") as string,
     last_name: formData.get("last_name") as string,
     company: formData.get("company") as string,
@@ -211,8 +209,8 @@ export const addCustomerAddress = async (
     province: formData.get("province") as string,
     country_code: formData.get("country_code") as string,
     phone: formData.get("phone") as string,
-    is_default_billing: isDefaultBilling,
-    is_default_shipping: isDefaultShipping,
+    is_default_shipping: formData.get("is_default_shipping") === "on",
+    is_default_billing: formData.get("is_default_shipping") === "on",
   }
 
   const headers = {
@@ -262,6 +260,7 @@ export const updateCustomerAddress = async (
   }
 
   const address = {
+    address_name: (formData.get("address_name") as string) || null,
     first_name: formData.get("first_name") as string,
     last_name: formData.get("last_name") as string,
     company: formData.get("company") as string,
@@ -271,13 +270,10 @@ export const updateCustomerAddress = async (
     postal_code: formData.get("postal_code") as string,
     province: formData.get("province") as string,
     country_code: formData.get("country_code") as string,
+    phone: (formData.get("phone") as string) || null,
+    is_default_shipping: formData.get("is_default_shipping") === "on",
+    is_default_billing: formData.get("is_default_shipping") === "on",
   } as HttpTypes.StoreUpdateCustomerAddress
-
-  const phone = formData.get("phone") as string
-
-  if (phone) {
-    address.phone = phone
-  }
 
   const headers = {
     ...(await getAuthHeaders()),

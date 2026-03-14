@@ -34,6 +34,13 @@ const AddressSelect = ({
     return addresses.find((a) => compareAddresses(a, addressInput))
   }, [addresses, addressInput])
 
+  const getAddressLabel = (address: HttpTypes.StoreCustomerAddress) => {
+    if (address.address_name) {
+      return address.address_name
+    }
+    return address.address_1 || `${address.first_name} ${address.last_name}`
+  }
+
   return (
     <Listbox onChange={handleSelect} value={selectedAddress?.id}>
       <div className="relative">
@@ -45,7 +52,7 @@ const AddressSelect = ({
             <>
               <span className="block truncate">
                 {selectedAddress
-                  ? selectedAddress.address_1
+                  ? getAddressLabel(selectedAddress)
                   : t("chooseAddress")}
               </span>
               <ChevronUpDown
@@ -80,9 +87,21 @@ const AddressSelect = ({
                       data-testid="shipping-address-radio"
                     />
                     <div className="flex flex-col">
-                      <span className="text-left text-base-semi">
-                        {address.first_name} {address.last_name}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-left text-base-semi">
+                          {getAddressLabel(address)}
+                        </span>
+                        {address.is_default_shipping && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-medium bg-emerald-100 text-emerald-700 rounded-full">
+                            {t("default")}
+                          </span>
+                        )}
+                      </div>
+                      {address.address_name && (
+                        <span className="text-small-regular text-ui-fg-subtle">
+                          {address.first_name} {address.last_name}
+                        </span>
+                      )}
                       {address.company && (
                         <span className="text-small-regular text-ui-fg-base">
                           {address.company}

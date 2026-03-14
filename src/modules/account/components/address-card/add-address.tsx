@@ -25,7 +25,6 @@ const AddAddress = ({
   const { state, open, close: closeModal } = useToggleState(false)
 
   const [formState, formAction] = useActionState(addCustomerAddress, {
-    isDefaultShipping: addresses.length === 0,
     success: false,
     error: null,
   })
@@ -66,6 +65,12 @@ const AddAddress = ({
         <form action={formAction}>
           <Modal.Body>
             <div className="flex flex-col gap-y-2">
+              <Input
+                label={t("addressName")}
+                name="address_name"
+                placeholder={t("addressNamePlaceholder")}
+                data-testid="address-name-input"
+              />
               <div className="grid grid-cols-2 gap-x-2">
                 <Input
                   label={t("firstName")}
@@ -136,6 +141,15 @@ const AddAddress = ({
                 autoComplete="phone"
                 data-testid="phone-input"
               />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="is_default_shipping"
+                  defaultChecked={addresses.length === 0}
+                  className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                />
+                <span className="text-sm text-gray-700">{t("setAsDefault")}</span>
+              </label>
             </div>
             {formState.error && (
               <div

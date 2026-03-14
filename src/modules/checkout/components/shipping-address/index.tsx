@@ -73,15 +73,21 @@ const ShippingAddress = ({
   }
 
   useEffect(() => {
-    // Ensure cart is not null and has a shipping_address before setting form data
+    // If cart already has a shipping address, use it
     if (cart && cart.shipping_address) {
-      setFormAddress(cart?.shipping_address, cart?.email)
+      setFormAddress(cart.shipping_address, cart.email)
+    } else if (customer && addressesInRegion && addressesInRegion.length > 0) {
+      // Auto-select the default shipping address, or the first one
+      const defaultAddress =
+        addressesInRegion.find((a) => a.is_default_shipping) ||
+        addressesInRegion[0]
+      setFormAddress(defaultAddress as HttpTypes.StoreCartAddress, customer.email)
     }
 
     if (cart && !cart.email && customer?.email) {
       setFormAddress(undefined, customer.email)
     }
-  }, [cart]) // Add cart as a dependency
+  }, [cart, customer, addressesInRegion])
 
   const handleChange = (
     e: React.ChangeEvent<
