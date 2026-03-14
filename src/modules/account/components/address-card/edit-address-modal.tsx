@@ -9,6 +9,7 @@ import useToggleState from "@lib/hooks/use-toggle-state"
 import CountrySelect from "@modules/checkout/components/country-select"
 import Input from "@modules/common/components/input"
 import Modal from "@modules/common/components/modal"
+import LocationSelect from "@modules/common/components/location-select"
 import Spinner from "@modules/common/icons/spinner"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import { HttpTypes } from "@medusajs/types"
@@ -63,6 +64,8 @@ const EditAddress: React.FC<EditAddressProps> = ({
     setRemoving(false)
   }
 
+  const isColombia = address.country_code === "co" || region.countries?.some((c) => c.iso_2 === "co")
+
   return (
     <>
       <div
@@ -107,7 +110,8 @@ const EditAddress: React.FC<EditAddressProps> = ({
               {address.address_2 && <span>, {address.address_2}</span>}
             </span>
             <span data-testid="address-postal-city">
-              {address.postal_code}, {address.city}
+              {address.city}
+              {address.postal_code && `, ${address.postal_code}`}
             </span>
             <span data-testid="address-province-country">
               {address.province && `${address.province}, `}
@@ -169,13 +173,6 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 />
               </div>
               <Input
-                label={t("company")}
-                name="company"
-                autoComplete="organization"
-                defaultValue={address.company || undefined}
-                data-testid="company-input"
-              />
-              <Input
                 label={t("address")}
                 name="address_1"
                 required
@@ -190,31 +187,6 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 defaultValue={address.address_2 || undefined}
                 data-testid="address-2-input"
               />
-              <div className="grid grid-cols-[144px_1fr] gap-x-2">
-                <Input
-                  label={t("postalCode")}
-                  name="postal_code"
-                  required
-                  autoComplete="postal-code"
-                  defaultValue={address.postal_code || undefined}
-                  data-testid="postal-code-input"
-                />
-                <Input
-                  label={t("city")}
-                  name="city"
-                  required
-                  autoComplete="locality"
-                  defaultValue={address.city || undefined}
-                  data-testid="city-input"
-                />
-              </div>
-              <Input
-                label={t("province")}
-                name="province"
-                autoComplete="address-level1"
-                defaultValue={address.province || undefined}
-                data-testid="state-input"
-              />
               <CountrySelect
                 name="country_code"
                 region={region}
@@ -223,13 +195,49 @@ const EditAddress: React.FC<EditAddressProps> = ({
                 defaultValue={address.country_code || undefined}
                 data-testid="country-select"
               />
-              <Input
-                label={t("phone")}
-                name="phone"
-                autoComplete="phone"
-                defaultValue={address.phone || undefined}
-                data-testid="phone-input"
-              />
+              {isColombia ? (
+                <div className="grid grid-cols-2 gap-x-2">
+                  <LocationSelect
+                    provinceValue={address.province || ""}
+                    cityValue={address.city || ""}
+                    required
+                  />
+                </div>
+              ) : (
+                <>
+                  <Input
+                    label={t("province")}
+                    name="province"
+                    autoComplete="address-level1"
+                    defaultValue={address.province || undefined}
+                    data-testid="state-input"
+                  />
+                  <Input
+                    label={t("city")}
+                    name="city"
+                    required
+                    autoComplete="locality"
+                    defaultValue={address.city || undefined}
+                    data-testid="city-input"
+                  />
+                </>
+              )}
+              <div className="grid grid-cols-[144px_1fr] gap-x-2">
+                <Input
+                  label={t("postalCode")}
+                  name="postal_code"
+                  autoComplete="postal-code"
+                  defaultValue={address.postal_code || undefined}
+                  data-testid="postal-code-input"
+                />
+                <Input
+                  label={t("phone")}
+                  name="phone"
+                  autoComplete="phone"
+                  defaultValue={address.phone || undefined}
+                  data-testid="phone-input"
+                />
+              </div>
               <label className="flex items-center gap-2 mt-2 cursor-pointer">
                 <input
                   type="checkbox"

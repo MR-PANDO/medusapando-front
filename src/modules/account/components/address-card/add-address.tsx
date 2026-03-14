@@ -9,6 +9,7 @@ import useToggleState from "@lib/hooks/use-toggle-state"
 import CountrySelect from "@modules/checkout/components/country-select"
 import Input from "@modules/common/components/input"
 import Modal from "@modules/common/components/modal"
+import LocationSelect from "@modules/common/components/location-select"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import { HttpTypes } from "@medusajs/types"
 import { addCustomerAddress } from "@lib/data/customer"
@@ -46,6 +47,9 @@ const AddAddress = ({
       setSuccessState(true)
     }
   }, [formState])
+
+  // Check if region is Colombia
+  const isColombia = region.countries?.some((c) => c.iso_2 === "co")
 
   return (
     <>
@@ -88,12 +92,6 @@ const AddAddress = ({
                 />
               </div>
               <Input
-                label={t("company")}
-                name="company"
-                autoComplete="organization"
-                data-testid="company-input"
-              />
-              <Input
                 label={t("address")}
                 name="address_1"
                 required
@@ -106,28 +104,6 @@ const AddAddress = ({
                 autoComplete="address-line2"
                 data-testid="address-2-input"
               />
-              <div className="grid grid-cols-[144px_1fr] gap-x-2">
-                <Input
-                  label={t("postalCode")}
-                  name="postal_code"
-                  required
-                  autoComplete="postal-code"
-                  data-testid="postal-code-input"
-                />
-                <Input
-                  label={t("city")}
-                  name="city"
-                  required
-                  autoComplete="locality"
-                  data-testid="city-input"
-                />
-              </div>
-              <Input
-                label={t("province")}
-                name="province"
-                autoComplete="address-level1"
-                data-testid="state-input"
-              />
               <CountrySelect
                 region={region}
                 name="country_code"
@@ -135,12 +111,41 @@ const AddAddress = ({
                 autoComplete="country"
                 data-testid="country-select"
               />
-              <Input
-                label={t("phone")}
-                name="phone"
-                autoComplete="phone"
-                data-testid="phone-input"
-              />
+              {isColombia ? (
+                <div className="grid grid-cols-2 gap-x-2">
+                  <LocationSelect required />
+                </div>
+              ) : (
+                <>
+                  <Input
+                    label={t("province")}
+                    name="province"
+                    autoComplete="address-level1"
+                    data-testid="state-input"
+                  />
+                  <Input
+                    label={t("city")}
+                    name="city"
+                    required
+                    autoComplete="locality"
+                    data-testid="city-input"
+                  />
+                </>
+              )}
+              <div className="grid grid-cols-[144px_1fr] gap-x-2">
+                <Input
+                  label={t("postalCode")}
+                  name="postal_code"
+                  autoComplete="postal-code"
+                  data-testid="postal-code-input"
+                />
+                <Input
+                  label={t("phone")}
+                  name="phone"
+                  autoComplete="phone"
+                  data-testid="phone-input"
+                />
+              </div>
               <label className="flex items-center gap-2 mt-2 cursor-pointer">
                 <input
                   type="checkbox"

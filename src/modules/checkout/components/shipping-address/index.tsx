@@ -2,6 +2,7 @@ import { HttpTypes } from "@medusajs/types"
 import { Container } from "@medusajs/ui"
 import Checkbox from "@modules/common/components/checkbox"
 import Input from "@modules/common/components/input"
+import LocationSelect from "@modules/common/components/location-select"
 import { mapKeys } from "lodash"
 import React, { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
@@ -100,6 +101,10 @@ const ShippingAddress = ({
     })
   }
 
+  const isColombia =
+    formData["shipping_address.country_code"] === "co" ||
+    cart?.region?.countries?.some((c) => c.iso_2 === "co")
+
   return (
     <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
@@ -154,24 +159,6 @@ const ShippingAddress = ({
           autoComplete="organization"
           data-testid="shipping-company-input"
         />
-        <Input
-          label={t("postalCode")}
-          name="shipping_address.postal_code"
-          autoComplete="postal-code"
-          value={formData["shipping_address.postal_code"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-postal-code-input"
-        />
-        <Input
-          label={t("city")}
-          name="shipping_address.city"
-          autoComplete="address-level2"
-          value={formData["shipping_address.city"]}
-          onChange={handleChange}
-          required
-          data-testid="shipping-city-input"
-        />
         <CountrySelect
           name="shipping_address.country_code"
           autoComplete="country"
@@ -182,13 +169,54 @@ const ShippingAddress = ({
           data-testid="shipping-country-select"
         />
         <Input
-          label={t("stateProvince")}
-          name="shipping_address.province"
-          autoComplete="address-level1"
-          value={formData["shipping_address.province"]}
+          label={t("postalCode")}
+          name="shipping_address.postal_code"
+          autoComplete="postal-code"
+          value={formData["shipping_address.postal_code"]}
           onChange={handleChange}
-          data-testid="shipping-province-input"
+          data-testid="shipping-postal-code-input"
         />
+        {isColombia ? (
+          <LocationSelect
+            provinceValue={formData["shipping_address.province"]}
+            cityValue={formData["shipping_address.city"]}
+            namePrefix="shipping_address."
+            onProvinceChange={(slug) => {
+              setFormData((prev) => ({
+                ...prev,
+                "shipping_address.province": slug,
+                "shipping_address.city": "",
+              }))
+            }}
+            onCityChange={(name) => {
+              setFormData((prev) => ({
+                ...prev,
+                "shipping_address.city": name,
+              }))
+            }}
+            required
+          />
+        ) : (
+          <>
+            <Input
+              label={t("stateProvince")}
+              name="shipping_address.province"
+              autoComplete="address-level1"
+              value={formData["shipping_address.province"]}
+              onChange={handleChange}
+              data-testid="shipping-province-input"
+            />
+            <Input
+              label={t("city")}
+              name="shipping_address.city"
+              autoComplete="address-level2"
+              value={formData["shipping_address.city"]}
+              onChange={handleChange}
+              required
+              data-testid="shipping-city-input"
+            />
+          </>
+        )}
       </div>
       <div className="my-8">
         <Checkbox
