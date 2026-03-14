@@ -219,8 +219,7 @@ export const getRecentlyPurchased = async (
       cache: "force-cache",
     })
     .then(({ recently_purchased }) => recently_purchased)
-    .catch((err) => {
-      console.error("Error fetching recently purchased:", err)
+    .catch(() => {
       return []
     })
 }
