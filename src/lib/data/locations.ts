@@ -4,6 +4,7 @@ import { sdk } from "@lib/config"
 
 type Department = { id: string; name: string; slug: string }
 type Municipality = { id: string; name: string; slug: string; department_id: string }
+type Neighborhood = { id: string; name: string; slug: string; shipping_price: number; municipality_id: string }
 
 let cachedDepartments: Department[] | null = null
 
@@ -32,4 +33,19 @@ export async function getMunicipalities(departmentSlug: string): Promise<Municip
   )
 
   return municipalities
+}
+
+export async function getNeighborhoods(municipalitySlug: string): Promise<Neighborhood[]> {
+  if (!municipalitySlug || !/^[a-z0-9-]+$/.test(municipalitySlug)) return []
+
+  const { neighborhoods } = await sdk.client.fetch<{ neighborhoods: Neighborhood[] }>(
+    "/store/locations/neighborhoods",
+    {
+      method: "GET",
+      query: { municipality: municipalitySlug },
+      cache: "force-cache",
+    }
+  )
+
+  return neighborhoods
 }

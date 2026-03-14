@@ -142,6 +142,8 @@
     "defaultAddress": "Predeterminada",
     "selectDepartment": "Selecciona un departamento",
     "selectCity": "Selecciona una ciudad",
+    "neighborhood": "Barrio / Zona",
+    "selectNeighborhood": "Selecciona un barrio",
     "loading": "Cargando...",
     "company": "Empresa",
     "address": "Dirección",

@@ -369,21 +369,30 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
       throw new Error("No existing cart found when setting addresses")
     }
 
+    const address2 = formData.get("shipping_address.address_2") as string || ""
+    const neighborhoodId = formData.get("shipping_address.neighborhood_id") as string || ""
+
     const data = {
       shipping_address: {
         first_name: formData.get("shipping_address.first_name"),
         last_name: formData.get("shipping_address.last_name"),
         address_1: formData.get("shipping_address.address_1"),
-        address_2: "",
+        address_2: address2,
         company: formData.get("shipping_address.company"),
         postal_code: formData.get("shipping_address.postal_code"),
         city: formData.get("shipping_address.city"),
         country_code: formData.get("shipping_address.country_code"),
         province: formData.get("shipping_address.province"),
         phone: formData.get("shipping_address.phone"),
+        metadata: neighborhoodId ? { neighborhood_id: neighborhoodId } : undefined,
       },
       email: formData.get("email"),
     } as any
+
+    // Store neighborhood_id in cart metadata for shipping price calculation
+    if (neighborhoodId) {
+      data.metadata = { neighborhood_id: neighborhoodId }
+    }
 
     const sameAsBilling = formData.get("same_as_billing")
     if (sameAsBilling === "on") data.billing_address = data.shipping_address

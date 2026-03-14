@@ -142,6 +142,8 @@
     "defaultAddress": "Default",
     "selectDepartment": "Select a department",
     "selectCity": "Select a city",
+    "neighborhood": "Neighborhood / Zone",
+    "selectNeighborhood": "Select a neighborhood",
     "loading": "Loading...",
     "company": "Company",
     "address": "Address",

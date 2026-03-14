@@ -25,6 +25,7 @@ const ShippingAddress = ({
     "shipping_address.first_name": cart?.shipping_address?.first_name || "",
     "shipping_address.last_name": cart?.shipping_address?.last_name || "",
     "shipping_address.address_1": cart?.shipping_address?.address_1 || "",
+    "shipping_address.address_2": cart?.shipping_address?.address_2 || "",
     "shipping_address.company": cart?.shipping_address?.company || "",
     "shipping_address.city": cart?.shipping_address?.city || "",
     "shipping_address.country_code": cart?.shipping_address?.country_code || "",
@@ -32,6 +33,9 @@ const ShippingAddress = ({
     "shipping_address.phone": cart?.shipping_address?.phone || "",
     email: cart?.email || "",
   })
+
+  // Track neighborhood selection for shipping price calculation
+  const [neighborhoodId, setNeighborhoodId] = useState("")
 
   const countriesInRegion = useMemo(
     () => cart?.region?.countries?.map((c) => c.iso_2),
@@ -57,6 +61,7 @@ const ShippingAddress = ({
         "shipping_address.first_name": address?.first_name || "",
         "shipping_address.last_name": address?.last_name || "",
         "shipping_address.address_1": address?.address_1 || "",
+        "shipping_address.address_2": address?.address_2 || "",
         "shipping_address.company": address?.company || "",
         "shipping_address.city": address?.city || "",
         "shipping_address.country_code": address?.country_code || "",
@@ -170,18 +175,30 @@ const ShippingAddress = ({
           <LocationSelect
             provinceValue={formData["shipping_address.province"]}
             cityValue={formData["shipping_address.city"]}
+            neighborhoodValue={neighborhoodId}
             namePrefix="shipping_address."
             onProvinceChange={(slug) => {
               setFormData((prev) => ({
                 ...prev,
                 "shipping_address.province": slug,
                 "shipping_address.city": "",
+                "shipping_address.address_2": "",
               }))
+              setNeighborhoodId("")
             }}
             onCityChange={(name) => {
               setFormData((prev) => ({
                 ...prev,
                 "shipping_address.city": name,
+                "shipping_address.address_2": "",
+              }))
+              setNeighborhoodId("")
+            }}
+            onNeighborhoodChange={(id, name, _price) => {
+              setNeighborhoodId(id)
+              setFormData((prev) => ({
+                ...prev,
+                "shipping_address.address_2": name,
               }))
             }}
             required
@@ -238,6 +255,8 @@ const ShippingAddress = ({
           data-testid="shipping-phone-input"
         />
       </div>
+      {/* Hidden fields for neighborhood */}
+      <input type="hidden" name="shipping_address.neighborhood_id" value={neighborhoodId} />
     </>
   )
 }

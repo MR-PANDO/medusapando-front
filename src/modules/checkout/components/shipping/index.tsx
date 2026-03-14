@@ -82,13 +82,25 @@ const Shipping: React.FC<ShippingProps> = ({
 
   const hasPickupOptions = !!_pickupMethods?.length
 
+  // Get neighborhood_id from cart metadata for calculated shipping
+  const neighborhoodId =
+    (cart?.shipping_address?.metadata as Record<string, any>)?.neighborhood_id ||
+    (cart?.metadata as Record<string, any>)?.neighborhood_id ||
+    ""
+
   useEffect(() => {
     setIsLoadingPrices(true)
 
     if (_shippingMethods?.length) {
       const promises = _shippingMethods
         .filter((sm) => sm.price_type === "calculated")
-        .map((sm) => calculatePriceForShippingOption(sm.id, cart.id))
+        .map((sm) => {
+          const data: Record<string, unknown> = {}
+          if (neighborhoodId) {
+            data.neighborhood_id = neighborhoodId
+          }
+          return calculatePriceForShippingOption(sm.id, cart.id, data)
+        })
 
       if (promises.length) {
         Promise.allSettled(promises).then((res) => {
@@ -106,7 +118,7 @@ const Shipping: React.FC<ShippingProps> = ({
     if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
       setShowPickupOptions(PICKUP_OPTION_ON)
     }
-  }, [availableShippingMethods])
+  }, [availableShippingMethods, neighborhoodId])
 
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
