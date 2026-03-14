@@ -386,15 +386,12 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         country_code: formData.get("shipping_address.country_code"),
         province: formData.get("shipping_address.province"),
         phone: formData.get("shipping_address.phone"),
-        metadata: neighborhoodId ? { neighborhood_id: neighborhoodId } : undefined,
+        metadata: { neighborhood_id: neighborhoodId || null },
       },
       email: formData.get("email"),
+      // Always update cart metadata — clear neighborhood_id if address changed
+      metadata: { neighborhood_id: neighborhoodId || null },
     } as any
-
-    // Store neighborhood_id in cart metadata for shipping price calculation
-    if (neighborhoodId) {
-      data.metadata = { neighborhood_id: neighborhoodId }
-    }
 
     const sameAsBilling = formData.get("same_as_billing")
     if (sameAsBilling === "on") data.billing_address = data.shipping_address
