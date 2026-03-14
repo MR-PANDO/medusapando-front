@@ -111,7 +111,6 @@ const EditAddress: React.FC<EditAddressProps> = ({
             </span>
             <span data-testid="address-postal-city">
               {address.city}
-              {address.postal_code && `, ${address.postal_code}`}
             </span>
             <span data-testid="address-province-country">
               {address.province && `${address.province}, `}
@@ -222,22 +221,13 @@ const EditAddress: React.FC<EditAddressProps> = ({
                   />
                 </>
               )}
-              <div className="grid grid-cols-[144px_1fr] gap-x-2">
-                <Input
-                  label={t("postalCode")}
-                  name="postal_code"
-                  autoComplete="postal-code"
-                  defaultValue={address.postal_code || undefined}
-                  data-testid="postal-code-input"
-                />
-                <Input
-                  label={t("phone")}
-                  name="phone"
-                  autoComplete="phone"
-                  defaultValue={address.phone || undefined}
-                  data-testid="phone-input"
-                />
-              </div>
+              <Input
+                label={t("phone")}
+                name="phone"
+                autoComplete="phone"
+                defaultValue={address.phone || undefined}
+                data-testid="phone-input"
+              />
               <label className="flex items-center gap-2 mt-2 cursor-pointer">
                 <input
                   type="checkbox"

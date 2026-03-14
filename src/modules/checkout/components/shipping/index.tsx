@@ -37,8 +37,8 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
     ret += `, ${address.address_2}`
   }
 
-  if (address.postal_code) {
-    ret += `, ${address.postal_code} ${address.city}`
+  if (address.city) {
+    ret += `, ${address.city}`
   }
 
   if (address.country_code) {

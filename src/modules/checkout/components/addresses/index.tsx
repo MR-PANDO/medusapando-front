@@ -113,7 +113,6 @@ const Addresses = ({
                       {cart.shipping_address.address_2}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
-                      {cart.shipping_address.postal_code},{" "}
                       {cart.shipping_address.city}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
@@ -159,7 +158,6 @@ const Addresses = ({
                           {cart.billing_address?.address_2}
                         </Text>
                         <Text className="txt-medium text-ui-fg-subtle">
-                          {cart.billing_address?.postal_code},{" "}
                           {cart.billing_address?.city}
                         </Text>
                         <Text className="txt-medium text-ui-fg-subtle">

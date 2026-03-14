@@ -11,7 +11,6 @@ const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
     "billing_address.last_name": cart?.billing_address?.last_name || "",
     "billing_address.address_1": cart?.billing_address?.address_1 || "",
     "billing_address.company": cart?.billing_address?.company || "",
-    "billing_address.postal_code": cart?.billing_address?.postal_code || "",
     "billing_address.city": cart?.billing_address?.city || "",
     "billing_address.country_code": cart?.billing_address?.country_code || "",
     "billing_address.province": cart?.billing_address?.province || "",
@@ -66,15 +65,6 @@ const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
           onChange={handleChange}
           autoComplete="organization"
           data-testid="billing-company-input"
-        />
-        <Input
-          label={t("postalCode")}
-          name="billing_address.postal_code"
-          autoComplete="postal-code"
-          value={formData["billing_address.postal_code"]}
-          onChange={handleChange}
-          required
-          data-testid="billing-postal-input"
         />
         <Input
           label={t("city")}

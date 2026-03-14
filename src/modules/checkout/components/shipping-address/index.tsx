@@ -26,7 +26,6 @@ const ShippingAddress = ({
     "shipping_address.last_name": cart?.shipping_address?.last_name || "",
     "shipping_address.address_1": cart?.shipping_address?.address_1 || "",
     "shipping_address.company": cart?.shipping_address?.company || "",
-    "shipping_address.postal_code": cart?.shipping_address?.postal_code || "",
     "shipping_address.city": cart?.shipping_address?.city || "",
     "shipping_address.country_code": cart?.shipping_address?.country_code || "",
     "shipping_address.province": cart?.shipping_address?.province || "",
@@ -59,7 +58,6 @@ const ShippingAddress = ({
         "shipping_address.last_name": address?.last_name || "",
         "shipping_address.address_1": address?.address_1 || "",
         "shipping_address.company": address?.company || "",
-        "shipping_address.postal_code": address?.postal_code || "",
         "shipping_address.city": address?.city || "",
         "shipping_address.country_code": address?.country_code || "",
         "shipping_address.province": address?.province || "",
@@ -167,14 +165,6 @@ const ShippingAddress = ({
           onChange={handleChange}
           required
           data-testid="shipping-country-select"
-        />
-        <Input
-          label={t("postalCode")}
-          name="shipping_address.postal_code"
-          autoComplete="postal-code"
-          value={formData["shipping_address.postal_code"]}
-          onChange={handleChange}
-          data-testid="shipping-postal-code-input"
         />
         {isColombia ? (
           <LocationSelect

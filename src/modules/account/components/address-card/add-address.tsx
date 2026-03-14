@@ -132,20 +132,12 @@ const AddAddress = ({
                   />
                 </>
               )}
-              <div className="grid grid-cols-[144px_1fr] gap-x-2">
-                <Input
-                  label={t("postalCode")}
-                  name="postal_code"
-                  autoComplete="postal-code"
-                  data-testid="postal-code-input"
-                />
-                <Input
-                  label={t("phone")}
-                  name="phone"
-                  autoComplete="phone"
-                  data-testid="phone-input"
-                />
-              </div>
+              <Input
+                label={t("phone")}
+                name="phone"
+                autoComplete="phone"
+                data-testid="phone-input"
+              />
               <label className="flex items-center gap-2 mt-2 cursor-pointer">
                 <input
                   type="checkbox"

@@ -115,7 +115,7 @@ const AddressSelect = ({
                           )}
                         </span>
                         <span>
-                          {address.postal_code}, {address.city}
+                          {address.city}
                         </span>
                         <span>
                           {address.province && `${address.province}, `}
