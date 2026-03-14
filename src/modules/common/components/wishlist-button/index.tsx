@@ -4,28 +4,23 @@ import { addToWishlist, removeFromWishlist } from "@lib/data/wishlist"
 import { useState, useTransition } from "react"
 
 type WishlistButtonProps = {
-  productId: string
-  variantId?: string
+  variantId: string
   initialInWishlist?: boolean
   initialItemId?: string | null
+  className?: string
 }
 
 export default function WishlistButton({
-  productId,
   variantId,
   initialInWishlist = false,
   initialItemId = null,
+  className = "",
 }: WishlistButtonProps) {
   const [inWishlist, setInWishlist] = useState(initialInWishlist)
   const [itemId, setItemId] = useState<string | null>(initialItemId)
   const [isPending, startTransition] = useTransition()
 
-  const toggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (!variantId) return
-
+  const handleToggle = () => {
     startTransition(async () => {
       if (inWishlist && itemId) {
         const result = await removeFromWishlist(itemId)
@@ -48,28 +43,27 @@ export default function WishlistButton({
 
   return (
     <button
-      onClick={toggleWishlist}
-      disabled={isPending || !variantId}
-      className={`absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md hover:shadow-lg transition-all ${
-        isPending ? "opacity-50 cursor-wait" : ""
-      }`}
-      type="button"
+      onClick={handleToggle}
+      disabled={isPending}
+      className={`group relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ${
+        inWishlist
+          ? "text-red-500 hover:text-red-600"
+          : "text-gray-400 hover:text-red-400"
+      } ${isPending ? "opacity-50 cursor-wait" : "cursor-pointer"} ${className}`}
       title={inWishlist ? "Quitar de favoritos" : "Agregar a favoritos"}
+      aria-label={inWishlist ? "Quitar de favoritos" : "Agregar a favoritos"}
     >
       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className={`h-5 w-5 transition-colors ${
-          inWishlist ? "text-red-500 fill-red-500" : "text-gray-400 hover:text-red-400"
-        }`}
+        className="w-5 h-5 transition-transform duration-200 group-hover:scale-110"
         fill={inWishlist ? "currentColor" : "none"}
-        viewBox="0 0 24 24"
         stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={inWishlist ? 0 : 2}
       >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+          d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
         />
       </svg>
     </button>

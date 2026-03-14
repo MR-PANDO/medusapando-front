@@ -69,7 +69,7 @@ export default async function ProductPreview({
       data-testid="product-wrapper"
     >
       {/* Wishlist button */}
-      <WishlistButton productId={product.id!} />
+      <WishlistButton productId={product.id!} variantId={variantId} />
 
       {/* Discount badge */}
       {hasDiscount && (
