@@ -124,6 +124,27 @@ const Shipping: React.FC<ShippingProps> = ({
     }
   }, [availableShippingMethods, neighborhoodId])
 
+  // Auto-reapply shipping method when calculated price changes (e.g., address changed)
+  useEffect(() => {
+    if (!shippingMethodId || !neighborhoodId || isLoadingPrices) return
+
+    const currentMethod = cart.shipping_methods?.find(
+      (sm) => sm.shipping_option_id === shippingMethodId
+    )
+    if (!currentMethod) return
+
+    const newPrice = calculatedPricesMap[shippingMethodId]
+    if (typeof newPrice !== "number" || newPrice === 0) return
+
+    // If the price on the cart differs from the newly calculated price, re-apply
+    const currentAmount = currentMethod.amount ?? 0
+    if (currentAmount !== newPrice) {
+      const methodData: Record<string, unknown> = { neighborhood_id: neighborhoodId }
+      setShippingMethod({ cartId: cart.id, shippingMethodId, data: methodData })
+        .catch(() => {})
+    }
+  }, [calculatedPricesMap, isLoadingPrices])
+
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
   }
