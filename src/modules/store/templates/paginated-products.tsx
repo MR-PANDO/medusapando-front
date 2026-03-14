@@ -90,10 +90,6 @@ export default async function PaginatedProducts({
     queryParams["q"] = searchQuery
   }
 
-  if (sortBy === "created_at") {
-    queryParams["order"] = "created_at"
-  }
-
   const region = await getRegion(countryCode)
 
   if (!region) {

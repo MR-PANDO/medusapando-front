@@ -107,15 +107,16 @@ export const listProductsWithSort = async ({
   const limit = queryParams?.limit || 12
 
   // Map sortBy to API order parameter
+  // Always include ,id as tiebreaker to ensure stable pagination (no duplicates across pages)
   let orderParam: string | undefined
   if (sortBy === "price_asc") {
-    orderParam = "variants.calculated_price"
+    orderParam = "variants.calculated_price,id"
   } else if (sortBy === "price_desc") {
-    orderParam = "-variants.calculated_price"
+    orderParam = "-variants.calculated_price,id"
   } else if (sortBy === "created_at") {
-    orderParam = "-created_at"
+    orderParam = "-created_at,id"
   } else if (sortBy === "sales_count") {
-    orderParam = "-metadata.sales_count"
+    orderParam = "-metadata.sales_count,id"
   }
 
   const {
