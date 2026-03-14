@@ -7,6 +7,7 @@ import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
 import ProductActionsPreview from "./product-actions-preview"
 import WishlistButton from "./wishlist-button"
+import ImageZoomButton from "./image-zoom-button"
 
 type UnitPricing = {
   unit_type: string
@@ -87,6 +88,10 @@ export default async function ProductPreview({
             size="full"
             isFeatured={isFeatured}
             className="!rounded-none !shadow-none"
+          />
+          <ImageZoomButton
+            imageSrc={product.thumbnail || product.images?.[0]?.url || null}
+            alt={product.title || ""}
           />
         </div>
       </LocalizedClientLink>
