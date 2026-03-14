@@ -30,6 +30,7 @@ type PaginatedProductsParams = {
   id?: string[]
   order?: string
   tag_id?: string[]
+  $and?: Array<{ tag_id: string }>
   q?: string
 }
 
@@ -81,8 +82,12 @@ export default async function PaginatedProducts({
     const tagIds = tagSlugs
       .map((slug) => TAG_SLUG_TO_ID[slug])
       .filter(Boolean)
-    if (tagIds.length > 0) {
+    if (tagIds.length === 1) {
+      // Single tag: simple filter
       queryParams["tag_id"] = tagIds
+    } else if (tagIds.length > 1) {
+      // Multiple tags: AND logic — product must have ALL selected tags
+      queryParams["$and"] = tagIds.map((id) => ({ tag_id: id }))
     }
   }
 
