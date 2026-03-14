@@ -151,7 +151,12 @@ const Shipping: React.FC<ShippingProps> = ({
       return id
     })
 
-    await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
+    const methodData: Record<string, unknown> = {}
+    if (neighborhoodId) {
+      methodData.neighborhood_id = neighborhoodId
+    }
+
+    await setShippingMethod({ cartId: cart.id, shippingMethodId: id, data: methodData })
       .catch((err) => {
         setShippingMethodId(currentId)
 
