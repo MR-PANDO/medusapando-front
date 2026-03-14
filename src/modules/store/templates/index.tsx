@@ -62,7 +62,7 @@ const StoreTemplate = async ({
   const t = await getTranslations("store")
   const locale = await getLocale()
   const pageNumber = page ? parseInt(page) : 1
-  const sort = sortBy || "created_at"
+  const sort = sortBy || "sales_count"
 
   // Fetch category translations for the refinement list
   const allCategoryIds = (categories || []).flatMap((cat) => [

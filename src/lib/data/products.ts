@@ -62,12 +62,12 @@ export const listProducts = async ({
           offset,
           region_id: region?.id,
           fields:
-            "*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,+variants.allow_backorder,*variants.images,+metadata,+tags",
+            "*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,+variants.allow_backorder,*variants.images,+metadata",
           ...queryParams,
         },
         headers,
         next,
-        cache: "force-cache",
+        cache: "no-store",
       }
     )
     .then(({ products, count }) => {
@@ -91,7 +91,7 @@ export const listProducts = async ({
 export const listProductsWithSort = async ({
   page = 1,
   queryParams,
-  sortBy = "created_at",
+  sortBy = "sales_count",
   countryCode,
 }: {
   page?: number
