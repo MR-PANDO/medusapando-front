@@ -199,6 +199,7 @@ const EditAddress: React.FC<EditAddressProps> = ({
                   <LocationSelect
                     provinceValue={address.province || ""}
                     cityValue={address.city || ""}
+                    neighborhoodValue={(address.metadata as Record<string, any>)?.neighborhood_id || ""}
                     required
                   />
                 </div>

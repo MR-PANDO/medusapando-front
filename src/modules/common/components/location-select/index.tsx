@@ -101,6 +101,12 @@ export default function LocationSelect({
           setSelectedCity(munis[0].name)
           setCurrentMunicipalitySlug(munis[0].slug)
           onCityChange?.(munis[0].name)
+        } else if (selectedCity) {
+          // Restore municipality slug from saved city name (e.g., saved address)
+          const match = munis.find((m: any) => m.name === selectedCity)
+          if (match) {
+            setCurrentMunicipalitySlug(match.slug)
+          }
         }
       } catch {
         setMunicipalities([])

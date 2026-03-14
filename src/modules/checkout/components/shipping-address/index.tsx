@@ -35,7 +35,12 @@ const ShippingAddress = ({
   })
 
   // Track neighborhood selection for shipping price calculation
-  const [neighborhoodId, setNeighborhoodId] = useState("")
+  // Initialize from cart metadata if available (e.g., returning to checkout)
+  const [neighborhoodId, setNeighborhoodId] = useState(
+    (cart?.shipping_address?.metadata as Record<string, any>)?.neighborhood_id ||
+    (cart?.metadata as Record<string, any>)?.neighborhood_id ||
+    ""
+  )
 
   const countriesInRegion = useMemo(
     () => cart?.region?.countries?.map((c) => c.iso_2),
@@ -55,7 +60,7 @@ const ShippingAddress = ({
     address?: HttpTypes.StoreCartAddress,
     email?: string
   ) => {
-    address &&
+    if (address) {
       setFormData((prevState: Record<string, any>) => ({
         ...prevState,
         "shipping_address.first_name": address?.first_name || "",
@@ -68,6 +73,12 @@ const ShippingAddress = ({
         "shipping_address.province": address?.province || "",
         "shipping_address.phone": address?.phone || "",
       }))
+
+      // Restore neighborhood_id from address metadata (saved addresses)
+      const savedNeighborhoodId =
+        (address?.metadata as Record<string, any>)?.neighborhood_id || ""
+      setNeighborhoodId(savedNeighborhoodId)
+    }
 
     email &&
       setFormData((prevState: Record<string, any>) => ({

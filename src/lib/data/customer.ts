@@ -194,13 +194,16 @@ export const addCustomerAddress = async (
   currentState: Record<string, unknown>,
   formData: FormData
 ): Promise<any> => {
-  const address = {
+  const neighborhoodId = formData.get("neighborhood_id") as string || ""
+  const address2 = formData.get("address_2") as string || ""
+
+  const address: Record<string, any> = {
     address_name: (formData.get("address_name") as string) || null,
     first_name: formData.get("first_name") as string,
     last_name: formData.get("last_name") as string,
     company: formData.get("company") as string,
     address_1: formData.get("address_1") as string,
-    address_2: formData.get("address_2") as string,
+    address_2: address2,
     city: formData.get("city") as string,
     postal_code: formData.get("postal_code") as string,
     province: formData.get("province") as string,
@@ -208,6 +211,10 @@ export const addCustomerAddress = async (
     phone: formData.get("phone") as string,
     is_default_shipping: formData.get("is_default_shipping") === "on",
     is_default_billing: formData.get("is_default_shipping") === "on",
+  }
+
+  if (neighborhoodId) {
+    address.metadata = { neighborhood_id: neighborhoodId }
   }
 
   const headers = {
@@ -256,13 +263,16 @@ export const updateCustomerAddress = async (
     return { success: false, error: "Address ID is required" }
   }
 
+  const updateNeighborhoodId = formData.get("neighborhood_id") as string || ""
+  const updateAddress2 = formData.get("address_2") as string || ""
+
   const address = {
     address_name: (formData.get("address_name") as string) || null,
     first_name: formData.get("first_name") as string,
     last_name: formData.get("last_name") as string,
     company: formData.get("company") as string,
     address_1: formData.get("address_1") as string,
-    address_2: formData.get("address_2") as string,
+    address_2: updateAddress2,
     city: formData.get("city") as string,
     postal_code: formData.get("postal_code") as string,
     province: formData.get("province") as string,
@@ -270,6 +280,7 @@ export const updateCustomerAddress = async (
     phone: (formData.get("phone") as string) || null,
     is_default_shipping: formData.get("is_default_shipping") === "on",
     is_default_billing: formData.get("is_default_shipping") === "on",
+    ...(updateNeighborhoodId ? { metadata: { neighborhood_id: updateNeighborhoodId } } : {}),
   } as HttpTypes.StoreUpdateCustomerAddress
 
   const headers = {
