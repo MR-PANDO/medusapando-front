@@ -216,6 +216,14 @@ const RefinementList = ({
               </label>
             )
           })}
+          {selectedTags && DIET_TAGS.some((tag) => selectedTags.split(",").includes(tag.value)) && (
+            <button
+              onClick={() => setQueryParams("tags", "")}
+              className="mt-1 text-xs text-gray-500 hover:text-emerald-600 transition-colors text-left"
+            >
+              {t("clearFilters")}
+            </button>
+          )}
         </div>
       </FilterSection>
 
