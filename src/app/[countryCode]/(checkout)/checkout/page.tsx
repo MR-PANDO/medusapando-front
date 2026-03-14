@@ -38,7 +38,7 @@ export default async function Checkout({ params }: Props) {
         <CheckoutSummary cart={cart} />
       </div>
       {recentlyPurchased.length > 0 &&
-        !cart.shipping_methods?.length && (
+        !cart.payment_collection && (
         <BuyAgain items={recentlyPurchased} countryCode={countryCode} />
       )}
     </>
