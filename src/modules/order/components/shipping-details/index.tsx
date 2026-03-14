@@ -1,7 +1,9 @@
+"use client"
+
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Text } from "@medusajs/ui"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 
 import Divider from "@modules/common/components/divider"
 
@@ -9,8 +11,8 @@ type ShippingDetailsProps = {
   order: HttpTypes.StoreOrder
 }
 
-const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
-  const t = await getTranslations("order")
+const ShippingDetails = ({ order }: ShippingDetailsProps) => {
+  const t = useTranslations("order")
   return (
     <div>
       <Heading level="h2" className="flex flex-row text-3xl-regular my-6">
@@ -58,9 +60,9 @@ const ShippingDetails = async ({ order }: ShippingDetailsProps) => {
         >
           <Text className="txt-medium-plus text-ui-fg-base mb-1">{t("method")}</Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {(order as any).shipping_methods[0]?.name} (
+            {(order as any).shipping_methods?.[0]?.name} (
             {convertToLocale({
-              amount: order.shipping_methods?.[0].total ?? 0,
+              amount: order.shipping_methods?.[0]?.total ?? 0,
               currency_code: order.currency_code,
             })}
             )

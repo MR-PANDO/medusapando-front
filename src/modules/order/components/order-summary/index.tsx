@@ -1,13 +1,15 @@
+"use client"
+
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 
 type OrderSummaryProps = {
   order: HttpTypes.StoreOrder
 }
 
-const OrderSummary = async ({ order }: OrderSummaryProps) => {
-  const t = await getTranslations("order")
+const OrderSummary = ({ order }: OrderSummaryProps) => {
+  const t = useTranslations("order")
   const getAmount = (amount?: number | null) => {
     if (!amount) {
       return

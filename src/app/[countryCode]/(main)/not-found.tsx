@@ -1,5 +1,4 @@
 import { Metadata } from "next"
-import { getTranslations } from "next-intl/server"
 
 import InteractiveLink from "@modules/common/components/interactive-link"
 
@@ -8,15 +7,14 @@ export const metadata: Metadata = {
   description: "Something went wrong",
 }
 
-export default async function NotFound() {
-  const t = await getTranslations("notFound")
+export default function NotFound() {
   return (
     <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
-      <h1 className="text-2xl-semi text-ui-fg-base">{t("heading")}</h1>
+      <h1 className="text-2xl-semi text-ui-fg-base">Página no encontrada</h1>
       <p className="text-small-regular text-ui-fg-base">
-        {t("message")}
+        La página que intentaste acceder no existe.
       </p>
-      <InteractiveLink href="/">{t("goHome")}</InteractiveLink>
+      <InteractiveLink href="/">Ir al inicio</InteractiveLink>
     </div>
   )
 }

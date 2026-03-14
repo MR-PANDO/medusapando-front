@@ -1,20 +1,22 @@
+"use client"
+
 import { Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 import React from "react"
 
-const Help = async () => {
-  const t = await getTranslations("order")
+const Help = () => {
+  const t = useTranslations("order")
   return (
     <div className="mt-6">
       <Heading className="text-base-semi">{t("needHelp")}</Heading>
       <div className="text-base-regular my-2">
         <ul className="gap-y-2 flex flex-col">
           <li>
-            <LocalizedClientLink href="/contact">{t("contact")}</LocalizedClientLink>
+            <LocalizedClientLink href="/servicio-cliente">{t("contact")}</LocalizedClientLink>
           </li>
           <li>
-            <LocalizedClientLink href="/contact">
+            <LocalizedClientLink href="/servicio-cliente">
               {t("returnsExchanges")}
             </LocalizedClientLink>
           </li>

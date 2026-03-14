@@ -1,14 +1,16 @@
+"use client"
+
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@medusajs/ui"
-import { getTranslations } from "next-intl/server"
+import { useTranslations } from "next-intl"
 
 type OrderDetailsProps = {
   order: HttpTypes.StoreOrder
   showStatus?: boolean
 }
 
-const OrderDetails = async ({ order, showStatus }: OrderDetailsProps) => {
-  const t = await getTranslations("order")
+const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
+  const t = useTranslations("order")
   const formatStatus = (str: string) => {
     const formatted = str.split("_").join(" ")
 
@@ -50,7 +52,7 @@ const OrderDetails = async ({ order, showStatus }: OrderDetailsProps) => {
               {t("paymentStatus")}{" "}
               <span
                 className="text-ui-fg-subtle "
-                sata-testid="order-payment-status"
+                data-testid="order-payment-status"
               >
                 {formatStatus(order.payment_status)}
               </span>
