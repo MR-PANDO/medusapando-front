@@ -33,16 +33,35 @@ function SearchInput({
   onBlur: () => void
 }) {
   const t = useTranslations("search")
-  const { query, refine } = useSearchBox()
+  const { refine } = useSearchBox()
   const inputRef = useRef<HTMLInputElement>(null)
+  const [inputValue, setInputValue] = useState("")
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setInputValue(value)
+
+    // Debounce the search to prevent re-renders that dismiss mobile keyboard
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      refine(value)
+    }, 300)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
   return (
     <div className="relative w-full">
       <input
         ref={inputRef}
         type="search"
-        value={query}
-        onChange={(e) => refine(e.target.value)}
+        value={inputValue}
+        onChange={handleChange}
         onFocus={onFocus}
         onBlur={onBlur}
         placeholder={t("placeholder")}
