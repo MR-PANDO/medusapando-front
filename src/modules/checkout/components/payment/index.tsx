@@ -96,15 +96,29 @@ const Payment = ({
     })
   }
 
-  // Fetch checkout config via API route (not server action — avoids serialization issues)
+  // Fetch checkout config via API route
   const fetchCheckoutConfig = async () => {
-    const res = await fetch("/api/wompi/checkout-config", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cart_id: cart.id }),
-    })
-    if (!res.ok) return null
-    return res.json()
+    try {
+      const res = await fetch("/api/wompi/checkout-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart_id: cart.id }),
+      })
+      if (!res.ok) {
+        const errText = await res.text()
+        setError(`Error ${res.status}: ${errText.substring(0, 100)}`)
+        return null
+      }
+      const data = await res.json()
+      if (!data.public_key) {
+        setError("Respuesta invalida del servidor")
+        return null
+      }
+      return data
+    } catch (err: any) {
+      setError(`Error de conexion: ${err.message}`)
+      return null
+    }
   }
 
   // Handle Wompi Widget payment

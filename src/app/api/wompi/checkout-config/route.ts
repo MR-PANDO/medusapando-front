@@ -1,24 +1,35 @@
 import { NextRequest, NextResponse } from "next/server"
-import { sdk } from "@lib/config"
-import { getAuthHeaders } from "@lib/data/cookies"
+
+const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const headers = await getAuthHeaders()
 
-    const result = await sdk.client.fetch<any>(
-      "/store/wompi/checkout-config",
-      {
-        method: "POST",
-        body: { cart_id: body.cart_id },
-        headers,
-      }
-    )
+    // Forward auth cookies from the browser request
+    const cookieHeader = request.headers.get("cookie") || ""
 
-    return NextResponse.json(result)
+    const res = await fetch(`${BACKEND_URL}/store/wompi/checkout-config`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-publishable-api-key": PUBLISHABLE_KEY,
+        cookie: cookieHeader,
+      },
+      body: JSON.stringify({ cart_id: body.cart_id }),
+    })
+
+    if (!res.ok) {
+      const error = await res.text()
+      console.error("[Wompi API] Backend error:", res.status, error)
+      return NextResponse.json({ error: "Backend error" }, { status: res.status })
+    }
+
+    const data = await res.json()
+    return NextResponse.json(data)
   } catch (err: any) {
-    console.error("[Wompi API] checkout-config error:", err)
+    console.error("[Wompi API] Error:", err.message)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
