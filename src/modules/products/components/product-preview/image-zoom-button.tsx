@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { createPortal } from "react-dom"
 import ImageLightbox from "@modules/common/components/image-lightbox"
 
 type ImageZoomButtonProps = {
@@ -41,13 +42,16 @@ export default function ImageZoomButton({ imageSrc, alt }: ImageZoomButtonProps)
         </svg>
       </button>
 
-      {isOpen && (
-        <ImageLightbox
-          src={imageSrc}
-          alt={alt}
-          onClose={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <ImageLightbox
+            src={imageSrc}
+            alt={alt}
+            onClose={() => setIsOpen(false)}
+          />,
+          document.body
+        )}
     </>
   )
 }
