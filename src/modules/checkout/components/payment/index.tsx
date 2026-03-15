@@ -7,6 +7,7 @@ import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer from "@modules/checkout/components/payment-container"
+import WompiPayment from "@modules/checkout/components/wompi-payment"
 import Divider from "@modules/common/components/divider"
 import { useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -153,6 +154,11 @@ const Payment = ({
                 {t("giftCard")}
               </Text>
             </div>
+          )}
+
+          {/* Wompi Widget & Checkout Web options */}
+          {selectedPaymentMethod === "pp_wompi_wompi" && (
+            <WompiPayment cart={cart} />
           )}
 
           <ErrorMessage
