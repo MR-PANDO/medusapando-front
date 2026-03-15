@@ -48,26 +48,46 @@ export async function getWompiCheckoutConfig(
 ): Promise<WompiCheckoutConfig | null> {
   const headers = await getAuthHeaders()
 
-  return sdk.client
-    .fetch<WompiCheckoutConfig>("/store/wompi/checkout-config", {
-      method: "POST",
-      body: { cart_id: cartId },
-      headers,
-    })
-    .catch(() => null)
+  try {
+    const result = await sdk.client.fetch<WompiCheckoutConfig>(
+      "/store/wompi/checkout-config",
+      {
+        method: "POST",
+        body: { cart_id: cartId },
+        headers,
+      }
+    )
+    // Explicitly return a plain object (server actions serialize the response)
+    return {
+      public_key: result.public_key,
+      reference: result.reference,
+      amount_in_cents: result.amount_in_cents,
+      currency: result.currency,
+      signature: result.signature,
+      redirect_url: result.redirect_url,
+      customer_data: result.customer_data || {},
+      shipping_address: result.shipping_address || {},
+    }
+  } catch (err) {
+    console.error("[Wompi] checkout-config error:", err)
+    return null
+  }
 }
 
 export async function verifyWompiTransaction(
   transactionId: string,
   cartId: string
 ): Promise<{ status: string; transaction?: any }> {
-  return sdk.client
-    .fetch<{ status: string; transaction?: any }>(
+  try {
+    const result = await sdk.client.fetch<{ status: string; transaction?: any }>(
       "/store/wompi/verify-transaction",
       {
         method: "POST",
         body: { transaction_id: transactionId, cart_id: cartId },
       }
     )
-    .catch(() => ({ status: "ERROR" }))
+    return { status: result.status, transaction: result.transaction || null }
+  } catch {
+    return { status: "ERROR" }
+  }
 }
