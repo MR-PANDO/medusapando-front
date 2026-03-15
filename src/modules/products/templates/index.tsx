@@ -13,6 +13,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { getEntityTranslation } from "@lib/data/translations"
 
 import ProductActionsWrapper from "./product-actions-wrapper"
+import ProductReviews from "@modules/products/components/product-reviews"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct & {
@@ -197,6 +198,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
           <div className="lg:col-span-2 order-1 lg:order-2">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
               <ProductDetailsTabs product={product} translatedDescription={translation?.description} />
+              <ProductReviews productId={product.id} />
             </div>
           </div>
         </div>
