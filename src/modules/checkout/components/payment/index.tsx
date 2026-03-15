@@ -127,7 +127,12 @@ const Payment = ({
     setError(null)
     try {
       const config = await fetchCheckoutConfig()
-      if (!config || config.error) throw new Error(t("wompiConfigError"))
+      if (!config || config.error) {
+        // fetchCheckoutConfig already set a specific error — don't overwrite
+        if (!error) setError(t("wompiConfigError"))
+        setWompiProcessing(false)
+        return
+      }
       if (!window.WidgetCheckout) throw new Error(t("wompiWidgetNotReady"))
 
       const checkout = new window.WidgetCheckout({
@@ -182,7 +187,11 @@ const Payment = ({
     setError(null)
     try {
       const config = await fetchCheckoutConfig()
-      if (!config || config.error) throw new Error(t("wompiConfigError"))
+      if (!config || config.error) {
+        if (!error) setError(t("wompiConfigError"))
+        setWompiProcessing(false)
+        return
+      }
 
       const params = new URLSearchParams({
         "public-key": config.public_key,
