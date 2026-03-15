@@ -342,11 +342,11 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
                 </svg>
               </LocalizedClientLink>
 
-              {/* Account icon - visible when scrolled (on all devices) */}
+              {/* Account icon - always visible on mobile, visible when scrolled on desktop */}
               <LocalizedClientLink
                 href="/account"
                 className={`p-2 text-gray-600 hover:text-emerald-600 transition-opacity duration-300 ${
-                  isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden sm:block'
+                  isScrolled ? 'opacity-100' : 'sm:opacity-0 sm:pointer-events-none'
                 }`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
