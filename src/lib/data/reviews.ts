@@ -66,6 +66,6 @@ export async function submitReview(input: {
 
     return { success: true }
   } catch (err: any) {
-    return { success: false, error: err?.message || "Error al enviar la resena" }
+    return { success: false, error: err?.message || "Error al enviar la reseña" }
   }
 }

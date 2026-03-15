@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 
-export type SortOptions = "price_asc" | "price_desc" | "created_at" | "sales_count"
+export type SortOptions = "price_asc" | "price_desc" | "created_at" | "sales_count" | "rating_desc" | "rating_asc"
 
 type SortProductsProps = {
   sortBy: SortOptions
@@ -33,6 +33,14 @@ const SortProducts = ({
     {
       value: "price_desc",
       label: t("priceHighLow"),
+    },
+    {
+      value: "rating_desc",
+      label: t("bestReviewed"),
+    },
+    {
+      value: "rating_asc",
+      label: t("leastReviewed"),
     },
   ]
 

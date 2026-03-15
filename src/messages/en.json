@@ -395,6 +395,8 @@
     "newest": "Newest",
     "priceLowHigh": "Price: Low to High",
     "priceHighLow": "Price: High to Low",
+    "bestReviewed": "Best reviewed",
+    "leastReviewed": "Least reviewed",
     "resultsFor": "Results for \"{query}\"",
     "productsInCategory": "Products: {name}",
     "allProducts": "All products",

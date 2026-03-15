@@ -115,6 +115,10 @@ export const listProductsWithSort = async ({
     orderParam = "-created_at"
   } else if (sortBy === "sales_count") {
     orderParam = "-metadata.sales_count"
+  } else if (sortBy === "rating_desc") {
+    orderParam = "-metadata.avg_rating"
+  } else if (sortBy === "rating_asc") {
+    orderParam = "metadata.avg_rating"
   }
 
   const {
