@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback, ReactNode } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import Image from 'next/image'
 import { useTranslations } from "next-intl"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -50,9 +51,12 @@ type NavHeaderProps = {
 export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonCompact }: NavHeaderProps) {
   const t = useTranslations("nav")
   const tDiets = useTranslations("diets")
+  const pathname = usePathname()
+  const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isDietsOpen, setIsDietsOpen] = useState(false)
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+  const isStorePage = pathname?.includes("/store")
   const dietsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isScrolledRef = useRef(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -330,64 +334,82 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
             </nav>
 
             {/* Right side - always on bottom row */}
-            <div className="flex items-center gap-2 sm:gap-3 ml-auto">
-              {/* Search icon - toggles search box on mobile, shows when scrolled on desktop */}
-              <button
-                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-                className={`p-2 text-gray-600 hover:text-emerald-600 ${
-                  isScrolled ? 'block' : 'md:hidden'
-                }`}
-                type="button"
-                aria-label="Buscar"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
+            <div className="flex items-center gap-1 sm:gap-3 ml-auto">
+              {/* Mobile inline search — expands from right to left */}
+              {isMobileSearchOpen ? (
+                <div className="flex items-center gap-2 flex-1 md:hidden animate-in slide-in-from-right duration-200">
+                  <div className="flex-1">
+                    {searchBox}
+                  </div>
+                  <button
+                    onClick={() => setIsMobileSearchOpen(false)}
+                    className="p-2 text-gray-600 hover:text-gray-900 flex-shrink-0"
+                    type="button"
+                    aria-label="Cerrar busqueda"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Search icon */}
+                  <button
+                    onClick={() => setIsMobileSearchOpen(true)}
+                    className={`p-2 text-gray-600 hover:text-emerald-600 ${
+                      isScrolled ? 'block' : 'md:hidden'
+                    }`}
+                    type="button"
+                    aria-label="Buscar"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
 
-              {/* Filters icon - opens store filters sidebar on mobile */}
-              <button
-                onClick={() => window.dispatchEvent(new Event("open-store-filters"))}
-                className="p-2 text-gray-600 hover:text-emerald-600 md:hidden"
-                type="button"
-                aria-label="Filtros"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-              </button>
+                  {/* Filters icon — opens filters on store page, navigates to store on other pages */}
+                  <button
+                    onClick={() => {
+                      if (isStorePage) {
+                        window.dispatchEvent(new Event("open-store-filters"))
+                      } else {
+                        router.push(pathname?.split("/")[1] ? `/${pathname.split("/")[1]}/store` : "/store")
+                      }
+                    }}
+                    className="p-2 text-gray-600 hover:text-emerald-600 md:hidden"
+                    type="button"
+                    aria-label="Filtros"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                  </button>
 
-              {/* Account icon - always visible on mobile, visible when scrolled on desktop */}
-              <LocalizedClientLink
-                href="/account"
-                className={`p-2 text-gray-600 hover:text-emerald-600 transition-opacity duration-300 ${
-                  isScrolled ? 'opacity-100' : 'sm:opacity-0 sm:pointer-events-none'
-                }`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                </svg>
-              </LocalizedClientLink>
+                  {/* Account icon */}
+                  <LocalizedClientLink
+                    href="/account"
+                    className={`p-2 text-gray-600 hover:text-emerald-600 transition-opacity duration-300 ${
+                      isScrolled ? 'opacity-100' : 'sm:opacity-0 sm:pointer-events-none'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </LocalizedClientLink>
 
-              {/* Cart icon - visible when scrolled */}
-              <div className={`transition-opacity duration-300 ${
-                isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden'
-              }`}>
-                {cartButtonCompact}
-              </div>
+                  {/* Cart icon - visible when scrolled */}
+                  <div className={`transition-opacity duration-300 ${
+                    isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none hidden'
+                  }`}>
+                    {cartButtonCompact}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Mobile search box — slides down */}
-      {isMobileSearchOpen && (
-        <div className="bg-white border-b border-gray-200 shadow-sm md:hidden">
-          <div className="content-container py-3">
-            {searchBox}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -267,6 +267,20 @@ function SearchContent() {
       />
       {isOpen && query && query.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-[100]">
+          {/* Close button for mobile */}
+          <div className="flex items-center justify-between px-4 pt-3 pb-1 md:hidden">
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Resultados</span>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 text-gray-400 hover:text-gray-600"
+              type="button"
+              aria-label="Cerrar resultados"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           <SearchResults onResultClick={() => setIsOpen(false)} />
         </div>
       )}
