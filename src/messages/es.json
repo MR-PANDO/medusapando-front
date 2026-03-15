@@ -238,6 +238,8 @@
     "wompiPaymentPending": "Tu pago está pendiente de confirmación",
     "wompiPaymentFailed": "El pago no fue aprobado. Intenta con otro método.",
     "wompiVerifying": "Verificando pago...",
+    "wompiLinkTitle": "Link de pago (Wompi)",
+    "wompiLinkDesc": "Recibirás un link de pago por correo electrónico",
     "paymentDetails": "Detalles de pago",
     "anotherStep": "Aparecerá otro paso",
     "review": "Revisión",

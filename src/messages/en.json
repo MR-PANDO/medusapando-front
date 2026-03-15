@@ -238,6 +238,8 @@
     "wompiPaymentPending": "Your payment is pending confirmation",
     "wompiPaymentFailed": "Payment was not approved. Try another method.",
     "wompiVerifying": "Verifying payment...",
+    "wompiLinkTitle": "Payment link (Wompi)",
+    "wompiLinkDesc": "You will receive a payment link by email",
     "paymentDetails": "Payment details",
     "anotherStep": "Another step will appear",
     "review": "Review",
