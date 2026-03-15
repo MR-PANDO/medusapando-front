@@ -11,7 +11,6 @@ import MedusaRadio from "@modules/common/components/radio"
 import Divider from "@modules/common/components/divider"
 import {
   getWompiPaymentMethods,
-  getWompiCheckoutConfig,
   verifyWompiTransaction,
   WompiPaymentMethods,
 } from "@lib/data/wompi"
@@ -97,13 +96,24 @@ const Payment = ({
     })
   }
 
+  // Fetch checkout config via API route (not server action — avoids serialization issues)
+  const fetchCheckoutConfig = async () => {
+    const res = await fetch("/api/wompi/checkout-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cart_id: cart.id }),
+    })
+    if (!res.ok) return null
+    return res.json()
+  }
+
   // Handle Wompi Widget payment
   const handleWompiWidget = async () => {
     setWompiProcessing(true)
     setError(null)
     try {
-      const config = await getWompiCheckoutConfig(cart.id)
-      if (!config) throw new Error(t("wompiConfigError"))
+      const config = await fetchCheckoutConfig()
+      if (!config || config.error) throw new Error(t("wompiConfigError"))
       if (!window.WidgetCheckout) throw new Error(t("wompiWidgetNotReady"))
 
       const checkout = new window.WidgetCheckout({
@@ -157,8 +167,8 @@ const Payment = ({
     setWompiProcessing(true)
     setError(null)
     try {
-      const config = await getWompiCheckoutConfig(cart.id)
-      if (!config) throw new Error(t("wompiConfigError"))
+      const config = await fetchCheckoutConfig()
+      if (!config || config.error) throw new Error(t("wompiConfigError"))
 
       const params = new URLSearchParams({
         "public-key": config.public_key,
