@@ -96,29 +96,27 @@ const Payment = ({
     })
   }
 
-  // Fetch checkout config via API route
-  const fetchCheckoutConfig = async () => {
-    try {
-      const res = await fetch("/api/wompi/checkout-config", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart_id: cart.id }),
-      })
-      if (!res.ok) {
-        const errText = await res.text()
-        setError(`Error ${res.status}: ${errText.substring(0, 100)}`)
-        return null
-      }
-      const data = await res.json()
-      if (!data.public_key) {
-        setError("Respuesta invalida del servidor")
-        return null
-      }
-      return data
-    } catch (err: any) {
-      setError(`Error de conexion: ${err.message}`)
-      return null
-    }
+  // Get Wompi config from payment session data (set by initiatePayment in the provider)
+  const getWompiConfig = () => {
+    const sessions = cart?.payment_collection?.payment_sessions || []
+    const wompiSession = sessions.find(
+      (s: any) => s.provider_id === "pp_wompi_wompi" && s.status === "pending"
+    )
+    return wompiSession?.data as any || null
+  }
+
+  // Ensure payment session is created, then get config
+  const getOrCreateWompiConfig = async () => {
+    let config = getWompiConfig()
+    if (config?.public_key) return config
+
+    // Create the payment session via Medusa's standard flow
+    // initiatePayment in the provider generates the Wompi config
+    await initiatePaymentSession(cart, { provider_id: "pp_wompi_wompi" })
+
+    // Need to wait for cart to update — reload page to get fresh session data
+    window.location.reload()
+    return null
   }
 
   // Handle Wompi Widget payment
@@ -126,13 +124,9 @@ const Payment = ({
     setWompiProcessing(true)
     setError(null)
     try {
-      const config = await fetchCheckoutConfig()
-      if (!config || config.error) {
-        // fetchCheckoutConfig already set a specific error — don't overwrite
-        if (!error) setError(t("wompiConfigError"))
-        setWompiProcessing(false)
-        return
-      }
+      const config = await getOrCreateWompiConfig()
+      if (!config) return // page is reloading
+
       if (!window.WidgetCheckout) throw new Error(t("wompiWidgetNotReady"))
 
       const checkout = new window.WidgetCheckout({
@@ -143,17 +137,17 @@ const Payment = ({
         redirectUrl: config.redirect_url,
         "signature:integrity": config.signature,
         customerData: {
-          email: config.customer_data.email,
-          fullName: config.customer_data.full_name,
-          phoneNumber: config.customer_data.phone_number,
-          phoneNumberPrefix: config.customer_data.phone_number_prefix || "+57",
+          email: config.customer_data?.email,
+          fullName: config.customer_data?.full_name,
+          phoneNumber: config.customer_data?.phone_number,
+          phoneNumberPrefix: config.customer_data?.phone_number_prefix || "+57",
         },
         shippingAddress: {
-          addressLine1: config.shipping_address.address_line_1,
-          city: config.shipping_address.city,
-          region: config.shipping_address.region,
-          country: config.shipping_address.country || "CO",
-          phoneNumber: config.shipping_address.phone_number,
+          addressLine1: config.shipping_address?.address_line_1,
+          city: config.shipping_address?.city,
+          region: config.shipping_address?.region,
+          country: config.shipping_address?.country || "CO",
+          phoneNumber: config.shipping_address?.phone_number,
         },
       })
 
@@ -186,12 +180,8 @@ const Payment = ({
     setWompiProcessing(true)
     setError(null)
     try {
-      const config = await fetchCheckoutConfig()
-      if (!config || config.error) {
-        if (!error) setError(t("wompiConfigError"))
-        setWompiProcessing(false)
-        return
-      }
+      const config = await getOrCreateWompiConfig()
+      if (!config) return // page is reloading
 
       const params = new URLSearchParams({
         "public-key": config.public_key,
@@ -201,12 +191,12 @@ const Payment = ({
         "signature:integrity": config.signature,
         "redirect-url": config.redirect_url,
       })
-      if (config.customer_data.email) params.set("customer-data:email", config.customer_data.email)
-      if (config.customer_data.full_name) params.set("customer-data:full-name", config.customer_data.full_name)
-      if (config.customer_data.phone_number) params.set("customer-data:phone-number", config.customer_data.phone_number)
-      if (config.shipping_address.address_line_1) params.set("shipping-address:address-line-1", config.shipping_address.address_line_1)
-      if (config.shipping_address.city) params.set("shipping-address:city", config.shipping_address.city)
-      if (config.shipping_address.region) params.set("shipping-address:region", config.shipping_address.region)
+      if (config.customer_data?.email) params.set("customer-data:email", config.customer_data.email)
+      if (config.customer_data?.full_name) params.set("customer-data:full-name", config.customer_data.full_name)
+      if (config.customer_data?.phone_number) params.set("customer-data:phone-number", config.customer_data.phone_number)
+      if (config.shipping_address?.address_line_1) params.set("shipping-address:address-line-1", config.shipping_address.address_line_1)
+      if (config.shipping_address?.city) params.set("shipping-address:city", config.shipping_address.city)
+      if (config.shipping_address?.region) params.set("shipping-address:region", config.shipping_address.region)
 
       window.location.href = `https://checkout.wompi.co/p/?${params.toString()}`
     } catch (err: any) {

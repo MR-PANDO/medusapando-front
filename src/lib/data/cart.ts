@@ -22,7 +22,7 @@ import { getRegion } from "./regions"
  */
 export async function retrieveCart(cartId?: string, fields?: string) {
   const id = cartId || (await getCartId())
-  fields ??= "*items, *region, *items.product, *items.variant, *items.variant.product.thumbnail, *items.variant.product.images, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name, +metadata, *shipping_address"
+  fields ??= "*items, *region, *items.product, *items.variant, *items.variant.product.thumbnail, *items.variant.product.images, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name, +metadata, *shipping_address, *payment_collection.payment_sessions"
 
   if (!id) {
     return null
