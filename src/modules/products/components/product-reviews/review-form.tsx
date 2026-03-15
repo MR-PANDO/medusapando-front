@@ -71,13 +71,13 @@ export default function ReviewForm({ productId }: ReviewFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 rounded-lg p-4 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-gray-50 rounded-lg p-3 md:p-4 space-y-3 md:space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold text-gray-900">{t("writeReview")}</h4>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="p-1 text-gray-400 hover:text-gray-600"
+          className="p-2 text-gray-400 hover:text-gray-600 -mr-1"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

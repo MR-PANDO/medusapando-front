@@ -18,18 +18,18 @@ function ReviewCard({ review }: { review: ProductReview }) {
   })
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <div className="flex items-start justify-between mb-2">
-        <div>
+    <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div className="min-w-0">
           <StarRating rating={review.rating} size="sm" />
           {review.title && (
-            <p className="text-sm font-semibold text-gray-900 mt-1">{review.title}</p>
+            <p className="text-xs md:text-sm font-semibold text-gray-900 mt-1 line-clamp-1">{review.title}</p>
           )}
         </div>
-        <span className="text-xs text-gray-400 flex-shrink-0">{date}</span>
+        <span className="text-[11px] md:text-xs text-gray-400 flex-shrink-0 whitespace-nowrap">{date}</span>
       </div>
-      <p className="text-sm text-gray-700 leading-relaxed">{review.content}</p>
-      <p className="text-xs text-gray-500 mt-3">
+      <p className="text-xs md:text-sm text-gray-700 leading-relaxed">{review.content}</p>
+      <p className="text-[11px] md:text-xs text-gray-500 mt-2 md:mt-3">
         {review.first_name} {review.last_name?.charAt(0)}.
       </p>
     </div>
@@ -63,15 +63,15 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
   }, [productId, page])
 
   return (
-    <div className="mt-12">
+    <div className="mt-8 md:mt-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 md:mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t("reviews")}</h3>
+          <h3 className="text-base md:text-lg font-semibold text-gray-900">{t("reviews")}</h3>
           {count > 0 && (
             <div className="flex items-center gap-2 mt-1">
               <StarRating rating={Math.round(averageRating)} size="sm" />
-              <span className="text-sm text-gray-600">
+              <span className="text-xs md:text-sm text-gray-600">
                 {averageRating.toFixed(1)} ({count} {count === 1 ? t("review") : t("reviewsCount")})
               </span>
             </div>
@@ -81,14 +81,14 @@ export default function ProductReviews({ productId }: ProductReviewsProps) {
 
       {/* Reviews list */}
       {reviews.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
           {reviews.map((review) => (
             <ReviewCard key={review.id} review={review} />
           ))}
         </div>
       ) : !loading ? (
-        <div className="text-center py-8 mb-6">
-          <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
+        <div className="text-center py-6 md:py-8 mb-4 md:mb-6">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-gray-300 mx-auto mb-2 md:mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           <p className="text-sm text-gray-500">{t("noReviews")}</p>
