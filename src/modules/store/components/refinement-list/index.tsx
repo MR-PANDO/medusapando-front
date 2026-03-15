@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { HttpTypes } from "@medusajs/types"
 
@@ -52,6 +52,14 @@ const RefinementList = ({
   const searchParams = useSearchParams()
   const [categorySearch, setCategorySearch] = useState("")
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+
+  // Listen for global event to open filters from nav bar
+  useEffect(() => {
+    const handler = () => setIsMobileOpen(true)
+    window.addEventListener("open-store-filters", handler)
+    return () => window.removeEventListener("open-store-filters", handler)
+  }, [])
+
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     categories: true,
     diets: true,
