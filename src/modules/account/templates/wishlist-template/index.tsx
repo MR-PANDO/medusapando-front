@@ -26,7 +26,8 @@ export default function WishlistTemplate({ wishlist, region }: WishlistTemplateP
     startTransition(async () => {
       const result = await removeFromWishlist(itemId)
       if (result) {
-        setItems(result.items)
+        // Remove locally — the returned items lack enriched product data
+        setItems((prev) => prev.filter((i) => i.id !== itemId))
       }
       setRemovingId(null)
     })
