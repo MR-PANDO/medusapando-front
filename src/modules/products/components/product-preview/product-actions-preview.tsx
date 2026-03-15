@@ -63,20 +63,20 @@ export default function ProductActionsPreview({
 
   return (
     <div
-      className="flex items-center justify-between gap-2 mt-3"
+      className="flex items-center gap-2 mt-3"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Quantity selector */}
-      <div className="flex items-center border border-gray-200 rounded-lg bg-white">
+      {/* Quantity selector — compact on mobile */}
+      <div className="flex items-center border border-gray-200 rounded-lg bg-white flex-shrink-0">
         <button
           onClick={decrementQty}
           disabled={!inStock}
-          className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-8 h-9 md:w-8 md:h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
+            className="h-3.5 w-3.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -89,18 +89,18 @@ export default function ProductActionsPreview({
             />
           </svg>
         </button>
-        <span className="w-8 h-8 flex items-center justify-center text-sm font-medium">
+        <span className="w-6 h-9 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm font-medium">
           {quantity}
         </span>
         <button
           onClick={incrementQty}
           disabled={!inStock}
-          className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-8 h-9 md:w-8 md:h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
+            className="h-3.5 w-3.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -115,11 +115,11 @@ export default function ProductActionsPreview({
         </button>
       </div>
 
-      {/* Add to basket button */}
+      {/* Add to basket button — fills remaining space */}
       <button
         onClick={handleAddToCart}
         disabled={isAdding || !variantId || !inStock}
-        className={`flex items-center justify-center w-10 h-10 rounded-lg transition-all ${
+        className={`flex-1 flex items-center justify-center h-9 md:h-10 md:flex-none md:w-10 rounded-lg transition-all ${
           added
             ? "bg-green-500 text-white"
             : isAdding

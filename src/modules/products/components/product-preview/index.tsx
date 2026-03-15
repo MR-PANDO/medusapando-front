@@ -80,8 +80,8 @@ export default async function ProductPreview({
       )}
 
       {/* Product image */}
-      <LocalizedClientLink href={`/products/${product.handle}`}>
-        <div className="relative aspect-square overflow-hidden bg-gray-50">
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
+        <LocalizedClientLink href={`/products/${product.handle}`} className="block w-full h-full">
           <Thumbnail
             thumbnail={product.thumbnail}
             images={product.images}
@@ -89,12 +89,12 @@ export default async function ProductPreview({
             isFeatured={isFeatured}
             className="!rounded-none !shadow-none"
           />
-          <ImageZoomButton
-            imageSrc={product.thumbnail || product.images?.[0]?.url || null}
-            alt={product.title || ""}
-          />
-        </div>
-      </LocalizedClientLink>
+        </LocalizedClientLink>
+        <ImageZoomButton
+          imageSrc={product.thumbnail || product.images?.[0]?.url || null}
+          alt={product.title || ""}
+        />
+      </div>
 
       {/* Product info */}
       <div className="p-3">
