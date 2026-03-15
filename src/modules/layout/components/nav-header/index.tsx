@@ -52,6 +52,7 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
   const tDiets = useTranslations("diets")
   const [isScrolled, setIsScrolled] = useState(false)
   const [isDietsOpen, setIsDietsOpen] = useState(false)
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const dietsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isScrolledRef = useRef(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -330,17 +331,19 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
 
             {/* Right side - always on bottom row */}
             <div className="flex items-center gap-2 sm:gap-3 ml-auto">
-              {/* Search icon - only when scrolled on desktop, always on mobile */}
-              <LocalizedClientLink
-                href="/store"
+              {/* Search icon - toggles search box on mobile, shows when scrolled on desktop */}
+              <button
+                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
                 className={`p-2 text-gray-600 hover:text-emerald-600 ${
                   isScrolled ? 'block' : 'md:hidden'
                 }`}
+                type="button"
+                aria-label="Buscar"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </LocalizedClientLink>
+              </button>
 
               {/* Account icon - always visible on mobile, visible when scrolled on desktop */}
               <LocalizedClientLink
@@ -364,6 +367,15 @@ export default function NavHeader({ sideMenu, searchBox, cartButton, cartButtonC
           </div>
         </div>
       </div>
+
+      {/* Mobile search box — slides down */}
+      {isMobileSearchOpen && (
+        <div className="bg-white border-b border-gray-200 shadow-sm md:hidden">
+          <div className="content-container py-3">
+            {searchBox}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
