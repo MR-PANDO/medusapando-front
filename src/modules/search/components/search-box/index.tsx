@@ -184,15 +184,15 @@ function SearchResults({ onResultClick }: { onResultClick: () => void }) {
   }
 
   return (
-    <div className="max-h-[400px] overflow-y-auto">
+    <div>
       {hits.slice(0, 8).map((hit) => (
         <div
           key={hit.id}
-          className="flex items-center gap-4 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+          className="flex items-center gap-3 md:gap-4 p-3 md:p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
         >
           <LocalizedClientLink
             href={`/products/${hit.handle}`}
-            className="w-12 h-12 flex-shrink-0"
+            className="w-16 h-16 md:w-12 md:h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-50"
             onClick={onResultClick}
           >
             <Thumbnail thumbnail={hit.thumbnail} size="square" />
@@ -202,21 +202,23 @@ function SearchResults({ onResultClick }: { onResultClick: () => void }) {
               href={`/products/${hit.handle}`}
               onClick={onResultClick}
             >
-              <p className="text-sm font-medium text-gray-900 truncate hover:text-gray-600">
+              <p className="text-sm md:text-sm font-semibold text-gray-900 line-clamp-2 md:truncate hover:text-emerald-600 transition-colors">
                 {locale === "en" ? (hit.title_en || hit.title) : hit.title}
               </p>
             </LocalizedClientLink>
             {(hit.description || hit.description_en) && (
-              <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs text-gray-500 line-clamp-1 mt-0.5 hidden md:block">
                 {locale === "en" ? (hit.description_en || hit.description) : hit.description}
               </p>
             )}
           </div>
           {hit.variant_id && (
-            <AddToCartButton
-              variantId={hit.variant_id}
-              countryCode={countryCode}
-            />
+            <div className="hidden md:block">
+              <AddToCartButton
+                variantId={hit.variant_id}
+                countryCode={countryCode}
+              />
+            </div>
           )}
         </div>
       ))}
@@ -266,13 +268,13 @@ function SearchContent() {
         }}
       />
       {isOpen && query && query.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-[100]">
-          {/* Close button for mobile */}
-          <div className="flex items-center justify-between px-4 pt-3 pb-1 md:hidden">
-            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Resultados</span>
+        <div className="fixed md:absolute left-0 right-0 md:left-auto md:right-auto top-auto mt-2 bg-white border border-gray-200 md:rounded-lg shadow-lg z-[100] md:w-full max-h-[70vh] md:max-h-[400px] overflow-hidden flex flex-col">
+          {/* Header with close button */}
+          <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-100 md:hidden flex-shrink-0">
+            <span className="text-sm text-gray-700 font-semibold">Resultados</span>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 text-gray-400 hover:text-gray-600"
+              className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
               type="button"
               aria-label="Cerrar resultados"
             >
@@ -281,7 +283,9 @@ function SearchContent() {
               </svg>
             </button>
           </div>
-          <SearchResults onResultClick={() => setIsOpen(false)} />
+          <div className="overflow-y-auto flex-1">
+            <SearchResults onResultClick={() => setIsOpen(false)} />
+          </div>
         </div>
       )}
     </div>
