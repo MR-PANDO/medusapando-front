@@ -4,6 +4,7 @@ import { HttpTypes } from "@medusajs/types"
 import { Container } from "@medusajs/ui"
 import Image from "next/image"
 import { useState } from "react"
+import ImageLightbox from "@modules/common/components/image-lightbox"
 
 type ImageGalleryProps = {
   images: HttpTypes.StoreProductImage[]
@@ -11,6 +12,7 @@ type ImageGalleryProps = {
 
 const ImageGallery = ({ images }: ImageGalleryProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
   const selectedImage = images[selectedIndex]
 
   const goToPrevious = () => {
@@ -35,7 +37,10 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
     <div className="flex flex-col gap-4">
       {/* Main Image */}
       <div className="relative">
-        <Container className="relative aspect-square w-full overflow-hidden bg-white rounded-lg border border-gray-200">
+        <Container
+          className="relative aspect-square w-full overflow-hidden bg-white rounded-lg border border-gray-200 cursor-zoom-in"
+          onClick={() => selectedImage?.url && setLightboxOpen(true)}
+        >
           {selectedImage?.url && (
             <Image
               src={selectedImage.url}
@@ -46,7 +51,32 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
               sizes="(max-width: 768px) 100vw, 50vw"
             />
           )}
+          {/* Zoom button */}
+          {selectedImage?.url && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setLightboxOpen(true)
+              }}
+              className="absolute bottom-3 right-3 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 shadow-md hover:bg-white hover:shadow-lg transition-all"
+              type="button"
+              aria-label="Ampliar imagen"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+              </svg>
+            </button>
+          )}
         </Container>
+
+        {/* Lightbox */}
+        {lightboxOpen && selectedImage?.url && (
+          <ImageLightbox
+            src={selectedImage.url}
+            alt={`Product image ${selectedIndex + 1}`}
+            onClose={() => setLightboxOpen(false)}
+          />
+        )}
 
         {/* Navigation Arrows */}
         {images.length > 1 && (

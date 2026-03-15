@@ -21,7 +21,7 @@ export default function ImageZoomButton({ imageSrc, alt }: ImageZoomButtonProps)
           e.stopPropagation()
           setIsOpen(true)
         }}
-        className="absolute bottom-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 shadow-md hover:bg-white hover:shadow-lg transition-all opacity-0 group-hover:opacity-100"
+        className="absolute bottom-2 right-2 z-10 w-10 h-10 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-white/90 shadow-md hover:bg-white hover:shadow-lg transition-all md:opacity-0 md:group-hover:opacity-100"
         type="button"
         title="Ver imagen"
         aria-label="Ampliar imagen"

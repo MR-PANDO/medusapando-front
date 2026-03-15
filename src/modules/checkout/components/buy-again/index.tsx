@@ -116,7 +116,7 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-6 md:h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -126,7 +126,7 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-6 md:h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-emerald-600 hover:shadow-lg transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -198,7 +198,7 @@ export default function BuyAgain({ items, countryCode }: BuyAgainProps) {
                   addingItems[item.product_id] ||
                   isPending
                 }
-                className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+                className={`flex-shrink-0 w-9 h-9 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-all duration-200 ${
                   addedItems[item.product_id]
                     ? "bg-emerald-600 text-white"
                     : addingItems[item.product_id]

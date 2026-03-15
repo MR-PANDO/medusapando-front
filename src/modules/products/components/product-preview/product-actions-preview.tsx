@@ -71,7 +71,7 @@ export default function ProductActionsPreview({
         <button
           onClick={decrementQty}
           disabled={!inStock}
-          className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
         >
           <svg
@@ -95,7 +95,7 @@ export default function ProductActionsPreview({
         <button
           onClick={incrementQty}
           disabled={!inStock}
-          className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
         >
           <svg

@@ -61,7 +61,7 @@ export default function WishlistButton({
     <button
       onClick={toggleWishlist}
       disabled={isPending || !variantId || !checked}
-      className={`absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md hover:shadow-lg transition-all ${
+      className={`absolute top-2 right-2 z-10 w-10 h-10 md:w-8 md:h-8 flex items-center justify-center rounded-full bg-white shadow-md hover:shadow-lg transition-all ${
         isPending ? "opacity-50 cursor-wait" : ""
       }`}
       type="button"

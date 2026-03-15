@@ -247,7 +247,7 @@ export default function LocationSelect({
 
       {/* Neighborhood select — only for metro area municipalities */}
       {hasNeighborhoods && (
-        <div className="flex flex-col col-span-2">
+        <div className="flex flex-col col-span-1 md:col-span-2">
           <label className="text-sm font-medium text-gray-700 mb-1">
             {t("neighborhood")}
             {required && <span className="text-red-500 ml-0.5">*</span>}
